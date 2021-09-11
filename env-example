@@ -1,0 +1,7 @@
+DB_HOST=localhost
+DB_USER=postgres
+DB_NAME=community-platform
+DB_PASSWORD=
+EMAIL=jbearxtendee@gmail.com
+EMAIL_PASSWORD=Kmzway86aa!
+SECRET_KEY=inirahasia
