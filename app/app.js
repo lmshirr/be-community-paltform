@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const apiRoutes = require("./routes/index");
-const NotFoundException = require("./utils/httpExceptions/notFoundException");
+const {NotFoundException} = require("./utils/httpExceptions/httpExceptions");
 
 const app = express();
 const port = 5000;
@@ -34,5 +34,4 @@ app.use(
     return res.status(err.statusCode || 500).json({ message: err.message });
   }
 );
-
 app.listen(port, () => console.log(`This App is Running on port ` + port));

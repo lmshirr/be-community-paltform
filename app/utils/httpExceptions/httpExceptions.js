@@ -1,4 +1,4 @@
-const httpStatusCode = require("./httpStatusCode");
+const httpStatusCode = require("./httpStatus");
 
 class HttpException extends Error {
   constructor(message, description, statusCode, isOperational) {
