@@ -47,7 +47,6 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-
 classRouter.get('/search/:key', classController.findClass);
 classRouter.get('/:id', classMiddleware.checkMembership, classController.getClassDetails);
 classRouter.post('/', authorizationMiddleware.checkLogin, classMiddleware.checkAdmin_post, classController.createClass);
