@@ -48,8 +48,8 @@ module.exports.register = async function (req, res, next) {
       activation_token: token,
     });
     res.status(201).json({
-      success: true,
       messages: "Register Success!",
+      data: user
     });
   } catch (error) {
     if (error.name === "SequelizeValidationError") {
@@ -122,6 +122,10 @@ module.exports.login = async function (req, res) {
         res.status(201).json({
           success: true,
           message: "Login Success",
+          data: {
+            name: user.name,
+            email: user.email
+          }
         });
       } else {
         res.status(200).json({
@@ -157,7 +161,7 @@ module.exports.findUser = async function (req, res) {
     });
     return res.status(200).json({
       success: true,
-      findUser,
+      data: findUser
     });
   } catch (error) {
     return res.status(200).json({
@@ -181,7 +185,7 @@ module.exports.getUserDetail = async function (req, res) {
       ],
     });
     return res.status(200).json({
-      user,
+      data: user,
     });
   } catch (error) {
     return res.status(200).json({
@@ -228,6 +232,10 @@ module.exports.editUser = async function (req, res) {
     return res.status(200).json({
       success: true,
       messages: "Profile updated!",
+      data: {
+        name: findUser.name,
+        email: findUser.email
+      }
     });
   } catch (error) {
     console.log(error);
