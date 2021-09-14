@@ -12,8 +12,7 @@ module.exports.getInvitationUser = async function(req, res){
             UserId: decoded.UserId
         }})
         return res.status(200).json({
-            success: true,
-            invitation
+            data: invitation
         })
     }catch(error){
         return res.status(200).json({
@@ -29,8 +28,7 @@ module.exports.getInvitationCommunity = async function(req, res){
             CommunityId: req.params.CommunityId
         }})
         return res.status(200).json({
-            success: true,
-            invitation
+            data: invitation
         })
     }catch(error){
         return res.status(200).json({
@@ -59,10 +57,14 @@ module.exports.createInvitation = async function(req, res){
         const token = req.cookies.jwt;
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const Inviter = decoded.UserId;
-        await db.Invitation.create({
+        const invite = await db.Invitation.create({
             Inviter,
             UserId,
             CommunityId
+        })
+        return res.status(200).json({
+            messages: "User invited",
+            data: invite
         })
     }catch(error){
         return res.status(200).json({
@@ -92,7 +94,6 @@ module.exports.respondInvite = async function(req,res){
             });
             await db.Invitation.destroy({where: {id: req.params.id}});
             return res.status(200).json({
-                success: true,
                 messages: "Community Joined"
             })
         }
@@ -101,7 +102,6 @@ module.exports.respondInvite = async function(req,res){
                 status: "Refused"
             })
             return res.status(200).json({
-                success: true,
                 messages: "Invitation refused"
             })
         }

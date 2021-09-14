@@ -67,14 +67,14 @@ const checkUser = (req, res, next)=>{
                 message: error
             })
         }
-        const invitation = await db.invitation.findByPk(req.params.id);
-        if(decodedToken.UserId == invitation.UserId){
-            next();
+        const invitation = await db.Invitation.findByPk(req.params.id);
+        if(!decodedToken.UserId == invitation.UserId){
+            return res.status(200).json({
+                success: false,
+                messages: "You dont have permission to this action!"
+            })
         }
-        return res.status(200).json({
-            success: false,
-            messages: "You dont have permission to this action!"
-        })
+        next();
     })
 }
 
