@@ -12,8 +12,7 @@ module.exports.getCommunityPosts = async function(req, res){
             }
         })
         return res.status(200).json({
-            success:true,
-            post
+            data: post
         })
     }catch(error){
         return res.status(200).json({
@@ -43,8 +42,7 @@ module.exports.getPostDetails = async function(req, res){
             }],
         });
         return res.status(200).json({
-            success:true,
-            post
+            data: post
         })
     }catch(error){
         return res.status(200).json({
@@ -87,8 +85,8 @@ module.exports.createPost = async function(req, res){
             });
         }
         res.status(201).json({
-            success: true,
-            messages: "Post created"
+            messages: "Post created",
+            data: post
         })
     }catch(error){
         if(error.name === "SequelizeValidationError"){
@@ -142,8 +140,8 @@ module.exports.editPost = async function(req, res){
             });
         }
         return res.status(200).json({
-            success: true,
-            messages: "Post updated!"
+            messages: "Post updated!",
+            data: post
         })
     }catch(error){
         console.log(error);
