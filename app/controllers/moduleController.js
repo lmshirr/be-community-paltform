@@ -33,14 +33,14 @@ module.exports.addModule = async function(req, res){
         ClassId
     } = req.params;
     try{
-        await db.Module.create({
+        const module = await db.Module.create({
             ClassId,
             filename,
             name
         })
         res.status(200).json({
-            success:true,
-            message:"Module Uploaded"
+            message:"Module Uploaded",
+            data: module
         })
     }catch(error){
         return res.status(200).json({
@@ -66,8 +66,8 @@ module.exports.editModule = async function(req, res){
             name: name
         })
         return res.status(200).json({
-            success: true,
-            messages: "Module updated!"
+            messages: "Module updated!",
+            data: module
         })
     }catch(error){
         return res.status(200).json({
@@ -83,7 +83,6 @@ module.exports.deleteModule = async function(req, res){
         fs.unlinkSync(`./assets/class/modules/${module.filename}`)
         await db.Module.destroy({where: {id: req.params.ModuleId}})
         return res.status(200).json({
-            success: true,
             messages: "Delete success!"
         })
     }catch(error){
