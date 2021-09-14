@@ -29,7 +29,6 @@ module.exports.joinCommunity = async function(req, res){
                 CommunityId
             });
             res.status(200).json({
-                success: true,
                 messages: "Join success!"
             })
         }
@@ -39,7 +38,6 @@ module.exports.joinCommunity = async function(req, res){
                 CommunityId
             });
             res.status(200).json({
-                success: true,
                 messages: "Your request to join this community has been sent"
             })
         }
@@ -84,7 +82,6 @@ module.exports.updateRole = async function(req, res){
             })
     
             return res.status(200).json({
-                success: true,
                 messages: "Role updated"
             })
         }
@@ -94,7 +91,6 @@ module.exports.updateRole = async function(req, res){
             })
     
             return res.status(200).json({
-                success: true,
                 messages: "Role updated"
             })
         }
@@ -143,7 +139,6 @@ module.exports.changeOwner = async function (req, res){
             role: 'Member'
         })
         res.status(200).json({
-            success: true,
             messages: "Role updated"
         })
     }catch(error){
@@ -168,7 +163,7 @@ module.exports.leaveCommunity = async function(req,res){
         if(checkOwner.role == 'Owner'){
             return res.status(200).json({
                 success: false,
-                messages: "You must your ownership to other people first!"
+                messages: "You must move your ownership to other people first!"
             })
         }
         await db.Community_Member.destroy({where: {
@@ -178,7 +173,6 @@ module.exports.leaveCommunity = async function(req,res){
             ]
         }});
         return res.status(200).json({
-            success: true,
             messages: "You leave the group"
         })
     }catch(error){
