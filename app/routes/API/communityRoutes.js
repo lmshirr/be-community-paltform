@@ -47,7 +47,7 @@ communityRouter.delete('/leaveCommunity/:id', authorizationMiddleware.checkLogin
 //request join
 communityRouter.get('/request/user/', authorizationMiddleware.checkLogin, requestController.getRequestUser);
 communityRouter.get('/request/:CommunityId', authorizationMiddleware.checkLogin, requestMembershipMiddleware.checkAdmin, requestController.getRequestCommunity);
-communityRouter.patch('/request/:id', authorizationMiddleware.checkLogin, requestMembershipMiddleware.checkAdmin, requestController.respondRequest);
+communityRouter.patch('/:CommunityId/request/:id', authorizationMiddleware.checkLogin, requestMembershipMiddleware.checkAdmin, requestController.respondRequest);
 communityRouter.delete('/request/:id', authorizationMiddleware.checkLogin, requestMembershipMiddleware.checkUser, requestController.deleteRequest);
 
 //invitation
