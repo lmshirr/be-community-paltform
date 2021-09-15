@@ -11,8 +11,7 @@ module.exports.getRequestUser = async function(req, res){
             UserId: decoded.UserId
         }})
         return res.status(200).json({
-            success: true,
-            request
+            data: request
         })
     }catch(error){
         return res.status(200).json({
@@ -28,8 +27,7 @@ module.exports.getRequestCommunity = async function(req, res){
             CommunityId: req.params.CommunityId
         }})
         return res.status(200).json({
-            success: true,
-            request
+            data: request
         })
     }catch(error){
         return res.status(200).json({
@@ -59,7 +57,6 @@ module.exports.respondRequest = async function(req, res){
             });
             await db.Request_Membership.destroy({where: {id: req.params.id}});
             return res.status(200).json({
-                success: true,
                 messages: "Request approved"
             })
         }
@@ -68,7 +65,6 @@ module.exports.respondRequest = async function(req, res){
                 status: "Refused"
             })
             return res.status(200).json({
-                success: true,
                 messages: "Request refused"
             })
         }
@@ -85,7 +81,6 @@ module.exports.deleteRequest = async function(req, res){
     try{
         await db.Request_Membership.destroy({where: {id: id}})
         return res.status(200).json({
-            success: true,
             messages: "Delete success!"
         })
     }catch(error){

@@ -1,5 +1,6 @@
 const db = require('../models/index.js');
 const { Op } = require("sequelize");
+const communityRouter = require('../routes/API/communityRoutes.js');
 require("dotenv").config({ path: "../.env" });
 
 
@@ -22,7 +23,7 @@ module.exports.findCommunity = async function (req, res) {
         })
         return res.status(200).json({
             success: true,
-            findCommunities
+            data: findCommunities
         })
     } catch (error) {
         return res.status(200).json({
@@ -40,16 +41,19 @@ module.exports.getCommunityDetails = async function (req, res) {
                 attributes: [
                     "id",
                     "name",
-                    "profile_pict",
-                    "privacy"
+                    "profile_pict"
                 ]
             }]
         })
         const totalMember = await db.Community_Member.count({ where: { CommunityId: req.params.id } })
         return res.status(200).json({
-            success: true,
-            community,
-            totalMember
+            data: {
+                id: community.id,
+                name: community.name,
+                privacy: community.privacy,
+                member: community.Users,
+                totalMember: totalMember
+            }
         })
     } catch (error) {
         return res.status(200).json({
@@ -60,7 +64,10 @@ module.exports.getCommunityDetails = async function (req, res) {
 }
 
 module.exports.createCommunity = async function (req, res) {
-    const community_pict = req.file.filename;
+    let community_pict = "com_pict.jpg";
+    if (req.file) {
+        community_pict = req.file.filename;
+    }
     const {
         UserId,
         name,
@@ -91,8 +98,8 @@ module.exports.createCommunity = async function (req, res) {
             role
         })
         res.status(201).json({
-            success: true,
-            messages: "Community created"
+            messages: "Community created",
+            data: community
         })
     } catch (error) {
         if (error.name === "SequelizeValidationError") {
@@ -140,8 +147,8 @@ module.exports.editCommunity = async function (req, res) {
             privacy: privacy
         });
         return res.status(200).json({
-            success: true,
-            messages: "Community updated!"
+            message: "Update Community Success",
+            data: community
         })
     } catch (error) {
         console.log(error);

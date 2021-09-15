@@ -33,14 +33,14 @@ module.exports.addVideo = async function(req, res){
         ClassId
     } = req.params;
     try{
-        await db.Video.create({
+        const video = await db.Video.create({
             ClassId,
             filename,
             name
         })
         res.status(200).json({
-            success: true,
-            messages: "Video Uploaded"
+            messages: "Video Uploaded",
+            data: video
         })
     }catch(error){
         return res.status(200).json({
@@ -66,8 +66,8 @@ module.exports.editVideo = async function(req, res){
             name: name
         })
         return res.status(200).json({
-            success: true,
-            messages: "Video updated!"
+            messages: "Video updated!",
+            data: video
         })
     }catch(error){
         return res.status(200).json({
@@ -83,7 +83,6 @@ module.exports.deleteVideo = async function(req, res){
         fs.unlinkSync(`./assets/class/videos/${video.filename}`);
         await db.Video.destroy({where: {id: req.params.VideoId}})
         return res.status(200).json({
-            success: true,
             messages: "Delete success!"
         })
     }catch(error){
