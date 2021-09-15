@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      User.belongsToMany(models.Community, {through: 'Community_Member'})
-      User.hasMany(models.Community_Post, {onDelete: 'cascade'})
-      User.hasMany(models.Request_Membership, {onDelete: 'cascade'});
-      User.hasMany(models.Invitation, {onDelete: 'cascade'});
+      User.belongsToMany(models.Community, { through: 'Community_Member' })
+      User.hasMany(models.Community_Post, { onDelete: 'cascade' })
+      User.hasMany(models.Request_Membership, { onDelete: 'cascade' });
+      User.hasMany(models.Invitation, { onDelete: 'cascade' });
     }
   };
   User.init({
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     email: {
       type: DataTypes.STRING,
-      allowNull:false,
+      allowNull: false,
       unique: true,
       validate: {
         isEmail: true
@@ -35,41 +35,41 @@ module.exports = (sequelize, DataTypes) => {
     },
     password: {
       type: DataTypes.STRING,
-      allowNull:false
+      allowNull: false
     },
     activation: {
       type: DataTypes.STRING,
-      allowNull:false,
+      allowNull: false,
       defaultValue: "notActivated"
     },
-    profile_pict:{
+    profile_pict: {
       type: DataTypes.STRING,
-      allowNull:false,
+      allowNull: false,
       defaultValue: "profile_pict.jpg"
     },
     name: {
       type: DataTypes.STRING,
-      allowNull:false
+      allowNull: false
     },
     phone_number: {
       type: DataTypes.STRING,
-      allowNull:false,
+      allowNull: false,
       validate: {
-        isNumeric:true
+        isNumeric: true
       }
     },
     birthday: {
       type: DataTypes.DATE,
-      allowNull:false
+      allowNull: false
     }
   }, {
-    hooks:{
-      beforeCreate: async (user, options)=>{
+    hooks: {
+      beforeCreate: async (user, options) => {
         const salt = await bcrypt.genSalt();
         const encryptedPassword = await bcrypt.hash(user.password, salt);
         user.password = encryptedPassword;
       },
-      beforeValidate: (user, options)=>{
+      beforeValidate: (user, options) => {
         user.email = user.email.toLowerCase();
       }
     },

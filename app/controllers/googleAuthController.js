@@ -2,7 +2,6 @@ require('dotenv').config({ path: './.env' });
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const { getGoogleAuthURL, getTokens } = require('../helpers/googleAuth');
-const { google } = require('googleapis');
 
 const tokenAge = 60 * 60;
 
@@ -21,7 +20,7 @@ module.exports.googleLogin = async (req, res) => {
         code,
         process.env.GOOGLE_CLIENT_ID,
         process.env.GOOGLE_CLIENT_SECRET,
-        'http://localhost:5000/api/user/auth/google'
+        `http://localhost:${process.env.PORT}/api/user/auth/google`
     );
 
     const googleUser = await axios.get(
@@ -40,6 +39,3 @@ module.exports.googleLogin = async (req, res) => {
         message: "Login Success"
     });
 }
-
-
-

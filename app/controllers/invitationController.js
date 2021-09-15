@@ -4,53 +4,58 @@ const jwt = require('jsonwebtoken');
 require("dotenv").config({ path: "../.env" });
 
 
-module.exports.getInvitationUser = async function(req, res){
-    try{
+module.exports.getInvitationUser = async function (req, res) {
+    try {
         const token = req.cookies.jwt;
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const invitation = await db.Invitation.findAll({where: {
-            UserId: decoded.UserId
-        }})
+        const invitation = await db.Invitation.findAll({
+            where: {
+                UserId: decoded.UserId
+            }
+        })
         return res.status(200).json({
             success: true,
             invitation
         })
-    }catch(error){
+    } catch (error) {
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }
 }
 
-module.exports.getInvitationCommunity = async function(req, res){
-    try{
-        const invitation = await db.Invitation.findAll({where: {
-            CommunityId: req.params.CommunityId
-        }})
+module.exports.getInvitationCommunity = async function (req, res) {
+    try {
+        const invitation = await db.Invitation.findAll({
+            where: {
+                CommunityId: req.params.CommunityId
+            }
+        })
         return res.status(200).json({
             success: true,
             invitation
         })
-    }catch(error){
+    } catch (error) {
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }
 }
 
-module.exports.createInvitation = async function(req, res){
-    const {CommunityId, UserId} =
-    req.body;
-    try{
-        const checkDuplicate = await db.Community_Member.findOne({where: {
-            [Op.and]: [
-                {UserId: UserId},
-                {CommunityId: CommunityId}
-            ]
-        }})
-        if(checkDuplicate){
+module.exports.createInvitation = async function (req, res) {
+    const { CommunityId, UserId } = req.body;
+    try {
+        const checkDuplicate = await db.Community_Member.findOne({
+            where: {
+                [Op.and]: [
+                    { UserId: UserId },
+                    { CommunityId: CommunityId }
+                ]
+            }
+        })
+        if (checkDuplicate) {
             return res.status(200).json({
                 success: false,
                 messages: "This User is already a member!"
@@ -64,39 +69,39 @@ module.exports.createInvitation = async function(req, res){
             UserId,
             CommunityId
         })
-    }catch(error){
+    } catch (error) {
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }
 }
 
-module.exports.respondInvite = async function(req,res){
-    const {respond} = req.body;
-    try{
-        if(!respond){
+module.exports.respondInvite = async function (req, res) {
+    const { respond } = req.body;
+    try {
+        if (!respond) {
             return res.status(200).json({
                 success: false,
                 messages: "Please input the respond"
             })
         }
         const invite = await db.Invitation.findByPk(req.params.id);
-        if(respond == "Accept"){
-            const {UserId, CommunityId} = invite
+        if (respond == "Accept") {
+            const { UserId, CommunityId } = invite
             const role = "Member"
             await db.Community_Member.create({
                 UserId,
                 CommunityId,
                 role
             });
-            await db.Invitation.destroy({where: {id: req.params.id}});
+            await db.Invitation.destroy({ where: { id: req.params.id } });
             return res.status(200).json({
                 success: true,
                 messages: "Community Joined"
             })
         }
-        if(respond == "Refuse"){
+        if (respond == "Refuse") {
             invite.update({
                 status: "Refused"
             })
@@ -105,26 +110,26 @@ module.exports.respondInvite = async function(req,res){
                 messages: "Invitation refused"
             })
         }
-    }catch(error){
+    } catch (error) {
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }
 }
 
-module.exports.deleteInvite = async function(req,res){
-    const {id} = req.params
-    try{
-        await db.Invitation.destroy({where: {id: id}})
+module.exports.deleteInvite = async function (req, res) {
+    const { id } = req.params
+    try {
+        await db.Invitation.destroy({ where: { id: id } })
         return res.status(200).json({
             success: true,
             messages: "Delete success!"
         })
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }
