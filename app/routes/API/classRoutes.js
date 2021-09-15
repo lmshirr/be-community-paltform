@@ -6,6 +6,7 @@ const classRouter = express.Router();
 const classController = require('../../controllers/classController');
 const moduleController = require('../../controllers/moduleController');
 const videoController = require('../../controllers/videoController');
+const webinarController = require('../../controllers/webinarController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const classMiddleware = require('../../middleware/classMiddleware');
 
@@ -64,6 +65,13 @@ classRouter.get('/video/:VideoId', classMiddleware.checkMembership, videoControl
 classRouter.post('/:ClassId/video', authorizationMiddleware.checkLogin, classMiddleware.checkAdmin_video_module, upload.single('video'), videoController.addVideo)
 classRouter.patch('/:ClassId/video/:VideoId', authorizationMiddleware.checkLogin, classMiddleware.checkAdmin_video_module, upload.single('video'), videoController.editVideo )
 classRouter.delete('/:ClassId/video/:VideoId', authorizationMiddleware.checkLogin, classMiddleware.checkAdmin_video_module, videoController.deleteVideo);
+
+// webinar routes
+classRouter.post('/:ClassId/webinar', authorizationMiddleware.checkLogin, webinarController.addWebinar)
+classRouter.get('/:ClassId/webinar/:webinarId', classMiddleware.checkMembership, webinarController.getWebinar)
+classRouter.delete('/:ClassId/webinar/:webinarId', authorizationMiddleware.checkLogin, webinarController.deleteWebinar)
+classRouter.patch('/:ClassId/webinar/:webinarId', authorizationMiddleware.checkLogin, webinarController.editWebinar)
+
 
 
 module.exports = classRouter;
