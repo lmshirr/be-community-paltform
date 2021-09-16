@@ -49,24 +49,16 @@ module.exports.register = async function (req, res, next) {
     });
     res.status(201).json({
       messages: "Register Success!",
-      data: user
+      data: user,
     });
   } catch (error) {
     if (error.name === "SequelizeValidationError") {
       return next(
-        new BadRequestException("Validation error", {
-          errors: error.errors.map((e) => ({ attribute: e.path, message: e.message })),
-        })
+        new BadRequestException(
+          "Validation error",
+          error.errors.map((e) => ({ attribute: e.path, message: e.message }))
+        )
       );
-      // return res.status(200).json({
-      //     success:false,
-      //     errors: error.errors.map((e)=>{
-      //         return{
-      //             attribute: e.path,
-      //             message: e.message
-      //         };
-      //     })
-      // })
     } else {
       return next(new InternalServerException());
     }
@@ -124,8 +116,8 @@ module.exports.login = async function (req, res) {
           message: "Login Success",
           data: {
             name: user.name,
-            email: user.email
-          }
+            email: user.email,
+          },
         });
       } else {
         res.status(200).json({
@@ -161,7 +153,7 @@ module.exports.findUser = async function (req, res) {
     });
     return res.status(200).json({
       success: true,
-      data: findUser
+      data: findUser,
     });
   } catch (error) {
     return res.status(200).json({
@@ -234,8 +226,8 @@ module.exports.editUser = async function (req, res) {
       messages: "Profile updated!",
       data: {
         name: findUser.name,
-        email: findUser.email
-      }
+        email: findUser.email,
+      },
     });
   } catch (error) {
     console.log(error);

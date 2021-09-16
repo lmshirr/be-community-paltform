@@ -1,43 +1,42 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Community_Post extends Model {
+  class Comment extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Community_Post.belongsTo(models.Community);
-      Community_Post.belongsTo(models.User);
-      Community_Post.hasMany(models.Community_Post_Attachment, { onDelete: "cascade" });
-      Community_Post.hasMany(models.Comment, { onDelete: "cascade", foreignKey: { name: "post_id" } });
+      Comment.belongsTo(models.User, { foreignKey: { name: "user_id" }, as: "user" });
+      Comment.belongsTo(models.Community_Post, { foreignKey: { name: "post_id" } });
     }
   }
-  Community_Post.init(
+  Comment.init(
     {
       id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
-        type: DataTypes.INTEGER,
       },
-      UserId: {
-        type: DataTypes.INTEGER,
-      },
-      CommunityId: {
+      user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      content: {
+      post_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      body: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: "Community_Post",
+      modelName: "Comment",
     }
   );
-  return Community_Post;
+  return Comment;
 };
