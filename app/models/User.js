@@ -1,6 +1,6 @@
-"use strict";
-const { Sequelize, Model } = require("sequelize");
-const bcrypt = require("bcrypt");
+'use strict';
+const { Sequelize, Model } = require('sequelize');
+const bcrypt = require('bcrypt');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -9,11 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      User.belongsToMany(models.Community, { through: "Community_Member" });
-      User.hasMany(models.Community_Post, { onDelete: "cascade" });
-      User.hasMany(models.Request_Membership, { onDelete: "cascade" });
-      User.hasMany(models.Invitation, { onDelete: "cascade" });
-      User.hasMany(models.Comment, { onDelete: "cascade", foreignKey: { name: "user_id" }, as: "user" });
+      User.belongsToMany(models.Community, { through: 'Community_Member' });
+      User.hasMany(models.Community_Post, { onDelete: 'cascade' });
+      User.hasMany(models.Request_Membership, { onDelete: 'cascade' });
+      User.hasMany(models.Invitation, { onDelete: 'cascade' });
+      User.hasMany(models.Comment, {
+        onDelete: 'cascade',
+        foreignKey: { name: 'user_id' },
+        as: 'user',
+      });
     }
   }
   User.init(
@@ -39,12 +43,12 @@ module.exports = (sequelize, DataTypes) => {
       activation: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: "notActivated",
+        defaultValue: 'notActivated',
       },
       profile_pict: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: "profile_pict.jpg",
+        defaultValue: 'profile_pict.jpg',
       },
       name: {
         type: DataTypes.STRING,
@@ -74,7 +78,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       sequelize,
-      modelName: "User",
+      modelName: 'User',
     }
   );
   return User;
