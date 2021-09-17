@@ -4,15 +4,17 @@ const communityRouter = require('../routes/API/communityRoutes.js');
 require("dotenv").config({ path: "../.env" });
 
 
-module.exports.findCommunity = async function(req, res){
-    try{
-        const findCommunities = await db.Community.findAll({ where: {
-            name:{
-                [Op.iLike]: `%${req.params.key}%`
-            }},
+module.exports.findCommunity = async function (req, res) {
+    try {
+        const findCommunities = await db.Community.findAll({
+            where: {
+                name: {
+                    [Op.iLike]: `%${req.params.key}%`
+                }
+            },
             include: [{
                 model: db.User,
-                attributes:[
+                attributes: [
                     "id",
                     "name",
                     "profile_pict"
@@ -20,49 +22,50 @@ module.exports.findCommunity = async function(req, res){
             }]
         })
         return res.status(200).json({
-            success:true,
+            success: true,
             data: findCommunities
         })
-    }catch(error){
+    } catch (error) {
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }
 }
 
-module.exports.getCommunityDetails = async function(req, res){
-    try{
-        const community = await db.Community.findByPk(req.params.id,{
+module.exports.getCommunityDetails = async function (req, res) {
+    try {
+        const community = await db.Community.findByPk(req.params.id, {
             include: [{
                 model: db.User,
-                attributes:[
+                attributes: [
                     "id",
                     "name",
                     "profile_pict"
                 ]
             }]
         })
-        const totalMember = await db.Community_Member.count({where: {CommunityId: req.params.id}})
+        const totalMember = await db.Community_Member.count({ where: { CommunityId: req.params.id } })
         return res.status(200).json({
-            data:{
+            data: {
                 id: community.id,
                 name: community.name,
                 privacy: community.privacy,
                 member: community.Users,
                 totalMember: totalMember
-            }})
-    }catch(error){
+            }
+        })
+    } catch (error) {
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }
 }
 
-module.exports.createCommunity = async function(req, res){
+module.exports.createCommunity = async function (req, res) {
     let community_pict = "com_pict.jpg";
-    if(req.file){
+    if (req.file) {
         community_pict = req.file.filename;
     }
     const {
@@ -71,12 +74,13 @@ module.exports.createCommunity = async function(req, res){
         type,
         description
     } = req.body;
-    try{
+
+    try {
         let privacy;
-        if(req.body.privacy == "Open"){
+        if (req.body.privacy == "Open") {
             privacy = "Open"
         }
-        if(req.body.privacy == "Closed"){
+        if (req.body.privacy == "Closed") {
             privacy = "Closed"
         }
         const community = await db.Community.create({
@@ -97,41 +101,41 @@ module.exports.createCommunity = async function(req, res){
             messages: "Community created",
             data: community
         })
-    }catch(error){
-        if(error.name === "SequelizeValidationError"){
+    } catch (error) {
+        if (error.name === "SequelizeValidationError") {
             return res.status(200).json({
-                success:false,
-                errors: error.errors.map((e)=>{
-                    return{
+                success: false,
+                errors: error.errors.map((e) => {
+                    return {
                         attribute: e.path,
                         message: e.message
                     };
                 })
             })
-        }else{
+        } else {
             console.log(error);
             return res.status(200).json({
-                success:false,
+                success: false,
                 errors: error
             })
         };
     }
 }
 
-module.exports.editCommunity = async function(req, res){
+module.exports.editCommunity = async function (req, res) {
     const { id } = req.params;
     let community_pict;
-    if(req.file){
+    if (req.file) {
         community_pict = req.file.filename;
     }
     const { name, type, description } = req.body;
-    
-    try{
+
+    try {
         let privacy;
-        if(req.body.privacy == "Open"){
+        if (req.body.privacy == "Open") {
             privacy = "Open"
         }
-        if(req.body.privacy == "Closed"){
+        if (req.body.privacy == "Closed") {
             privacy = "Closed"
         }
         const community = await db.Community.findByPk(id);
@@ -143,29 +147,29 @@ module.exports.editCommunity = async function(req, res){
             privacy: privacy
         });
         return res.status(200).json({
-            message:"Update Community Success",
+            message: "Update Community Success",
             data: community
         })
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
-    }    
+    }
 }
 
-module.exports.deleteCommunity = async function(req, res){
-    try{
-        await db.Community.destroy({where: {id: req.params.id}})
+module.exports.deleteCommunity = async function (req, res) {
+    try {
+        await db.Community.destroy({ where: { id: req.params.id } })
         return res.status(200).json({
             success: true,
             messages: "Delete success!"
         })
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(200).json({
-            success:false,
+            success: false,
             errors: error
         })
     }

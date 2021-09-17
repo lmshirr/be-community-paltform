@@ -1,14 +1,16 @@
 {
   "name": "community-platform",
   "version": "1.0.0",
-  "description": "",
+  "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
   "main": "app.js",
   "dependencies": {
+    "axios": "^0.21.4",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "googleapis": "^85.0.0",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.2",
     "mysql2": "^2.2.5",
@@ -26,7 +28,9 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.4.0"
+    "prettier": "^2.4.0",
+    "nodemon": "^2.0.12",
+    "sequelize-cli": "^6.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

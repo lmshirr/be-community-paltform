@@ -1,7 +1,7 @@
 DB_HOST=database
 DB_USER=postgres
 DB_NAME=community-platform
-DB_PASSWORD=asdasd
-EMAIL=email@gmail.com
-EMAIL_PASSWORD=passwordemail
+DB_PASSWORD=
+EMAIL=jbearxtendee@gmail.com
+EMAIL_PASSWORD=Kmzway86aa!
 SECRET_KEY=inirahasia

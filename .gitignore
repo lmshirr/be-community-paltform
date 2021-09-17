@@ -117,3 +117,7 @@ dist
 
 #ignore assets
 assets/
+
+# packages
+package-lock.json
+./app/package-lock.json
