@@ -34,10 +34,11 @@ module.exports.googleLogin = async (req, res) => {
 
     const token = await jwt.sign(googleUser, process.env.SECRET_KEY, { expiresIn: tokenAge });
     res.cookie("jwt", token, { maxAge: 60 * 60 * 1000 });
-    res.status(201).json({
-        success: true,
-        message: "Login Success"
-    });
+    res.redirect(`${process.env.CLIENT_ROOT_URL}`);
+    // res.status(201).json({
+    //     success: true,
+    //     message: "Login Success"
+    // });
 }
 
 module.exports.getCurrentUser = (req, res) => {
