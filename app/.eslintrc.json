@@ -1,8 +1,7 @@
 {
     "env": {
         "node": true,
-        "commonjs": true,
-        "es2021": true
+        "commonjs": true
     },
     "extends": [
         "airbnb-base",
@@ -12,7 +11,21 @@
     "parserOptions": {
         "ecmaVersion": 12
     },
+    "ignorePatterns": [".eslintrc.json"],
     "rules": {
-        "prettier/prettier": "error", {"endOfLine": "auto"}
+        "no-console": "off",
+        "camelcase":"off",
+        "no-param-reassign":"off",
+        "no-unused-vars": "warn",
+        "func-names": "off",
+        "consistent-return": "off",
+        "import/order": "off",
+        "prefer-arrow-callback": "off",
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto"
+            }
+        ]
     }
 }

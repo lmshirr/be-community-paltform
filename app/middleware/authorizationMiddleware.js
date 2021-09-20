@@ -2,14 +2,12 @@ require('dotenv').config({ path: '../.env' });
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const db = require('../models');
+const { UnauthorizedException } = require('../utils/httpExceptions');
 
 const checkLogin = (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) {
-    return res.status(200).json({
-      success: false,
-      message: "You aren't logged in",
-    });
+    return next(new UnauthorizedException("You aren't logged in"));
   }
   next();
 };

@@ -1,10 +1,9 @@
-const { postCommentValidator } = require("../utils/validator/commentValidator");
+const { postCommentValidator } = require('../utils/validator/commentValidator');
 const {
   BadRequestException,
   InternalServerException,
-  NotFoundException,
-} = require("../utils/httpExceptions/httpExceptions");
-const db = require("../models");
+} = require('../utils/httpExceptions');
+const db = require('../models');
 
 /**
  *
@@ -19,17 +18,20 @@ module.exports.postComment = async (req, res, next) => {
   const { isValidate, errors } = postCommentValidator(post_id, user_id, body);
 
   // if doesnt have query or body throw bad request
-  if (!isValidate) return next(new BadRequestException("Query or body must not empty", errors));
+  if (!isValidate)
+    return next(
+      new BadRequestException('Query or body must not empty', errors)
+    );
 
   let comment;
   try {
     comment = await db.Comment.create({ post_id, body, user_id });
     console.log(comment);
   } catch (err) {
-    if (err.name === "SequelizeValidationError") {
+    if (err.name === 'SequelizeValidationError') {
       return next(
         new BadRequestException(
-          "Validation error",
+          'Validation error',
           err.errors.map((e) => ({ attribute: e.path, message: e.message }))
         )
       );
@@ -38,7 +40,7 @@ module.exports.postComment = async (req, res, next) => {
     return next(new InternalServerException());
   }
 
-  return res.status(201).json({ message: "Comment created", data: comment });
+  return res.status(201).json({ message: 'Comment created', data: comment });
 };
 
 /**
@@ -60,13 +62,13 @@ module.exports.getComments = async (req, res, next) => {
       },
       include: {
         model: db.User,
-        as: "user",
+        as: 'user',
         required: true,
       },
     });
   } catch (err) {
     console.log(err);
-    return next(new InternalServerException("Internal server error"));
+    return next(new InternalServerException());
   }
 
   return res.json({ data: comments });

@@ -1,8 +1,9 @@
 const express = require('express');
 const commentController = require('../../controllers/commentController');
-const commentRouter = express.Router();
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const classMiddleware = require('../../middleware/classMiddleware');
+
+const commentRouter = express.Router();
 
 commentRouter
   .route('/')
