@@ -39,3 +39,24 @@ module.exports.googleLogin = async (req, res) => {
         message: "Login Success"
     });
 }
+
+module.exports.getCurrentUser = (req, res) => {
+    const token = req.cookies.jwt;
+    if (token) {
+        const user = jwt.verify(token, process.env.SECRET_KEY);
+        res.status(200).json({
+            success: true,
+            content: {
+                loggedIn: true,
+                user
+            }
+        });
+    } else {
+        res.status(401).json({
+            success: false,
+            content: {
+                loggedIn: false
+            }
+        });
+    }
+}

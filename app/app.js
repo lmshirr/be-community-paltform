@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const apiRoutes = require("./routes/index");
-const {NotFoundException} = require("./utils/httpExceptions/httpExceptions");
+const { NotFoundException } = require("./utils/httpExceptions/httpExceptions");
 
 const app = express();
 const port = 5000;
@@ -10,7 +10,7 @@ const port = 5000;
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000', credentials: true, withCredentials: true }));
 
 app.use("/api", apiRoutes);
 
