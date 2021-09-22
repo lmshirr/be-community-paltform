@@ -1,45 +1,60 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Users', {
-      id: {
+    return queryInterface.createTable('user', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+      },
+      id: {
+        type: Sequelize.UUID,
+        unique: true,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false,
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       profile_pict: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
-      name:{
-        type: Sequelize.STRING
-      },
-      phone_number:{
-        type: Sequelize.STRING
-      },
-      birthday:{
-        type: Sequelize.DATE
-      },
-      activation: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
+      name: {
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      phone_number: {
+        type: Sequelize.STRING,
+      },
+      birthday: {
+        type: Sequelize.DATE,
+      },
+      confirmed: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        defaultValue: false,
+      },
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
-  }
+    return queryInterface.dropTable('user');
+  },
 };

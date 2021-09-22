@@ -1,7 +1,7 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Community_Post_Attachment extends Model {
     /**
@@ -10,27 +10,50 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Community_Post_Attachment.belongsTo(models.Community_Post)
+      Community_Post_Attachment.belongsTo(models.Community_Post);
     }
-  };
-  Community_Post_Attachment.init({
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
+  }
+  Community_Post_Attachment.init(
+    {
+      pk: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      id: {
+        type: DataTypes.UUID,
+        unique: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+      },
+      community_post_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Community_Post', key: 'id' },
+      },
+      filename: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      created_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
     },
-    CommunityPostId: {
-      type: DataTypes.INTEGER,
-      allowNull:false
-    },
-    filename: {
-      type: DataTypes.STRING,
-      allowNull:false
+    {
+      sequelize,
+      modelName: 'Community_Post_Attachment',
+      tableName: 'community_post_attachment',
+      freezeTableName: true,
+      timestamps: false,
     }
-  }, {
-    sequelize,
-    modelName: 'Community_Post_Attachment',
-  });
+  );
   return Community_Post_Attachment;
 };

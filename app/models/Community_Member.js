@@ -1,7 +1,7 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Community_Member extends Model {
     /**
@@ -9,26 +9,55 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
+    static associate(model) {}
+  }
+  Community_Member.init(
+    {
+      pk: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
+      user_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'user', key: 'id' },
+      },
+      community_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'community', key: 'id' },
+      },
+      role: {
+        type: DataTypes.ENUM('member', 'owner', 'administrator'),
+        allowNull: false,
+        defaultValue: 'member',
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'Community_Member',
+      tableName: 'community_member',
+      freezeTableName: true,
+      timestamps: false,
     }
-  };
-  Community_Member.init({
-    UserId: {
-      type: DataTypes.INTEGER,
-      allowNull:false
-    },
-    CommunityId: {
-      type: DataTypes.INTEGER,
-      allowNull:false
-    },
-    role: {
-      type: DataTypes.STRING,
-      defaultValue: "Member"
-    },
-  }, {
-    sequelize,
-    modelName: 'Community_Member',
-  });
+  );
   return Community_Member;
 };
