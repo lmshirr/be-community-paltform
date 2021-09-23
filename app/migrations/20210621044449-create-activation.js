@@ -1,31 +1,42 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Activations', {
-      id: {
+    return queryInterface.createTable('activation', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      id_user: {
         type: Sequelize.INTEGER,
-        references: {model: 'Users', key:'id'}
+      },
+      id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        unique: true,
+        defaultValue: Sequelize.UUIDV4,
+      },
+      user_id: {
+        type: Sequelize.UUID,
+        references: { model: 'user', key: 'id' },
+        allowNull: false,
       },
       activation_token: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      created_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Activations');
-  }
+    await queryInterface.dropTable('activation');
+  },
 };

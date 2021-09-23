@@ -1,42 +1,49 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Community_Posts', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
+    await queryInterface.createTable('community_post', {
+      pk: {
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        autoIncrement: true,
+        allowNull: false,
       },
-      CommunityId: {
-        type: Sequelize.INTEGER,
-        references: {model: 'Communities', key:'id'},
+      id: {
+        type: Sequelize.UUID,
+        unique: true,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+      },
+      community_id: {
+        type: Sequelize.UUID,
+        references: { model: 'community', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
       },
-      UserId: {
-        type: Sequelize.INTEGER,
-        allowNull:false,
-        references: {model: 'Users', key:'id'},
-        onDelete: 'CASCADE'
+      user_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: { model: 'user', key: 'id' },
+        onDelete: 'CASCADE',
       },
       content: {
         type: Sequelize.TEXT,
-        allowNull:false
-      },
-      createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      created_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Community_Posts', 'Community_Posts_CommunityId_fkey');
-    await queryInterface.removeConstraint('Community_Posts', 'Community_Posts_UserId_fkey');
-    await queryInterface.dropTable('Community_Posts');
-  }
+    await queryInterface.dropTable('community_post');
+  },
 };

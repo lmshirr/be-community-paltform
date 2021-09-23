@@ -18,12 +18,11 @@ const storage = multer.diskStorage({
     if (req.url.includes('video')) {
       next(null, 'assets/class/videos');
     }
-
   },
   filename: function (req, file, next) {
-    next(null, uuid.v4() + path.extname(file.originalname))
-  }
-})
+    next(null, uuid.v4() + path.extname(file.originalname));
+  },
+});
 
 const fileFilter = (req, file, next) => {
   if (req.url.includes('module')) {
@@ -34,25 +33,48 @@ const fileFilter = (req, file, next) => {
     }
   }
   if (req.url.includes('video')) {
-    if (file.mimetype === 'video/mp4' || file.mimetype === 'video/avi' || file.mimetype === 'video/mkv' || file.mimetype === 'video/webm') {
+    if (
+      file.mimetype === 'video/mp4' ||
+      file.mimetype === 'video/avi' ||
+      file.mimetype === 'video/mkv' ||
+      file.mimetype === 'video/webm'
+    ) {
       next(null, true);
     } else {
       next(new Error('Please only upload MP4/AVI/MKV/WEBM file'), false);
     }
   }
-
 };
 
 const upload = multer({
   storage: storage,
-  fileFilter: fileFilter
+  fileFilter: fileFilter,
 });
 
 classRouter.get('/search/:key', classController.findClass);
-classRouter.get('/:id', classMiddleware.checkMembership, classController.getClassDetails);
-classRouter.post('/', authorizationMiddleware.checkLogin, classMiddleware.checkAdmin_post, classController.createClass);
-classRouter.patch('/:id', authorizationMiddleware.checkLogin, classMiddleware.checkAdmin_delete_patch, classController.editClass);
-classRouter.delete('/:id', authorizationMiddleware.checkLogin, classMiddleware.checkAdmin_delete_patch, classController.deleteClass);
+classRouter.get(
+  '/:id',
+  classMiddleware.checkMembership,
+  classController.getClassDetails
+);
+classRouter.post(
+  '/',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_post,
+  classController.createClass
+);
+classRouter.patch(
+  '/:id',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_delete_patch,
+  classController.editClass
+);
+classRouter.delete(
+  '/:id',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_delete_patch,
+  classController.deleteClass
+);
 
 // Module routes
 classRouter.get('/module/:ModuleId', classMiddleware.checkMembership, moduleController.getModule);

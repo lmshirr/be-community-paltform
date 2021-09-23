@@ -39,7 +39,10 @@
     "start:dev": "nodemon ./app.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:undo": "npx sequelize-cli db:migrate:undo",
-    "db:undo-all": "npx sequelize-cli db:migrate:undo:all"
+    "db:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "db:drop": "npx sequelize-cli db:drop",
+    "db:create": "npx sequelize-cli db:create",
+    "db:seed:all": "npx sequelize-cli db:seed:all"
   },
   "repository": {
     "type": "git",

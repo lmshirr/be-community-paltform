@@ -1,7 +1,7 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Video extends Model {
     /**
@@ -10,31 +10,53 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Video.belongsTo(models.Class)
+      Video.belongsTo(models.Class);
     }
-  };
-  Video.init({
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
+  }
+  Video.init(
+    {
+      pk: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
+      class_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      filename: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      created_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
     },
-    ClassId: {
-      type: DataTypes.INTEGER,
-      allowNull:false
-    },
-    filename: {
-      type: DataTypes.STRING,
-      allowNull:false
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull:false
+    {
+      sequelize,
+      modelName: 'Video',
+      freezeTableName: true,
+      timestamps: false,
+      tableName: 'video',
     }
-  }, {
-    sequelize,
-    modelName: 'Video',
-  });
+  );
   return Video;
 };
