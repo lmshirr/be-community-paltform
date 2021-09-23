@@ -1,46 +1,39 @@
 'use strict';
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-  class Class extends Model {
+  class Assessment extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Class.belongsTo(models.Community)
-      Class.hasMany(models.Module, { onDelete: 'cascade' })
-      Class.hasMany(models.Video, { onDelete: 'cascade' })
-      Class.hasMany(models.Assessment, { onDelete: 'cascade' })
+      Assessment.belongsTo(models.Class)
     }
-  }
-
-  Class.init({
+  };
+  Assessment.init({
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER
     },
-    CommunityId: {
+    ClassId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    name: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    UserId: {
+    total_questions: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
+    }
   }, {
     sequelize,
-    modelName: 'Class',
+    modelName: 'Assessment',
   });
-  return Class;
-};
+  return Assessment;
+}
