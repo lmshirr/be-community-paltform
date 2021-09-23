@@ -1,185 +1,184 @@
-const db = require('../models/index.js');
-const { Op } = require("sequelize");
-const jwt = require('jsonwebtoken');
-const bcrypt =require('bcrypt');
-require("dotenv").config({ path: "../.env" });
+const {
+  Community,
+  Community_Member,
+  Request_Membership,
+} = require('../models/index');
+const {
+  ConflictException,
+  InternalServerException,
+  ForbiddenException,
+  NotFoundException,
+} = require('../utils/httpExceptions');
+const { Op } = require('sequelize');
 
-module.exports.joinCommunity = async function(req, res){
-    const token = req.cookies.jwt;
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    const UserId = decoded.UserId;
-    const CommunityId = req.body.CommunityId;
-    try{
-        const community = await db.Community.findByPk(CommunityId);
-        const checkDuplicate = await db.Community_Member.findOne({where: {
-            [Op.and]: [
-                {UserId: UserId},
-                {CommunityId: CommunityId}
-            ]
-        }})
-        if(checkDuplicate){
-            return res.status(200).json({
-                success: false,
-                messages: "You are already a member!"
-            })
-        }
-        if(community.privacy == "Open"){
-            await db.Community_Member.create({
-                UserId,
-                CommunityId
-            });
-            res.status(200).json({
-                messages: "Join success!"
-            })
-        }
-        if(community.privacy == "Closed"){
-            await db.Request_Membership.create({
-                UserId,
-                CommunityId
-            });
-            res.status(200).json({
-                messages: "Your request to join this community has been sent"
-            })
-        }
-        
-    }catch(error){
-        console.log(error);
-        return res.status(200).json({
-            success:false,
-            errors: error
-        })
-    }
-}
+module.exports.joinCommunity = async function (req, res, next) {
+  const { id: user_id } = req.user;
+  const { id: community_id } = req.params;
 
-module.exports.updateRole = async function(req, res){
-    try{
-        if(req.body.role == 'Owner'){
-            return res.status(200).json({
-                success: false,
-                messages: "You can't change ownership"
-            })
-        }
-        const findMembership = await db.Community_Member.findOne({where:{
-            [Op.and]: [
-                {UserId: req.params.UserId},
-                {CommunityId: req.params.id},
-            ]
-        }})
-        const token = req.cookies.jwt;
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const findRole = await db.Community_Member.findOne({where: {
-            UserId: decoded.UserId
-        }})
-        if(findRole.role == 'Administrator' && findMembership.role == 'Owner'){
-            return res.status(200).json({
-                success: false,
-                messages: "You don't have authorization to change this member"
-            })
-        }
-        if(req.body.role == "Administrator"){
-            findMembership.update({
-                role: "Administrator"
-            })
-    
-            return res.status(200).json({
-                messages: "Role updated"
-            })
-        }
-        if(req.body.role == "Member"){
-            findMembership.update({
-                role: "Member"
-            })
-    
-            return res.status(200).json({
-                messages: "Role updated"
-            })
-        }
-        return res.status(200).json({
-            success: false,
-            messages: "Role update failed"
-        })
-        
-    }catch(error){
-        console.log(error);
-        return res.status(200).json({
-            success:false,
-            errors: error
-        })
+  try {
+    const community = await Community.findOne({ where: { id: community_id } });
+    if (!community) {
+      return next(new NotFoundException('Community not found'));
     }
-}
 
-module.exports.changeOwner = async function (req, res){
-    try{
-        const token = req.cookies.jwt;
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const findMembership = await db.Community_Member.findOne({where:{
-            [Op.and]: [
-                {UserId: decoded.UserId},
-                {CommunityId: req.params.id},
-                {role: 'Owner'}
-            ]
-        }})
-        const substitute = req.body.substitute
-        const substituteFind = await db.Community_Member.findOne({where: {
-            [Op.and]: [
-                {UserId: substitute},
-                {CommunityId: req.params.id},
-            ]
-        }})
-        if(!substituteFind){
-            return res.status(200).json({
-                success:false,
-                message: "Harus memilih pengganti sebagai owner!"
-            })
-        }
-        await substituteFind.update({
-            role: "Owner"
-        });
-        findMembership.update({
-            role: 'Member'
-        })
-        res.status(200).json({
-            messages: "Role updated"
-        })
-    }catch(error){
-        console.log(error);
-        return res.status(200).json({
-            success:false,
-            errors: error
-        })
-    }
-}
+    // check is already member ?
+    const member = await Community_Member.findOne({
+      where: {
+        [Op.and]: [{ user_id }, { community_id }],
+      },
+    });
 
-module.exports.leaveCommunity = async function(req,res){
-    try{
-        const token = req.cookies.jwt;
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        const checkOwner = await db.Community_Member.findOne({where: {
-            [Op.and]: [
-                {UserId: decoded.UserId},
-                {CommunityId: req.params.id},
-            ]
-        }})
-        if(checkOwner.role == 'Owner'){
-            return res.status(200).json({
-                success: false,
-                messages: "You must move your ownership to other people first!"
-            })
-        }
-        await db.Community_Member.destroy({where: {
-            [Op.and]: [
-                {UserId: decoded.UserId},
-                {CommunityId: req.params.id},
-            ]
-        }});
-        return res.status(200).json({
-            messages: "You leave the group"
-        })
-    }catch(error){
-        console.log(error);
-        return res.status(200).json({
-            success:false,
-            errors: error
-        })
+    if (member) {
+      return next(new ConflictException('You are already a member!'));
     }
-}
+
+    if (community.privacy === 'open') {
+      const data = await Community_Member.create({
+        user_id,
+        community_id,
+      });
+
+      return res.json({
+        messages: 'Join success!',
+        data,
+      });
+    }
+
+    if (community.privacy === 'closed') {
+      // check is already request, if yes return please wait for confirmation from admin
+      const isAlreadyRequest = await Request_Membership.findOne({
+        where: { user_id, community_id },
+      });
+
+      if (isAlreadyRequest) {
+        return next(
+          new ForbiddenException(
+            'You already request to this community, please wait for confirmation'
+          )
+        );
+      }
+
+      const data = await Request_Membership.create({
+        user_id,
+        community_id,
+      });
+
+      return res.json({
+        messages: 'Your request to join this community has been sent',
+        data,
+      });
+    }
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+};
+
+module.exports.updateRole = async function (req, res, next) {
+  const { id: community_id, memberId: user_id } = req.params;
+  const { role } = req.body;
+  const { id } = req.user;
+
+  let newMemberRole;
+  try {
+    newMemberRole = await Community_Member.findOne({
+      where: {
+        [Op.and]: [{ user_id }, { community_id }],
+      },
+    });
+
+    if (!newMemberRole) {
+      return next(
+        new NotFoundException('User want to change not exist in this community')
+      );
+    }
+
+    if (role === 'owner') {
+      // check is want to change have role owner ?
+      const ownerCommunity = await Community_Member.findOne({
+        where: {
+          [Op.and]: [{ user_id: id }, { community_id }, { role: 'owner' }],
+        },
+      });
+
+      if (!ownerCommunity) {
+        return next(
+          new NotFoundException(
+            "You are not owner on this community, can't change role owner"
+          )
+        );
+      }
+
+      newMemberRole = await newMemberRole.update({
+        role: 'owner',
+      });
+      await ownerCommunity.update({
+        role: 'member',
+      });
+
+      return res.json({
+        message: 'Change new owner success',
+        data: newMemberRole,
+      });
+    }
+
+    const memberWantToChangeRole = await Community_Member.findOne({
+      where: {
+        user_id: id,
+      },
+    });
+
+    if (memberWantToChangeRole.role === 'member') {
+      return next(
+        new ForbiddenException(
+          "You don't have authorization to change this member"
+        )
+      );
+    }
+
+    newMemberRole = await newMemberRole.update({
+      role,
+    });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    messages: 'Role updated!',
+    data: newMemberRole,
+  });
+};
+
+module.exports.leaveCommunity = async function (req, res, next) {
+  const { id: community_id, memberId: user_id } = req.params;
+
+  let member;
+  try {
+    member = await Community_Member.findOne({
+      where: {
+        [Op.and]: [{ user_id }, { community_id }],
+      },
+    });
+
+    if (member.role === 'owner') {
+      return next(
+        new ForbiddenException(
+          'You must move your ownership to other people first!'
+        )
+      );
+    }
+
+    member = await Community_Member.destroy({
+      where: {
+        [Op.and]: [{ user_id }, { community_id }],
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    messages: 'You leave the group',
+    data: member,
+  });
+};

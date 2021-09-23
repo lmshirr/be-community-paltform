@@ -2,42 +2,50 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Request_Memberships', {
-      id: {
+    await queryInterface.createTable('request_membership', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      UserId:{
         type: Sequelize.INTEGER,
-        references: {model: 'Users', key:'id'},
-        onDelete: 'CASCADE',
-        allowNull:false
       },
-      CommunityId:{
-        type: Sequelize.INTEGER,
-        references: {model: 'Communities', key:'id'},
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
+      user_id: {
+        type: Sequelize.UUID,
+        references: { model: 'user', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
+      },
+      community_id: {
+        type: Sequelize.UUID,
+        references: { model: 'community', key: 'id' },
+        onDelete: 'CASCADE',
+        allowNull: false,
       },
       status: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
+        type: Sequelize.ENUM('pending'),
+        defaultValue: 'pending',
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      created_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Request_Memberships', 'Request_Memberships_UserId_fkey');
-    await queryInterface.removeConstraint('Request_Memberships', 'Request_Memberships_CommunityId_fkey');
-    await queryInterface.dropTable('Request_Memberships');
-  }
+    await queryInterface.dropTable('request_membership');
+  },
 };

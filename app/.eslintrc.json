@@ -21,6 +21,8 @@
         "consistent-return": "off",
         "import/order": "off",
         "prefer-arrow-callback": "off",
+        "strict": "off",
+        "arrow-body-style": "off",
         "prettier/prettier": [
             "error",
             {

@@ -1,38 +1,53 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Classes', {
-      id: {
+    await queryInterface.createTable('class', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      CommunityId:{
         type: Sequelize.INTEGER,
-        references: {model: 'Communities', key:'id'},
+      },
+      id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        defaultValue: Sequelize.UUIDV4,
+        unique: true,
+      },
+      community_id: {
+        type: Sequelize.UUID,
+        references: { model: 'community', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
+      },
+      user_id: {
+        type: Sequelize.UUID,
+        references: { model: 'user', key: 'id' },
+        onDelete: 'cascade',
+        allowNull: false,
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       description: {
         type: Sequelize.TEXT,
-        allowNull:false
-      },
-      createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      created_at: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Classes', 'Classes_CommunityId_fkey');
-    await queryInterface.dropTable('Classes');
-  }
+    await queryInterface.dropTable('class');
+  },
 };

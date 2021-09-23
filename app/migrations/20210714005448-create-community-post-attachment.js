@@ -1,35 +1,43 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Community_Post_Attachments', {
-      id: {
+    await queryInterface.createTable('community_post_attachment', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      CommunityPostId: {
         type: Sequelize.INTEGER,
-        references: {model: 'Community_Posts', key:'id'},
+      },
+      id: {
+        type: Sequelize.UUID,
+        unique: true,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+      },
+      community_post_id: {
+        type: Sequelize.UUID,
+        references: { model: 'community_post', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
       },
       filename: {
         type: Sequelize.STRING,
-        allowNull:false
-      },
-      createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      created_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Community_Post_Attachments', 'Community_Post_Attachments_CommunityPostId_fkey');
-    await queryInterface.dropTable('Community_Post_Attachments');
-  }
+    await queryInterface.dropTable('community_post_attachment');
+  },
 };

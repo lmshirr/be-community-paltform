@@ -1,37 +1,47 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Videos', {
-      id: {
+    await queryInterface.createTable('video', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      ClassId: {
         type: Sequelize.INTEGER,
-        references: {model: 'Classes', key:'id'},
+      },
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
+      class_id: {
+        type: Sequelize.UUID,
+        references: { model: 'class', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
       },
       filename: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       name: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      created_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Videos', 'Videos_ClassId_fkey');
-    await queryInterface.dropTable('Videos');
-  }
+    await queryInterface.dropTable('video');
+  },
 };

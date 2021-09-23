@@ -1,60 +1,50 @@
-const db = require('../models/index');
+const {
+  User,
+  Activation,
+  Invitation,
+  Request_Membership,
+} = require('../models/index');
 require('dotenv').config({ path: './.env' });
 const uuid = require('uuid');
-const nodemailer = require('nodemailer');
 const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const smtpTransportModule = require('nodemailer-smtp-transport');
-const { use } = require('../routes/index');
 const {
   InternalServerException,
   BadRequestException,
   NotFoundException,
   UnauthorizedException,
+  ForbiddenException,
 } = require('../utils/httpExceptions/index');
+const mailService = require('../utils/email/mail.service');
 
 const tokenAge = 60 * 60;
 
 module.exports.register = async function (req, res, next) {
   const { email, password, name, phone_number, birthday } = req.body;
+
   try {
-    const user = await db.User.create({
+    const user = await User.create({
       email,
       password,
       name,
       phone_number,
       birthday,
     });
-    const smtpTransport = nodemailer.createTransport(
-      smtpTransportModule({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      })
-    );
+
     const token = uuid.v4();
     const host = req.get('host');
     const link = `http://${host}/api/user/verify?token=${token}`;
-    const mailOptions = {
-      to: email,
-      subject: 'Please confirm your Email account',
-      html: `Hello,<br> Please Click on the link to verify your email.<br><a href=${link}>Click here to verify</a>`,
-    };
-    smtpTransport.sendMail(mailOptions, function (error, response) {
-      if (error) {
-        console.log(error);
-        return res.status(200).json('error');
-      }
-      console.log('Message sent');
-    });
-    await db.Activation.create({
-      id_user: user.id,
+
+    // send email
+    mailService.sendEmail(email, link);
+
+    await Activation.create({
+      user_id: user.id,
       activation_token: token,
     });
-    res.status(201).json({
+
+    return res.status(201).json({
       messages: 'Register Success!',
       data: user,
     });
@@ -67,86 +57,95 @@ module.exports.register = async function (req, res, next) {
         )
       );
     }
-    return next(new InternalServerException());
+    console.log(error);
+    return next(new InternalServerException(error));
   }
 };
 
 module.exports.verification = async function (req, res, next) {
   const activation_token = req.query.token;
-  console.log(activation_token);
+
+  let user;
   try {
-    const findActivation = await db.Activation.findOne({
+    const { user_id } = await Activation.findOne({
       where: { activation_token },
     });
-    console.log(findActivation.id_user);
 
-    if (findActivation) {
-      const user = await db.User.findByPk(findActivation.id_user);
-      await user.update({ activation: 'Active' });
-      await db.Activation.destroy({
-        where: { id_user: findActivation.id_user },
-      });
-      return res.status(201).json({
-        success: true,
-        messages: 'Email verification success',
-      });
+    if (!user_id) {
+      return next(new NotFoundException('Token not found'));
     }
-    return next(new NotFoundException('Token not found'));
+
+    user = await User.findOne({ where: { id: user_id } });
+
+    await user.update({ confirmed: true });
+
+    await Activation.destroy({
+      where: { user_id },
+    });
   } catch (error) {
     console.log(error);
     return next(new InternalServerException());
   }
+
+  return res.json({
+    messages: 'Email verification success',
+    data: user,
+  });
 };
 
 module.exports.login = async function (req, res, next) {
+  const { email, password } = req.body;
+
   try {
-    const user = await db.User.findOne({ where: { email: req.body.email } });
-    if (user) {
-      if (user.activation !== 'Active') {
-        return next(
-          new UnauthorizedException('Please activate your email first')
-        );
-      }
-      const passwordAuth = bcrypt.compareSync(req.body.password, user.password);
-      if (passwordAuth) {
-        const token = await jwt.sign(
-          { UserId: user.id },
-          process.env.SECRET_KEY,
-          { expiresIn: tokenAge }
-        );
-        res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
-        res.status(201).json({
-          message: 'Login Success',
-          data: {
-            name: user.name,
-            email: user.email,
-          },
-        });
-      } else {
-        res.status(200).json({
-          success: false,
-          message: "Email and password didn't match",
-        });
-      }
-    } else {
-      res.status(200).json({
-        errors: {
-          attribute: 'Authentication',
-          message: 'Email is not registered',
-        },
-      });
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return next(new NotFoundException('User not found'));
     }
-  } catch (error) {
-    return res.status(200).json({
-      success: false,
-      errors: error,
+
+    // check user confirmed
+    if (!user.confirmed) {
+      return next(
+        new UnauthorizedException('Please activate your email first')
+      );
+    }
+
+    const isPasswordMatch = bcrypt.compareSync(password, user.password);
+
+    if (!isPasswordMatch) {
+      return next(new UnauthorizedException('Invalid credential'));
+    }
+
+    const { pk, id, name, profile_pict, phone_number, confirmed } = user;
+
+    const token = await jwt.sign(
+      { pk, id, name, profile_pict, phone_number, confirmed },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: tokenAge,
+      }
+    );
+
+    res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
+
+    res.json({
+      message: 'Login Success',
+      data: {
+        pk,
+        id,
+        name,
+        profile_pict,
+        phone_number,
+      },
     });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
   }
 };
 
-module.exports.findUser = async function (req, res) {
+module.exports.findUser = async function (req, res, next) {
   try {
-    const findUser = await db.User.findAll({
+    const findUser = await User.findAll({
       where: {
         name: {
           [Op.iLike]: `%${req.params.key}%`,
@@ -154,104 +153,136 @@ module.exports.findUser = async function (req, res) {
       },
       attributes: ['id', 'name', 'profile_pict'],
     });
-    return res.status(200).json({
+    return res.json({
       success: true,
       data: findUser,
     });
   } catch (error) {
-    return res.status(200).json({
-      success: false,
-      errors: error,
-    });
+    console.log(error);
+    return next(new InternalServerException('Internal server error', error));
   }
 };
 
-module.exports.getUserDetail = async function (req, res) {
+module.exports.getUserDetail = async function (req, res, next) {
   const { id } = req.params;
-  try {
-    const user = await db.User.findByPk(id, {
-      attributes: [
-        'id',
-        'name',
-        'profile_pict',
-        'birthday',
-        'email',
-        'phone_number',
-      ],
 
-      include: [
-        {
-          model: db.Community,
-          attributes: ['id', 'name', 'community_pict'],
-        },
-      ],
-    });
-    return res.status(200).json({
-      data: user,
+  let user;
+  try {
+    user = await User.findOne({
+      where: { id },
     });
   } catch (error) {
-    return res.status(200).json({
-      success: false,
-      errors: error,
-    });
+    return next(new InternalServerException('Internal server error', error));
   }
+
+  return res.json({ data: user });
 };
 
-module.exports.editUser = async function (req, res) {
+module.exports.editUser = async function (req, res, next) {
   const { id } = req.params;
-  const { name, phone_number, birthday, password } = req.body;
-  const findUser = await db.User.findOne({ where: { id } });
-  if (password == null) {
-    return res.status(200).json({
-      success: false,
-      messages: 'Please enter the password',
-    });
+
+  const { name, phone_number, birthday } = req.body;
+
+  const user = await User.findOne({ where: { id } });
+
+  if (!user) {
+    return next(new NotFoundException('User not found'));
   }
-  if (!findUser) {
-    return res.status(200).json({
-      success: false,
-      messages: 'User not found!',
-    });
-  }
-  const comparePassword = bcrypt.compareSync(password, findUser.password);
-  if (!comparePassword) {
-    return res.status(200).json({
-      success: false,
-      messages: 'Wrong Password!',
-    });
-  }
+
   let profile_pict;
+
   if (req.file) {
     profile_pict = req.file.filename;
   }
+
+  let userUpdated;
   try {
-    findUser.update({
-      name,
-      phone_number,
-      birthday,
-      profile_pict,
-    });
-    return res.status(200).json({
-      success: true,
-      messages: 'Profile updated!',
-      data: {
-        name: findUser.name,
-        email: findUser.email,
+    userUpdated = await user.update(
+      {
+        name,
+        phone_number,
+        birthday,
+        profile_pict,
+        updated_at: new Date(),
       },
-    });
+      { returning: true }
+    );
   } catch (error) {
-    console.log(error);
-    return res.status(200).json({
-      success: false,
-      errors: error,
-    });
+    return next(new InternalServerException('Internal server error', error));
   }
+  return res.json({
+    messages: 'Profile updated!',
+    data: userUpdated,
+  });
 };
 
 module.exports.logout = (req, res) => {
   res.cookie('jwt', '', { maxAge: 1 });
-  res.status(201).json({
-    success: true,
+
+  return res.status(200).json({
     message: 'Logout Success',
+  });
+};
+
+module.exports.getInvitationUser = async function (req, res, next) {
+  const { id: user_id } = req.user;
+
+  let invitation;
+  try {
+    invitation = await Invitation.findAll({
+      where: {
+        user_id,
+      },
+    });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    data: invitation,
+  });
+};
+
+module.exports.getRequestUser = async function (req, res, next) {
+  const { id: user_id } = req.user;
+
+  let request;
+  try {
+    request = await Request_Membership.findAll({
+      where: {
+        user_id,
+      },
+    });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    data: request,
+  });
+};
+
+module.exports.deleteUserRequest = async function (req, res, next) {
+  const { id: request_id } = req.params;
+  const { id: user_id } = req.user;
+
+  let request;
+  try {
+    request = await Request_Membership.findOne({ where: { id: request_id } });
+
+    if (request.user_id !== user_id) {
+      return next(
+        new ForbiddenException('You have not allowed to do this action')
+      );
+    }
+
+    request = await request.destroy();
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    messages: 'Delete success!',
+    data: request,
   });
 };
