@@ -25,7 +25,7 @@ const checkLogin = (req, res, next) => {
 
 const checkAdmin = async (req, res, next) => {
   const { id: user_id } = req.user;
-  const { community_id } = req.query;
+  const { id: community_id } = req.params;
 
   const role = await Community_Member.findOne({
     where: {
@@ -47,7 +47,7 @@ const checkAdmin = async (req, res, next) => {
 
 const checkOwner = async (req, res, next) => {
   const { id: user_id } = req.user;
-  const { community_id } = req.query;
+  const { id: community_id } = req.params;
 
   const role = await Community_Member.findOne({
     where: {

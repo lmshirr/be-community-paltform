@@ -10,7 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Activation, Community, Request_Membership }) {
+    static associate({
+      Activation,
+      Community,
+      Request_Membership,
+      Invitation,
+      Community_Post,
+    }) {
       User.hasOne(Activation, { foreignKey: 'user_id' });
       User.belongsToMany(Community, {
         through: 'Community_Member',
@@ -23,9 +29,11 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         foreignKey: 'user_id',
       });
-      // User.belongsToMany(models.Community, { through: 'Community_Member' });
-      // User.hasMany(models.Community_Post, { onDelete: 'cascade' });
-      // User.hasMany(models.Invitation, { onDelete: 'cascade' });
+      User.hasMany(Invitation, { onDelete: 'cascade', foreignKey: 'user_id' });
+      User.hasMany(Community_Post, {
+        onDelete: 'cascade',
+        foreignKey: 'user_id',
+      });
       // User.hasMany(models.Comment, {
       //   onDelete: 'cascade',
       //   foreignKey: { name: 'user_id' },

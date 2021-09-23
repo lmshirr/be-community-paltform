@@ -4,29 +4,11 @@ const {
   InternalServerException,
   ConflictException,
   BadRequestException,
+  ForbiddenException,
 } = require('../utils/httpExceptions');
 
-module.exports.getInvitationUser = async function (req, res, next) {
-  const { id: user_id } = req.user;
-
-  let invitation;
-  try {
-    invitation = await Invitation.findAll({
-      where: {
-        user_id,
-      },
-    });
-  } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
-  }
-
-  return res.json({
-    data: invitation,
-  });
-};
-
 module.exports.getInvitationCommunity = async function (req, res, next) {
-  const { community_id } = req.query;
+  const { id: community_id } = req.params;
 
   let invitation;
   try {
@@ -36,6 +18,7 @@ module.exports.getInvitationCommunity = async function (req, res, next) {
       },
     });
   } catch (error) {
+    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 
@@ -45,7 +28,8 @@ module.exports.getInvitationCommunity = async function (req, res, next) {
 };
 
 module.exports.createInvitation = async function (req, res, next) {
-  const { community_id, user_id } = req.query;
+  const { id: community_id } = req.params;
+  const { user_id } = req.body;
   const { id } = req.user;
 
   let invite;
@@ -58,6 +42,18 @@ module.exports.createInvitation = async function (req, res, next) {
 
     if (isMember) {
       return next(new ConflictException('This User is already a member!'));
+    }
+
+    // check is already invite
+    const isAlreadyInvited = await Invitation.findOne({
+      where: { [Op.and]: [{ user_id }, { community_id }, { inviter: id }] },
+    });
+    if (isAlreadyInvited) {
+      return next(
+        new ForbiddenException(
+          'You already invite this user, please wait for respond'
+        )
+      );
     }
 
     invite = await Invitation.create({
@@ -76,7 +72,7 @@ module.exports.createInvitation = async function (req, res, next) {
 };
 
 module.exports.respondInvite = async function (req, res, next) {
-  const { respond } = req.query;
+  const { respond } = req.body;
   const { id } = req.params;
 
   try {
@@ -116,10 +112,10 @@ module.exports.respondInvite = async function (req, res, next) {
 };
 
 module.exports.deleteInvite = async function (req, res, next) {
-  const { id } = req.params;
+  const { id: community_id, invitationId } = req.params;
 
   try {
-    await Invitation.destroy({ where: { id } });
+    await Invitation.destroy({ where: { id: invitationId } });
 
     return res.status(200).json({
       success: true,

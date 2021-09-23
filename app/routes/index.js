@@ -7,10 +7,10 @@ const communityPostRoutes = require('./API/communityPostRoutes');
 const classRoutes = require('./API/classRoutes');
 const commentRouter = require('./API/commentRoutes');
 
-apiRouter.use('/user', userRoutes);
-apiRouter.use('/community', communityRoutes);
-apiRouter.use('/communityPost', communityPostRoutes);
-apiRouter.use('/class', classRoutes);
-apiRouter.use('/comment', commentRouter);
+apiRouter.use('/users', userRoutes);
+apiRouter.use('/communities', communityRoutes);
+apiRouter.use('/posts', communityPostRoutes);
+apiRouter.use('/classes', classRoutes);
+apiRouter.use('/comments', commentRouter);
 
 module.exports = apiRouter;

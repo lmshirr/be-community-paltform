@@ -1,15 +1,20 @@
-const { User, Activation, Community } = require('../models/index');
+const {
+  User,
+  Activation,
+  Invitation,
+  Request_Membership,
+} = require('../models/index');
 require('dotenv').config({ path: './.env' });
 const uuid = require('uuid');
 const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { use } = require('../routes/index');
 const {
   InternalServerException,
   BadRequestException,
   NotFoundException,
   UnauthorizedException,
+  ForbiddenException,
 } = require('../utils/httpExceptions/index');
 const mailService = require('../utils/email/mail.service');
 
@@ -216,5 +221,68 @@ module.exports.logout = (req, res) => {
 
   return res.status(200).json({
     message: 'Logout Success',
+  });
+};
+
+module.exports.getInvitationUser = async function (req, res, next) {
+  const { id: user_id } = req.user;
+
+  let invitation;
+  try {
+    invitation = await Invitation.findAll({
+      where: {
+        user_id,
+      },
+    });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    data: invitation,
+  });
+};
+
+module.exports.getRequestUser = async function (req, res, next) {
+  const { id: user_id } = req.user;
+
+  let request;
+  try {
+    request = await Request_Membership.findAll({
+      where: {
+        user_id,
+      },
+    });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    data: request,
+  });
+};
+
+module.exports.deleteUserRequest = async function (req, res, next) {
+  const { id: request_id } = req.params;
+  const { id: user_id } = req.user;
+
+  let request;
+  try {
+    request = await Request_Membership.findOne({ where: { id: request_id } });
+
+    if (request.user_id !== user_id) {
+      return next(
+        new ForbiddenException('You have not allowed to do this action')
+      );
+    }
+
+    request = await request.destroy();
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({
+    messages: 'Delete success!',
+    data: request,
   });
 };

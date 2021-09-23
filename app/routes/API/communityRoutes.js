@@ -8,20 +8,25 @@ const requestController = require('../../controllers/requestMembershipController
 const invitationController = require('../../controllers/invitationController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const invitationMiddleware = require('../../middleware/invitationMiddleware');
-const requestMembershipMiddleware = require('../../middleware/requestMemberMiddleware');
+const communityPostController = require('../../controllers/communityPostController');
 const roleMiddleware = require('../../middleware/roleMiddleware');
+const { uploadPostImage } = require('../../utils/multer/uploadImage.service');
+const postMiddleware = require('../../middleware/postMiddleware');
 
 const communityRouter = express.Router();
 
 communityRouter.get('/search/:key', communityController.findCommunity);
 communityRouter
   .route('/')
-  .get(communityController.getCommunityDetails)
+  .get(authorizationMiddleware.checkLogin, communityController.getAllCommunity)
   .post(
     authorizationMiddleware.checkLogin,
     uploadCommunityImage.single('community_pict'),
     communityController.createCommunity
-  )
+  );
+communityRouter
+  .route('/:id')
+  .get(communityController.getCommunityDetails)
   .patch(
     authorizationMiddleware.checkLogin,
     authorizationMiddleware.checkAdmin,
@@ -36,81 +41,88 @@ communityRouter
 
 // Membership
 communityRouter.post(
-  '/join',
+  '/:id/join',
   authorizationMiddleware.checkLogin,
   memberController.joinCommunity
 );
 communityRouter.patch(
-  '/member/role',
+  '/:id/members/:memberId',
   authorizationMiddleware.checkLogin,
   authorizationMiddleware.checkOwner,
   memberController.updateRole
 );
-communityRouter.patch(
-  '/member/owner',
-  authorizationMiddleware.checkLogin,
-  authorizationMiddleware.checkOwner,
-  memberController.changeOwner
-);
 communityRouter.delete(
-  '/leave',
+  '/:id/members/:memberId',
   authorizationMiddleware.checkLogin,
   memberController.leaveCommunity
 );
 
 // request join
 communityRouter.get(
-  '/request/user',
+  '/:id/requests',
   authorizationMiddleware.checkLogin,
-  requestController.getRequestUser
-);
-communityRouter.get(
-  '/request',
-  authorizationMiddleware.checkLogin,
-  requestMembershipMiddleware.checkAdmin,
+  authorizationMiddleware.checkAdmin,
   requestController.getRequestCommunity
 );
 communityRouter.patch(
-  '/request',
+  '/:id/requests/:requestId',
   authorizationMiddleware.checkLogin,
-  requestMembershipMiddleware.checkAdmin,
+  authorizationMiddleware.checkAdmin,
   requestController.respondRequest
-);
-communityRouter.delete(
-  '/request',
-  authorizationMiddleware.checkLogin,
-  requestController.deleteRequest
 );
 
 // invitation
-communityRouter.get(
-  '/invitation/user',
-  authorizationMiddleware.checkLogin,
-  invitationController.getInvitationUser
-);
-communityRouter.get(
-  '/invitation',
-  authorizationMiddleware.checkLogin,
-  invitationMiddleware.checkAdmin,
-  invitationController.getInvitationCommunity
-);
+communityRouter
+  .route('/:id/invitations')
+  .get(
+    authorizationMiddleware.checkLogin,
+    authorizationMiddleware.checkAdmin,
+    invitationController.getInvitationCommunity
+  )
+  .post(
+    authorizationMiddleware.checkLogin,
+    roleMiddleware.checkMembership,
+    invitationController.createInvitation
+  );
+
+communityRouter
+  .route('/:id/invitations/:ivitationId')
+  .patch(
+    authorizationMiddleware.checkLogin,
+    invitationMiddleware.checkUser,
+    invitationController.respondInvite
+  )
+  .delete(
+    authorizationMiddleware.checkLogin,
+    invitationMiddleware.checkAdmin,
+    invitationController.deleteInvite
+  );
+
+// post routes
+communityRouter.get('/:id/posts', communityPostController.getCommunityPosts);
 communityRouter.post(
-  '/invitation',
+  '/:id/posts',
   authorizationMiddleware.checkLogin,
-  roleMiddleware.checkMembership,
-  invitationController.createInvitation
+  uploadPostImage.array('attachments'),
+  postMiddleware.checkMembership_post,
+  communityPostController.createPost
 );
 communityRouter.patch(
-  '/invitation/:id',
+  '/:id/posts/:postId',
   authorizationMiddleware.checkLogin,
-  invitationMiddleware.checkUser,
-  invitationController.respondInvite
+  uploadPostImage.array('attachments'),
+  postMiddleware.checkUser_delete_patch,
+  communityPostController.editPost
 );
 communityRouter.delete(
-  '/invitation/:id',
+  '/:id/posts/:postId',
   authorizationMiddleware.checkLogin,
-  invitationMiddleware.checkAdmin,
-  invitationController.deleteInvite
+  postMiddleware.checkUser_delete_patch,
+  communityPostController.deletePost
+);
+communityRouter.get(
+  '/:id/posts/:postId',
+  communityPostController.getPostDetails
 );
 
 module.exports = communityRouter;

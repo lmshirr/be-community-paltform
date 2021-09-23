@@ -35,7 +35,7 @@ module.exports.findCommunity = async function (req, res) {
 };
 
 module.exports.getCommunityDetails = async function (req, res, next) {
-  const { community_id: id } = req.query;
+  const { id } = req.params;
 
   let community;
   let total_member;
@@ -127,7 +127,7 @@ module.exports.createCommunity = async function (req, res, next) {
 };
 
 module.exports.editCommunity = async function (req, res, next) {
-  const { community_id: id } = req.query;
+  const { id } = req.params;
   const { privacy, name, type, description } = req.body;
 
   console.log(privacy);
@@ -161,7 +161,7 @@ module.exports.editCommunity = async function (req, res, next) {
 };
 
 module.exports.deleteCommunity = async function (req, res, next) {
-  const { community_id: id } = req.query;
+  const { id } = req.params;
 
   let community;
   try {
@@ -173,4 +173,15 @@ module.exports.deleteCommunity = async function (req, res, next) {
     messages: 'Delete success!',
     data: community,
   });
+};
+
+module.exports.getAllCommunity = async function (req, res, next) {
+  let communities;
+  try {
+    communities = await Community.findAll();
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({ data: communities });
 };

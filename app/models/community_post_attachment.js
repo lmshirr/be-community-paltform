@@ -9,8 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      Community_Post_Attachment.belongsTo(models.Community_Post);
+    static associate({ Community_Post }) {
+      Community_Post_Attachment.belongsTo(Community_Post, {
+        foreignKey: 'community_post_id',
+      });
     }
   }
   Community_Post_Attachment.init(

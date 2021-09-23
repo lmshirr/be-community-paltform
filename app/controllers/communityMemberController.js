@@ -13,10 +13,13 @@ const { Op } = require('sequelize');
 
 module.exports.joinCommunity = async function (req, res, next) {
   const { id: user_id } = req.user;
-  const { community_id } = req.query;
+  const { id: community_id } = req.params;
 
   try {
     const community = await Community.findOne({ where: { id: community_id } });
+    if (!community) {
+      return next(new NotFoundException('Community not found'));
+    }
 
     // check is already member ?
     const member = await Community_Member.findOne({
@@ -42,6 +45,19 @@ module.exports.joinCommunity = async function (req, res, next) {
     }
 
     if (community.privacy === 'closed') {
+      // check is already request, if yes return please wait for confirmation from admin
+      const isAlreadyRequest = await Request_Membership.findOne({
+        where: { user_id, community_id },
+      });
+
+      if (isAlreadyRequest) {
+        return next(
+          new ForbiddenException(
+            'You already request to this community, please wait for confirmation'
+          )
+        );
+      }
+
       const data = await Request_Membership.create({
         user_id,
         community_id,
@@ -53,32 +69,56 @@ module.exports.joinCommunity = async function (req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 };
 
 module.exports.updateRole = async function (req, res, next) {
-  const { user_id, role, community_id } = req.query;
+  const { id: community_id, memberId: user_id } = req.params;
+  const { role } = req.body;
   const { id } = req.user;
 
-  let member;
+  let newMemberRole;
   try {
-    // owner can't change to member or administrator
-    if (role === 'owner') {
-      return next(new ForbiddenException("You can't change ownership"));
-    }
-
-    member = await Community_Member.findOne({
+    newMemberRole = await Community_Member.findOne({
       where: {
         [Op.and]: [{ user_id }, { community_id }],
       },
     });
 
-    if (!member) {
+    if (!newMemberRole) {
       return next(
         new NotFoundException('User want to change not exist in this community')
       );
+    }
+
+    if (role === 'owner') {
+      // check is want to change have role owner ?
+      const ownerCommunity = await Community_Member.findOne({
+        where: {
+          [Op.and]: [{ user_id: id }, { community_id }, { role: 'owner' }],
+        },
+      });
+
+      if (!ownerCommunity) {
+        return next(
+          new NotFoundException(
+            "You are not owner on this community, can't change role owner"
+          )
+        );
+      }
+
+      newMemberRole = await newMemberRole.update({
+        role: 'owner',
+      });
+      await ownerCommunity.update({
+        role: 'member',
+      });
+
+      return res.json({
+        message: 'Change new owner success',
+        data: newMemberRole,
+      });
     }
 
     const memberWantToChangeRole = await Community_Member.findOne({
@@ -95,69 +135,21 @@ module.exports.updateRole = async function (req, res, next) {
       );
     }
 
-    member = await member.update({
+    newMemberRole = await newMemberRole.update({
       role,
     });
   } catch (error) {
-    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 
   return res.json({
     messages: 'Role updated!',
-    data: member,
-  });
-};
-
-module.exports.changeOwner = async function (req, res, next) {
-  const { new_owner, community_id } = req.query;
-  const { id: user_id } = req.user;
-
-  try {
-    // check is want to change have role owner ?
-    const ownerCommunity = await Community_Member.findOne({
-      where: {
-        [Op.and]: [{ user_id }, { community_id }, { role: 'owner' }],
-      },
-    });
-
-    if (!ownerCommunity) {
-      return next(new NotFoundException('You are not owner on this community'));
-    }
-
-    const newOwnerCommunity = await Community_Member.findOne({
-      where: {
-        [Op.and]: [{ user_id: new_owner }, { community_id }],
-      },
-    });
-
-    if (!newOwnerCommunity) {
-      return next(
-        new ForbiddenException(
-          'You must include new owner to change owner on this community'
-        )
-      );
-    }
-
-    await newOwnerCommunity.update({
-      role: 'owner',
-    });
-
-    await newOwnerCommunity.update({
-      role: 'member',
-    });
-  } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
-  }
-
-  return res.json({
-    messages: 'Role updated',
+    data: newMemberRole,
   });
 };
 
 module.exports.leaveCommunity = async function (req, res, next) {
-  const { id: user_id } = req.user;
-  const { community_id } = req.query;
+  const { id: community_id, memberId: user_id } = req.params;
 
   let member;
   try {

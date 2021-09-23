@@ -9,9 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      Invitation.belongsTo(models.User);
-      Invitation.belongsTo(models.Community);
+    static associate({ User, Community }) {
+      Invitation.belongsTo(User, { foreignKey: 'user_id' });
+      Invitation.belongsTo(Community, { foreignKey: 'community_id' });
     }
   }
   Invitation.init(
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         references: { model: 'User', key: 'id' },
       },
-      communnity_id: {
+      community_id: {
         type: DataTypes.UUID,
         allowNull: false,
         references: { model: 'community', key: 'id' },
