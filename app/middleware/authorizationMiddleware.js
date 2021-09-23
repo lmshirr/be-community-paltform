@@ -1,76 +1,66 @@
-require('dotenv').config({path: '../.env'});
-const db = require('../models/index.js');
+require('dotenv').config({ path: '../.env' });
 const jwt = require('jsonwebtoken');
-const { Op } = require("sequelize");
+const { Op } = require('sequelize');
+const { Community_Member } = require('../models');
+const {
+  UnauthorizedException,
+  ForbiddenException,
+} = require('../utils/httpExceptions');
 
+const checkLogin = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) {
+    return next(new UnauthorizedException("You aren't logged in"));
+  }
 
-const checkLogin = (req, res, next) =>{
-    const token = req.cookies.jwt;
-    if(!token){
-        return res.status(200).json({
-            success: false,
-            message: "You aren't logged in"
-        })
+  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return next(new UnauthorizedException("You aren't logged in"));
     }
-    next();
-}
+    req.user = decoded;
+  });
 
-const checkAdmin = (req, res, next) =>{
-    const token = req.cookies.jwt;
-    jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken)=>{
-        if(error){
-            return res.status(200).json({
-                success: false,
-                message: error
-            })
-        }
-        const role = await db.Community_Member.findOne({where: {
-            [Op.and]: [
-                {UserId: decodedToken.UserId},
-                {CommunityId: req.params.id},
-                {[Op.or]: [
-                    {role: 'Owner'},
-                    {role: 'Administrator'}
-                ]}
-                
-            ]
-        }});
-        console.log(role);
-        if(!role){
-            return res.status(200).json({
-                success: false,
-                messages: "You dont have permission to this action!"
-            })
-        }
-        next();
-    })
-}
+  next();
+};
 
-const checkOwner = (req, res, next) =>{
-    const token = req.cookies.jwt;
-    jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken)=>{
-        console.log(decodedToken);
-        if(error){
-            return res.status(200).json({
-                success: false,
-                message: error
-            })
-        }
-        const role = await db.Community_Member.findOne({where: {
-            [Op.and]: [
-                {UserId: decodedToken.UserId},
-                {CommunityId: req.params.id},
-                {role: 'Owner'}
-            ]
-        }});
-        if(!role){
-            return res.status(200).json({
-                success: false,
-                messages: "You dont have permission to this action!"
-            })
-        }
-        next();
-    })
-}
+const checkAdmin = async (req, res, next) => {
+  const { id: user_id } = req.user;
+  const { id: community_id } = req.params;
 
-module.exports = {checkLogin, checkAdmin, checkOwner}
+  const role = await Community_Member.findOne({
+    where: {
+      [Op.and]: [
+        { user_id },
+        { community_id },
+        { [Op.or]: [{ role: 'owner' }, { role: 'administrator' }] },
+      ],
+    },
+  });
+
+  if (!role) {
+    return next(
+      new ForbiddenException('You dont have permission to this action!')
+    );
+  }
+  next();
+};
+
+const checkOwner = async (req, res, next) => {
+  const { id: user_id } = req.user;
+  const { id: community_id } = req.params;
+
+  const role = await Community_Member.findOne({
+    where: {
+      [Op.and]: [{ user_id }, { community_id }, { role: 'owner' }],
+    },
+  });
+  if (!role) {
+    return next(
+      new ForbiddenException('You dont have permission to this action!')
+    );
+  }
+
+  next();
+};
+
+module.exports = { checkLogin, checkAdmin, checkOwner };

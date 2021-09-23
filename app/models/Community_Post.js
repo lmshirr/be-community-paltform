@@ -1,7 +1,7 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Community_Post extends Model {
     /**
@@ -9,33 +9,65 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      Community_Post.belongsTo(models.Community)
-      Community_Post.belongsTo(models.User)
-      Community_Post.hasMany(models.Community_Post_Attachment, {onDelete: 'cascade'})
+    static associate({ Community, User, Community_Post_Attachment, Comment }) {
+      Community_Post.belongsTo(Community, { foreignKey: 'community_id' });
+      Community_Post.belongsTo(User, { foreignKey: 'user_id' });
+      Community_Post.hasMany(Community_Post_Attachment, {
+        onDelete: 'cascade',
+        foreignKey: 'community_post_id',
+      });
+      Community_Post.hasMany(Comment, {
+        onDelete: 'cascade',
+        foreignKey: { name: 'post_id' },
+      });
     }
-  };
-  Community_Post.init({
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
+  }
+  Community_Post.init(
+    {
+      pk: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      id: {
+        type: DataTypes.UUID,
+        unique: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+      },
+      user_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'User', key: 'id' },
+      },
+      community_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Community', key: 'id' },
+      },
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      created_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
     },
-    UserId: {
-      type: DataTypes.INTEGER,
-    },
-    CommunityId: {
-      type: DataTypes.INTEGER,
-      allowNull:false
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull:false
+    {
+      sequelize,
+      modelName: 'Community_Post',
+      tableName: 'community_post',
+      freezeTableName: true,
+      timestamps: false,
     }
-  }, {
-    sequelize,
-    modelName: 'Community_Post',
-  });
+  );
   return Community_Post;
 };

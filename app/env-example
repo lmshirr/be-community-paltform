@@ -1,4 +1,4 @@
-DB_HOST=localhost
+DB_HOST=database
 DB_USER=postgres
 DB_NAME=community-platform
 DB_PASSWORD=

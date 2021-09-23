@@ -1,39 +1,50 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Community_Members', {
-      id: {
+    await queryInterface.createTable('community_member', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      CommunityId: {
         type: Sequelize.INTEGER,
-        references: {model: 'Communities', key:'id'},
-        onDelete: 'CASCADE'
       },
-      UserId: {
-        type: Sequelize.INTEGER,
-        references: {model: 'Users', key:'id'},
-        onDelete: 'CASCADE'
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
+      community_id: {
+        type: Sequelize.UUID,
+        references: { model: 'community', key: 'id' },
+        onDelete: 'CASCADE',
+        allowNull: false,
+      },
+      user_id: {
+        type: Sequelize.UUID,
+        references: { model: 'user', key: 'id' },
+        onDelete: 'CASCADE',
+        allowNull: false,
       },
       role: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
+        type: Sequelize.ENUM('member', 'owner', 'administrator'),
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: 'member',
       },
-      updatedAt: {
+      created_at: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Community_Members', 'Community_Members_CommunityId_fkey');
-    await queryInterface.removeConstraint('Community_Members', 'Community_Members_UserId_fkey');
-    await queryInterface.dropTable('Community_Members');
-  }
+    await queryInterface.dropTable('community_member');
+  },
 };

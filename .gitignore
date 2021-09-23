@@ -120,3 +120,4 @@ assets/
 
 # packages
 package-lock.json
+./app/package-lock.json

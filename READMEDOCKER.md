@@ -1,6 +1,10 @@
 ## Running Container
 - Copy .env-example-docker ke .env pada root folder
 - Untuk first Run ganti ENVIRONMENT pada .env ke `build`
+- Buat network pada docker dengan command
+```cmd
+docker network create external-node
+```
 - Jalankan 
 ```cmd 
 docker-compose up node 

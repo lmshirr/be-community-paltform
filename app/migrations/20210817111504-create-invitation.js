@@ -2,49 +2,56 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Invitations', {
-      id: {
+    await queryInterface.createTable('invitation', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      Inviter:{
         type: Sequelize.INTEGER,
-        references: {model: 'Users', key:'id'},
-        onDelete: 'CASCADE',
-        allowNull:false
       },
-      UserId:{
-        type: Sequelize.INTEGER,
-        references: {model: 'Users', key:'id'},
-        onDelete: 'CASCADE',
-        allowNull:false
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true,
       },
-      CommunityId:{
-        type: Sequelize.INTEGER,
-        references: {model: 'Communities', key:'id'},
+      inviter_id: {
+        type: Sequelize.UUID,
+        references: { model: 'user', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
+      },
+      user_id: {
+        type: Sequelize.UUID,
+        references: { model: 'user', key: 'id' },
+        onDelete: 'CASCADE',
+        allowNull: false,
+      },
+      community_id: {
+        type: Sequelize.UUID,
+        references: { model: 'community', key: 'id' },
+        onDelete: 'CASCADE',
+        allowNull: false,
       },
       status: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
+        type: Sequelize.ENUM('pending'),
+        defaultValue: 'pending',
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      created_at: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Invitations', 'Invitations_Inviter_fkey');
-    await queryInterface.removeConstraint('Invitations', 'Invitations_UserId_fkey');
-    await queryInterface.removeConstraint('Invitations', 'Invitations_CommunityId_fkey');
-    await queryInterface.dropTable('Invitations');
-  }
+    await queryInterface.dropTable('invitation');
+  },
 };

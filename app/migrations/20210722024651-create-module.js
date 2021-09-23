@@ -1,37 +1,47 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Modules', {
-      id: {
+    await queryInterface.createTable('module', {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      ClassId: {
         type: Sequelize.INTEGER,
-        references: {model: 'Classes', key:'id'},
+      },
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
+      class_id: {
+        type: Sequelize.UUID,
+        references: { model: 'class', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
       },
       filename: {
-        type: Sequelize.STRING
-      },
-      name:{
-        type: Sequelize.STRING
-      },
-      createdAt: {
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
+      name: {
+        type: Sequelize.STRING,
         allowNull: false,
-        type: Sequelize.DATE
-      }
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.removeConstraint('Modules', 'Modules_ClassId_fkey');
-    await queryInterface.dropTable('Modules');
-  }
+    await queryInterface.dropTable('module');
+  },
 };
