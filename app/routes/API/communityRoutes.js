@@ -45,17 +45,14 @@ communityRouter.post(
   authorizationMiddleware.checkLogin,
   memberController.joinCommunity
 );
-communityRouter.patch(
-  '/:id/members/:memberId',
-  authorizationMiddleware.checkLogin,
-  authorizationMiddleware.checkOwner,
-  memberController.updateRole
-);
-communityRouter.delete(
-  '/:id/members/:memberId',
-  authorizationMiddleware.checkLogin,
-  memberController.leaveCommunity
-);
+communityRouter
+  .route('/:id/memberships/:memberId')
+  .patch(
+    authorizationMiddleware.checkLogin,
+    authorizationMiddleware.checkOwner,
+    memberController.updateRole
+  )
+  .delete(authorizationMiddleware.checkLogin, memberController.leaveCommunity);
 
 // request join
 communityRouter.get(
@@ -99,30 +96,29 @@ communityRouter
   );
 
 // post routes
-communityRouter.get('/:id/posts', communityPostController.getCommunityPosts);
-communityRouter.post(
-  '/:id/posts',
-  authorizationMiddleware.checkLogin,
-  uploadPostImage.array('attachments'),
-  postMiddleware.checkMembership_post,
-  communityPostController.createPost
-);
-communityRouter.patch(
-  '/:id/posts/:postId',
-  authorizationMiddleware.checkLogin,
-  uploadPostImage.array('attachments'),
-  postMiddleware.checkUser_delete_patch,
-  communityPostController.editPost
-);
-communityRouter.delete(
-  '/:id/posts/:postId',
-  authorizationMiddleware.checkLogin,
-  postMiddleware.checkUser_delete_patch,
-  communityPostController.deletePost
-);
-communityRouter.get(
-  '/:id/posts/:postId',
-  communityPostController.getPostDetails
-);
+communityRouter
+  .route('/:id/posts')
+  .get(communityPostController.getCommunityPosts)
+  .post(
+    authorizationMiddleware.checkLogin,
+    uploadPostImage.array('attachments'),
+    postMiddleware.checkMembership_post,
+    communityPostController.createPost
+  );
+
+communityRouter
+  .route('/:id/posts/:postId')
+  .get(communityPostController.getPostDetails)
+  .patch(
+    authorizationMiddleware.checkLogin,
+    uploadPostImage.array('attachments'),
+    postMiddleware.checkUser_delete_patch,
+    communityPostController.editPost
+  )
+  .delete(
+    authorizationMiddleware.checkLogin,
+    postMiddleware.checkUser_delete_patch,
+    communityPostController.deletePost
+  );
 
 module.exports = communityRouter;

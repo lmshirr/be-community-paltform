@@ -1,6 +1,11 @@
 /* eslint-disable no-dupe-keys */
 const db = require('../models/index');
 const {
+  Community_Post,
+  User,
+  Community_Post_Attachment,
+} = require('../models/index');
+const {
   InternalServerException,
   BadRequestException,
 } = require('../utils/httpExceptions/index');
@@ -10,10 +15,11 @@ module.exports.getCommunityPosts = async function (req, res, next) {
 
   let post;
   try {
-    post = await db.Community_Post.findAll({
+    post = await Community_Post.findAll({
       where: {
         community_id,
       },
+      include: { model: Community_Post_Attachment, as: 'post_attachment' },
     });
   } catch (error) {
     return next(new InternalServerException('Internal server error', error));
@@ -27,17 +33,17 @@ module.exports.getPostDetails = async function (req, res, next) {
 
   let post;
   try {
-    post = await db.Community_Post.findOne({
+    post = await Community_Post.findOne({
       where: { id },
       include: [
         {
-          model: db.User,
+          model: User,
           attributes: ['id', 'name', 'profile_pict'],
         },
       ],
       include: [
         {
-          model: db.Community_Post_Attachment,
+          model: Community_Post_Attachment,
           attributes: ['id', 'filename'],
         },
       ],
@@ -55,9 +61,10 @@ module.exports.createPost = async function (req, res, next) {
   const { id: community_id } = req.params;
   const { content } = req.body;
   const { id: user_id } = req.user;
+  console.log(community_id);
 
   try {
-    const post = await db.Community_Post.create({
+    const post = await Community_Post.create({
       community_id,
       user_id,
       content,
@@ -68,7 +75,7 @@ module.exports.createPost = async function (req, res, next) {
       req.files.forEach(async function (file) {
         const { filename } = file;
         try {
-          await db.Community_Post_Attachment.create({
+          await Community_Post_Attachment.create({
             community_post_id: CommunityPostId,
             filename,
           });
@@ -106,7 +113,7 @@ module.exports.editPost = async function (req, res, next) {
   const { content } = req.body;
 
   try {
-    const post = await db.Community_Post.findOne({ where: { id: post_id } });
+    const post = await Community_Post.findOne({ where: { id: post_id } });
 
     post.update({
       content,
@@ -117,7 +124,7 @@ module.exports.editPost = async function (req, res, next) {
         const { filename } = file;
 
         try {
-          await db.Community_Post_Attachment.create({
+          await Community_Post_Attachment.create({
             community_post_id: post_id,
             filename,
           });
@@ -141,7 +148,7 @@ module.exports.deletePost = async function (req, res, next) {
   const { id: community_id, postId: post_id } = req.params;
 
   try {
-    await db.Community_Post.destroy({ where: { id: post_id } });
+    await Community_Post.destroy({ where: { id: post_id } });
 
     return res.json({
       success: true,
@@ -156,7 +163,7 @@ module.exports.deleteAttachment = async function (req, res, next) {
   const { id } = req.params;
 
   try {
-    await db.Community_Post_Attachment.destroy({ where: { id } });
+    await Community_Post_Attachment.destroy({ where: { id } });
 
     return res.json({
       success: true,

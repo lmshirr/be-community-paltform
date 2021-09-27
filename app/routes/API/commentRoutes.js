@@ -1,21 +1,26 @@
-const express = require('express');
+const { Router } = require('express');
 const commentController = require('../../controllers/commentController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
-const classMiddleware = require('../../middleware/classMiddleware');
+const {
+  uploadCommentImage,
+} = require('../../utils/multer/uploadImage.service');
+const commentMiddleware = require('../../middleware/commentMiddleware');
 
-const commentRouter = express.Router();
+const commentRouter = Router();
 
 commentRouter
   .route('/')
   .post(
     authorizationMiddleware.checkLogin,
-    classMiddleware.checkMembership,
+    commentMiddleware.checkMembership,
+    uploadCommentImage.single('comment_pict'),
     commentController.postComment
   )
   .get(
     authorizationMiddleware.checkLogin,
-    classMiddleware.checkMembership,
+    commentMiddleware.checkMembership,
     commentController.getComments
-  );
+  )
+  .delete();
 
 module.exports = commentRouter;

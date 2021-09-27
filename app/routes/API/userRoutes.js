@@ -41,6 +41,13 @@ userRouter.delete(
   userController.deleteUserRequest
 );
 
+// community
+userRouter.get(
+  '/:id/communities',
+  authorizationMiddleware.checkLogin,
+  userController.getAllUserCommunity
+);
+
 // Google OAuth
 userRouter.get('/auth/google', googleAuthController.googleLogin);
 userRouter.get('/auth/google/url', googleAuthController.getGoogleAuthURL);

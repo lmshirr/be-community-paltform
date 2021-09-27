@@ -1,81 +1,37 @@
 const express = require('express');
-const uuid = require('uuid');
-const multer = require('multer');
-const path = require('path');
-const classRouter = express.Router();
 const classController = require('../../controllers/classController');
 const moduleController = require('../../controllers/moduleController');
 const videoController = require('../../controllers/videoController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const classMiddleware = require('../../middleware/classMiddleware');
+const {
+  uploadClassModuleOrVideo,
+} = require('../../utils/multer/uploadImage.service');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, next) {
-    if (req.url.includes('module')) {
-      next(null, 'assets/class/modules');
-    }
-    if (req.url.includes('video')) {
-      next(null, 'assets/class/videos');
-    }
-  },
-  filename: function (req, file, next) {
-    next(null, uuid.v4() + path.extname(file.originalname));
-  },
-});
-
-const fileFilter = (req, file, next) => {
-  if (req.url.includes('module')) {
-    if (file.mimetype === 'application/pdf') {
-      next(null, true);
-    } else {
-      next(new Error('Please only upload PDF file'), false);
-    }
-  }
-  if (req.url.includes('video')) {
-    if (
-      file.mimetype === 'video/mp4' ||
-      file.mimetype === 'video/avi' ||
-      file.mimetype === 'video/mkv' ||
-      file.mimetype === 'video/webm'
-    ) {
-      next(null, true);
-    } else {
-      next(new Error('Please only upload MP4/AVI/MKV/WEBM file'), false);
-    }
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-});
+const classRouter = express.Router();
 
 classRouter.get('/search/:key', classController.findClass);
-classRouter.get(
-  '/:id',
-  classMiddleware.checkMembership,
-  classController.getClassDetails
-);
 classRouter.post(
   '/',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_post,
   classController.createClass
 );
-classRouter.patch(
-  '/:id',
-  authorizationMiddleware.checkLogin,
-  classMiddleware.checkAdmin_delete_patch,
-  classController.editClass
-);
-classRouter.delete(
-  '/:id',
-  authorizationMiddleware.checkLogin,
-  classMiddleware.checkAdmin_delete_patch,
-  classController.deleteClass
-);
+classRouter
+  .route('/:id')
+  .get(classMiddleware.checkMembership, classController.getClassDetails)
+  .patch(
+    authorizationMiddleware.checkLogin,
+    classMiddleware.checkAdmin_delete_patch,
+    classController.editClass
+  )
+  .delete(
+    authorizationMiddleware.checkLogin,
+    classMiddleware.checkAdmin_delete_patch,
+    classController.deleteClass
+  );
 
-//Module routes
+// Module routes
 classRouter.get(
   '/module/:ModuleId',
   classMiddleware.checkMembership,
@@ -85,14 +41,14 @@ classRouter.post(
   '/:ClassId/module',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  upload.single('module'),
+  uploadClassModuleOrVideo.single('module'),
   moduleController.addModule
 );
 classRouter.patch(
   '/:ClassId/module/:ModuleId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  upload.single('module'),
+  uploadClassModuleOrVideo.single('module'),
   moduleController.editModule
 );
 classRouter.delete(
@@ -112,14 +68,14 @@ classRouter.post(
   '/:ClassId/video',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  upload.single('video'),
+  uploadClassModuleOrVideo.single('video'),
   videoController.addVideo
 );
 classRouter.patch(
   '/:ClassId/video/:VideoId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  upload.single('video'),
+  uploadClassModuleOrVideo.single('video'),
   videoController.editVideo
 );
 classRouter.delete(

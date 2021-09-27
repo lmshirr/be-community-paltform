@@ -25,7 +25,7 @@ const checkUser_delete_patch = (req, res, next) => {
 
 const checkMembership_post = async (req, res, next) => {
   const { id: user_id } = req.user;
-  const { community_id } = req.body;
+  const { id: community_id } = req.params;
 
   const checkMember = await db.Community_Member.findOne({
     where: {

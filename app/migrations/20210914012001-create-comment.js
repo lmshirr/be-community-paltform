@@ -17,12 +17,17 @@ module.exports = {
       },
       body: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       post_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: { model: 'community_post', key: 'id' },
+      },
+      comment_pict: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        unique: false,
       },
       user_id: {
         type: Sequelize.UUID,

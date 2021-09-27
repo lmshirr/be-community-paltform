@@ -9,13 +9,14 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      Comment.belongsTo(models.User, {
+    static associate({ User, Community_Post }) {
+      Comment.belongsTo(User, {
         foreignKey: { name: 'user_id' },
-        as: 'user',
+        targetKey: 'id',
       });
-      Comment.belongsTo(models.Community_Post, {
+      Comment.belongsTo(Community_Post, {
         foreignKey: { name: 'post_id' },
+        targetKey: 'id',
       });
     }
   }
@@ -43,12 +44,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       body: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       comment_pict: {
         type: DataTypes.STRING,
         allowNull: true,
-        unique: true,
       },
       created_at: {
         type: DataTypes.DATE,

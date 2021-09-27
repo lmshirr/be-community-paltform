@@ -15,10 +15,13 @@ module.exports = (sequelize, DataTypes) => {
       Community_Post.hasMany(Community_Post_Attachment, {
         onDelete: 'cascade',
         foreignKey: 'community_post_id',
+        sourceKey: 'id',
+        as: 'post_attachment',
       });
       Community_Post.hasMany(Comment, {
         onDelete: 'cascade',
         foreignKey: { name: 'post_id' },
+        sourceKey: 'id',
       });
     }
   }

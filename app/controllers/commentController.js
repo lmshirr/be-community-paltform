@@ -3,7 +3,7 @@ const {
   BadRequestException,
   InternalServerException,
 } = require('../utils/httpExceptions');
-const db = require('../models');
+const { Comment, User } = require('../models');
 
 /**
  *
@@ -25,8 +25,7 @@ module.exports.postComment = async (req, res, next) => {
 
   let comment;
   try {
-    comment = await db.Comment.create({ post_id, body, user_id });
-    console.log(comment);
+    comment = await Comment.create({ post_id, body, user_id });
   } catch (err) {
     if (err.name === 'SequelizeValidationError') {
       return next(
@@ -43,12 +42,6 @@ module.exports.postComment = async (req, res, next) => {
   return res.status(201).json({ message: 'Comment created', data: comment });
 };
 
-/**
- *
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @param {import('express').NextFunction} next
- */
 module.exports.getComments = async (req, res, next) => {
   const { post_id } = req.query;
 
@@ -56,13 +49,12 @@ module.exports.getComments = async (req, res, next) => {
 
   let comments;
   try {
-    comments = await db.Comment.findAll({
+    comments = await Comment.findAll({
       where: {
         post_id,
       },
       include: {
-        model: db.User,
-        as: 'user',
+        model: User,
         required: true,
       },
     });

@@ -2,6 +2,7 @@ const multer = require('multer');
 const uuid = require('uuid');
 const path = require('path');
 
+// profile storate
 const profileStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
@@ -12,6 +13,7 @@ const profileStorage = multer.diskStorage({
   },
 });
 
+// community storage
 const communityStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
@@ -22,6 +24,7 @@ const communityStorage = multer.diskStorage({
   },
 });
 
+// post storage
 const postStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
@@ -32,7 +35,34 @@ const postStorage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req, file, cb) => {
+// module storage
+const moduleAndVideoStorage = multer.diskStorage({
+  destination: (req, file, next) => {
+    if (req.url.includes('module')) {
+      next(null, 'assets/class/modules');
+    }
+    if (req.url.includes('video')) {
+      next(null, 'assets/class/videos');
+    }
+  },
+  filename: (req, file, next) => {
+    next(null, uuid.v4() + path.extname(file.originalname));
+  },
+});
+
+//
+const commentStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    console.log(req.body);
+    callback(null, '../assets/comment');
+  },
+  filename: (req, file, callback) => {
+    callback(null, uuid.v4() + path.extname(file.originalname));
+  },
+});
+
+// file filter for image
+const imageFileFilter = (req, file, cb) => {
   if (
     file.mimetype === 'image/jpeg' ||
     file.mimetype === 'image/png' ||
@@ -43,19 +73,58 @@ const fileFilter = (req, file, cb) => {
   return cb(new Error('Please only upload jpeg, jpg, and png'), false);
 };
 
+// file filter for pdf and video
+const pdfAndVideoFileFilter = (req, file, next) => {
+  if (req.url.includes('module')) {
+    if (file.mimetype === 'application/pdf') {
+      return next(null, true);
+    }
+    return next(new Error('Please only upload PDF file'), false);
+  }
+
+  if (req.url.includes('video')) {
+    if (
+      file.mimetype === 'video/mp4' ||
+      file.mimetype === 'video/avi' ||
+      file.mimetype === 'video/mkv' ||
+      file.mimetype === 'video/webm'
+    ) {
+      return next(null, true);
+    }
+    return next(new Error('Please only upload MP4/AVI/MKV/WEBM file'), false);
+  }
+};
+
+// upload constanst
 const uploadProfileImage = multer({
   storage: profileStorage,
-  fileFilter,
+  fileFilter: imageFileFilter,
 });
 
 const uploadCommunityImage = multer({
   storage: communityStorage,
-  fileFilter,
+  fileFilter: imageFileFilter,
 });
 
 const uploadPostImage = multer({
   storage: postStorage,
-  fileFilter,
+  fileFilter: imageFileFilter,
 });
 
-module.exports = { uploadCommunityImage, uploadProfileImage, uploadPostImage };
+const uploadClassModuleOrVideo = multer({
+  storage: moduleAndVideoStorage,
+  fileFilter: pdfAndVideoFileFilter,
+});
+
+const uploadCommentImage = multer({
+  storage: commentStorage,
+  fileFilter: imageFileFilter,
+});
+
+module.exports = {
+  uploadCommunityImage,
+  uploadProfileImage,
+  uploadPostImage,
+  uploadClassModuleOrVideo,
+  uploadCommentImage,
+};

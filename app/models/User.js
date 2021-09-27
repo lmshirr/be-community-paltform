@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       Request_Membership,
       Invitation,
       Community_Post,
+      Comment,
     }) {
       User.hasOne(Activation, { foreignKey: 'user_id' });
       User.belongsToMany(Community, {
@@ -28,17 +29,19 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(Request_Membership, {
         onDelete: 'cascade',
         foreignKey: 'user_id',
+        sourceKey: 'id',
       });
       User.hasMany(Invitation, { onDelete: 'cascade', foreignKey: 'user_id' });
       User.hasMany(Community_Post, {
         onDelete: 'cascade',
         foreignKey: 'user_id',
+        sourceKey: 'id',
       });
-      // User.hasMany(models.Comment, {
-      //   onDelete: 'cascade',
-      //   foreignKey: { name: 'user_id' },
-      //   as: 'user',
-      // });
+      User.hasMany(Comment, {
+        onDelete: 'cascade',
+        foreignKey: { name: 'user_id' },
+        sourceKey: 'id',
+      });
     }
   }
   User.init(

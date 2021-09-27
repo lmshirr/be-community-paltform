@@ -3,6 +3,7 @@ const {
   Activation,
   Invitation,
   Request_Membership,
+  Community_Member,
 } = require('../models/index');
 require('dotenv').config({ path: './.env' });
 const uuid = require('uuid');
@@ -285,4 +286,17 @@ module.exports.deleteUserRequest = async function (req, res, next) {
     messages: 'Delete success!',
     data: request,
   });
+};
+
+module.exports.getAllUserCommunity = async (req, res, next) => {
+  const { id: user_id } = req.user;
+
+  let communities;
+  try {
+    communities = await Community_Member.findAll({ where: { user_id } });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({ data: communities });
 };

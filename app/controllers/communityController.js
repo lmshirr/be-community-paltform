@@ -7,7 +7,7 @@ const {
   InternalServerException,
 } = require('../utils/httpExceptions');
 
-module.exports.findCommunity = async function (req, res) {
+module.exports.findCommunity = async function (req, res, next) {
   try {
     const findCommunities = await db.Community.findAll({
       where: {
@@ -22,15 +22,12 @@ module.exports.findCommunity = async function (req, res) {
         },
       ],
     });
-    return res.status(200).json({
+    return res.json({
       success: true,
       data: findCommunities,
     });
   } catch (error) {
-    return res.status(200).json({
-      success: false,
-      errors: error,
-    });
+    return next(new InternalServerException('Internal server error', error));
   }
 };
 
