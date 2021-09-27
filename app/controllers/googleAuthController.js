@@ -2,6 +2,14 @@ require('dotenv').config({ path: './.env' });
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const { getGoogleAuthURL, getTokens } = require('../helpers/googleAuth');
+const { GoogleUser } = require('../models/index');
+const {
+  InternalServerException,
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+  ForbiddenException,
+} = require('../utils/httpExceptions/index');
 
 const tokenAge = 60 * 60;
 
@@ -14,13 +22,13 @@ module.exports.getGoogleAuthURL = async (req, res) => {
 };
 
 module.exports.googleLogin = async (req, res) => {
-  const code = req.query.code;
+  const { code } = req.query;
 
   const { id_token, access_token } = await getTokens(
     code,
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    `http://localhost:${process.env.PORT}/api/user/auth/google`
+    `http://localhost:${process.env.PORT}/api/users/auth/google`
   );
 
   const googleUser = await axios
@@ -34,12 +42,49 @@ module.exports.googleLogin = async (req, res) => {
       throw new Error(err.message);
     });
 
-  const token = await jwt.sign(googleUser, process.env.SECRET_KEY, {
-    expiresIn: tokenAge,
+  const user = await GoogleUser.findOne({
+    where: { google_id: googleUser.id },
   });
+  if (!user) {
+    const newUser = await GoogleUser.create({
+      google_id: googleUser.id,
+      email: googleUser.email,
+      verified_email: googleUser.verified_email,
+      name: googleUser.name,
+      given_name: googleUser.given_name,
+      family_name: googleUser.family_name,
+      picture: googleUser.picture,
+      locale: googleUser.locale,
+      hd: googleUser.hd,
+    });
+  }
+
+  const token = await jwt.sign(googleUser, process.env.SECRET_KEY, { expiresIn: tokenAge });
   res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
-  res.status(201).json({
-    success: true,
-    message: 'Login Success',
-  });
-};
+  res.redirect(`${process.env.CLIENT_ROOT_URL}`);
+  // res.status(201).json({
+  //     success: true,
+  //     message: "Login Success"
+  // });
+}
+
+module.exports.getCurrentUser = (req, res) => {
+  const token = req.cookies.jwt;
+  if (token) {
+    const user = jwt.verify(token, process.env.SECRET_KEY);
+    res.status(200).json({
+      success: true,
+      content: {
+        loggedIn: true,
+        user,
+      }
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      content: {
+        loggedIn: false,
+      }
+    });
+  }
+}

@@ -2,6 +2,7 @@ const express = require('express');
 const classController = require('../../controllers/classController');
 const moduleController = require('../../controllers/moduleController');
 const videoController = require('../../controllers/videoController');
+const assessmentController = require('../../controllers/assessmentController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const classMiddleware = require('../../middleware/classMiddleware');
 const {
@@ -83,6 +84,31 @@ classRouter.delete(
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   videoController.deleteVideo
+);
+
+// Assessment routes
+classRouter.get(
+  '/assessment/:AssessmentId',
+  classMiddleware.checkMembership,
+  assessmentController.getAssessment
+);
+classRouter.post(
+  '/:ClassId/assessment',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.addAssessment
+);
+classRouter.patch(
+  '/:ClassId/assessment/:AssessmentId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.editAssessment
+);
+classRouter.delete(
+  '/:ClassId/assessment/:AssessmentId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.deleteAssessment
 );
 
 module.exports = classRouter;

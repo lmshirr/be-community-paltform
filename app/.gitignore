@@ -120,3 +120,6 @@ assets/
 
 # packages
 package-lock.json
+
+# adminer
+adminer-4.8.1.php

@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Class.belongsTo(models.Community);
       Class.hasMany(models.Module, { onDelete: 'cascade' });
       Class.hasMany(models.Video, { onDelete: 'cascade' });
+      Class.hasMany(models.Assessment, { onDelete: 'cascade' });
     }
   }
   Class.init(

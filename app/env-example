@@ -5,3 +5,8 @@ DB_PASSWORD=
 EMAIL=jbearxtendee@gmail.com
 EMAIL_PASSWORD=Kmzway86aa!
 SECRET_KEY=inirahasia
+
+PORT=5000
+GOOGLE_CLIENT_ID=812372317084-lkquhgjvc99e86845flit78ds3n9pt1d.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=-__R3tTMBcSh63xeqX-IR9ZO
+CLIENT_ROOT_URL=http://localhost:3000
