@@ -54,7 +54,7 @@ const moduleAndVideoStorage = multer.diskStorage({
 const commentStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
-    callback(null, '../assets/comment');
+    callback(null, '../assets/comment_pict');
   },
   filename: (req, file, callback) => {
     callback(null, uuid.v4() + path.extname(file.originalname));
