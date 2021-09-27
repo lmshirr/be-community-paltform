@@ -1,7 +1,6 @@
 'use strict';
 
 const { Model } = require('sequelize');
-const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   class GoogleUser extends Model {
@@ -110,33 +109,3 @@ module.exports = (sequelize, DataTypes) => {
   );
   return GoogleUser;
 };
-
-// 'use strict';
-
-// const { Model } = require('sequelize');
-// module.exports = (sequelize, DataTypes) => {
-//   class GoogleUser extends Model {
-//     /**
-//      * Helper method for defining associations.
-//      * This method is not a part of Sequelize lifecycle.
-//      * The `models/index` file will call this method automatically.
-//      */
-//     static associate(models) {
-//       // define association here
-//     }
-//   };
-//   GoogleUser.init({
-//     google_id: DataTypes.STRING,
-//     email: DataTypes.STRING,
-//     verified_email: DataTypes.BOOLEAN,
-//     name: DataTypes.STRING,
-//     given_name: DataTypes.STRING,
-//     family_name: DataTypes.STRING,
-//     picture: DataTypes.STRING,
-//     locale: DataTypes.STRING
-//   }, {
-//     sequelize,
-//     modelName: 'GoogleUser',
-//   });
-//   return GoogleUser;
-// };
