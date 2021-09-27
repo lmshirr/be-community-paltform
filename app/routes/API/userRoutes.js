@@ -44,5 +44,6 @@ userRouter.delete(
 // Google OAuth
 userRouter.get('/auth/google', googleAuthController.googleLogin);
 userRouter.get('/auth/google/url', googleAuthController.getGoogleAuthURL);
+userRouter.get('/auth/google/user', googleAuthController.getCurrentUser);
 
 module.exports = userRouter;
