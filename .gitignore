@@ -122,8 +122,6 @@ assets/
 package-lock.json
 ./app/package-lock.json
 
-# adminer
-adminer-4.8.1.php
-
-# trashfile
+# trash file
 googleuser.js
+testmigration.js
