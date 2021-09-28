@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(model) {}
+    static associate(model) { }
   }
   Community_Member.init(
     {
@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: false,
         references: { model: 'user', key: 'id' },
+        // references: { model: 'google_user', key: 'id' },
       },
       community_id: {
         type: DataTypes.UUID,

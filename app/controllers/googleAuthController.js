@@ -1,8 +1,7 @@
-require('dotenv').config({ path: './.env' });
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const { getGoogleAuthURL, getTokens } = require('../helpers/googleAuth');
-const { GoogleUser } = require('../models/index');
+const { GoogleUser, User } = require('../models/index');
 const {
   InternalServerException,
   BadRequestException,
@@ -11,7 +10,7 @@ const {
   ForbiddenException,
 } = require('../utils/httpExceptions/index');
 
-const tokenAge = 60 * 60;
+const tokenAge = 60 * 60 * 1000;
 
 module.exports.getGoogleAuthURL = async (req, res) => {
   const url = await getGoogleAuthURL();
@@ -42,11 +41,11 @@ module.exports.googleLogin = async (req, res) => {
       throw new Error(err.message);
     });
 
-  const user = await GoogleUser.findOne({
+  let user = await User.findOne({
     where: { google_id: googleUser.id },
   });
   if (!user) {
-    const newUser = await GoogleUser.create({
+    const newUser = await User.create({
       google_id: googleUser.id,
       email: googleUser.email,
       verified_email: googleUser.verified_email,
@@ -57,7 +56,15 @@ module.exports.googleLogin = async (req, res) => {
       locale: googleUser.locale,
       hd: googleUser.hd,
     });
+
+    user = await User.findOne({
+      where: { google_id: newUser.google_id },
+    });
   }
+
+  googleUser.id = user.id;
+  googleUser.google_id = user.google_id;
+  googleUser.pk = user.pk;
 
   const token = await jwt.sign(googleUser, process.env.SECRET_KEY, { expiresIn: tokenAge });
   res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });

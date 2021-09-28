@@ -1,4 +1,3 @@
-require("dotenv").config({ path: "../.env" });
 const { google } = require('googleapis');
 const { default: axios } = require('axios');
 
