@@ -1,4 +1,3 @@
-const { postCommentValidator } = require('../utils/validator/commentValidator');
 const {
   BadRequestException,
   InternalServerException,
@@ -12,20 +11,34 @@ const { Comment, User } = require('../models');
  * @param {import('express').NextFunction} next
  */
 module.exports.postComment = async (req, res, next) => {
-  const { post_id, user_id } = req.query;
+  const { post_id } = req.query;
   const { body } = req.body;
-
-  const { isValidate, errors } = postCommentValidator(post_id, user_id, body);
+  const { id: user_id } = req.user;
+  const { file } = req;
 
   // if doesnt have query or body throw bad request
-  if (!isValidate)
+  if (!post_id || !user_id) {
+    return next(new BadRequestException('Post id or user id must not empty'));
+  }
+
+  console.log(!file);
+  // check is comment body not empty or is there have image?
+  if (!file && !body) {
     return next(
-      new BadRequestException('Query or body must not empty', errors)
+      new BadRequestException(
+        'Must at least send comment body or send an image'
+      )
     );
+  }
 
   let comment;
   try {
-    comment = await Comment.create({ post_id, body, user_id });
+    comment = await Comment.create({
+      post_id,
+      body,
+      user_id,
+      comment_pict: file?.filename,
+    });
   } catch (err) {
     if (err.name === 'SequelizeValidationError') {
       return next(
@@ -36,7 +49,7 @@ module.exports.postComment = async (req, res, next) => {
       );
     }
     console.log(err);
-    return next(new InternalServerException());
+    return next(new InternalServerException('Internal server error', err));
   }
 
   return res.status(201).json({ message: 'Comment created', data: comment });

@@ -3,11 +3,18 @@ const { Op } = require('sequelize');
 const {
   InternalServerException,
   ForbiddenException,
+  BadRequestException,
 } = require('../utils/httpExceptions');
 
 const checkMembership = async (req, res, next) => {
   const { id: user_id } = req.user;
   const { community_id } = req.query;
+
+  if (!community_id) {
+    return next(
+      new BadRequestException('Query parameter community_id must not empty')
+    );
+  }
 
   try {
     const member = await Community_Member.findOne({
