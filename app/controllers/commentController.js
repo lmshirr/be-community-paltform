@@ -11,7 +11,7 @@ const { Comment, User } = require('../models');
  * @param {import('express').NextFunction} next
  */
 module.exports.postComment = async (req, res, next) => {
-  const { post_id } = req.query;
+  const { postId: post_id } = req.params;
   const { body } = req.body;
   const { id: user_id } = req.user;
   const { file } = req;
@@ -56,7 +56,7 @@ module.exports.postComment = async (req, res, next) => {
 };
 
 module.exports.getComments = async (req, res, next) => {
-  const { post_id } = req.query;
+  const { postId: post_id } = req.params;
 
   console.log(post_id);
 

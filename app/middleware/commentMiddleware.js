@@ -8,7 +8,7 @@ const {
 
 const checkMembership = async (req, res, next) => {
   const { id: user_id } = req.user;
-  const { community_id } = req.query;
+  const { id: community_id } = req.params;
 
   if (!community_id) {
     return next(

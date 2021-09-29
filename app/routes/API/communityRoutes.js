@@ -12,6 +12,12 @@ const communityPostController = require('../../controllers/communityPostControll
 const roleMiddleware = require('../../middleware/roleMiddleware');
 const { uploadPostImage } = require('../../utils/multer/uploadImage.service');
 const postMiddleware = require('../../middleware/postMiddleware');
+const classController = require('../../controllers/classController');
+const commentMiddleware = require('../../middleware/commentMiddleware');
+const commentController = require('../../controllers/commentController');
+const {
+  uploadCommentImage,
+} = require('../../utils/multer/uploadImage.service');
 
 const communityRouter = express.Router();
 
@@ -120,5 +126,25 @@ communityRouter
     postMiddleware.checkUser_delete_patch,
     communityPostController.deletePost
   );
+
+// comments
+communityRouter
+  .route('/:id/post/:postId/comments')
+  .get(
+    authorizationMiddleware.checkLogin,
+    commentMiddleware.checkMembership,
+    commentController.getComments
+  )
+  .post(
+    authorizationMiddleware.checkLogin,
+    commentMiddleware.checkMembership,
+    uploadCommentImage.single('comment_pict'),
+    commentController.postComment
+  );
+
+// classes
+communityRouter
+  .route('/:id/classes')
+  .post(authorizationMiddleware.checkLogin, classController.createClass);
 
 module.exports = communityRouter;
