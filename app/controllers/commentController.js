@@ -37,7 +37,8 @@ module.exports.postComment = async (req, res, next) => {
       post_id,
       body,
       user_id,
-      comment_pict: file?.filename,
+      // comment_pict: file?.filename,
+      comment_pict: file.filename,
     });
   } catch (err) {
     if (err.name === 'SequelizeValidationError') {

@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'community_id',
         uniqueKey: false,
         sourceKey: 'id',
-        as: 'user',
+        as: 'users',
       });
       Community.hasMany(Request_Membership, {
         onDelete: 'cascade',

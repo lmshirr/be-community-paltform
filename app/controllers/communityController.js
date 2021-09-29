@@ -15,13 +15,13 @@ module.exports.findCommunity = async function (req, res, next) {
           [Op.iLike]: `%${req.params.key}%`,
         },
       },
-      // attributes: ['id', 'name', 'profile_pict'],
-      // include: [
-      //   {
-      //     model: db.User,
-      //     attributes: ['id', 'name', 'profile_pict'],
-      //   },
-      // ],
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'name', 'profile_pict'],
+          as: 'users',
+        },
+      ],
     });
 
     return res.json({
@@ -29,6 +29,7 @@ module.exports.findCommunity = async function (req, res, next) {
       data: findCommunities,
     });
   } catch (error) {
+    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 };
@@ -49,7 +50,7 @@ module.exports.getCommunityDetails = async function (req, res, next) {
           'name',
           'email',
           'profile_pict',
-          'phone_number',
+          // 'phone_number',
         ],
         as: 'user',
         through: {

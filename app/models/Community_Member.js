@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: false,
         references: { model: 'user', key: 'id' },
-        // references: { model: 'google_user', key: 'id' },
       },
       community_id: {
         type: DataTypes.UUID,
