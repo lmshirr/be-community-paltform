@@ -15,13 +15,15 @@ module.exports.findCommunity = async function (req, res, next) {
           [Op.iLike]: `%${req.params.key}%`,
         },
       },
-      include: [
-        {
-          model: db.User,
-          attributes: ['id', 'name', 'profile_pict'],
-        },
-      ],
+      // attributes: ['id', 'name', 'profile_pict'],
+      // include: [
+      //   {
+      //     model: db.User,
+      //     attributes: ['id', 'name', 'profile_pict'],
+      //   },
+      // ],
     });
+
     return res.json({
       success: true,
       data: findCommunities,
