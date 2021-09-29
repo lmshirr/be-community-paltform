@@ -76,7 +76,7 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Webinar',
     freezeTableName: true,
     timestamps: false,
-    tableName: 'webinar'
+    tableName: 'Webinars'
   });
   return Webinar;
 };
