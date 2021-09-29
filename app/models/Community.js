@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         foreignKey: 'community_id',
       });
+      Community.hasMany(Class, {
+        onDelete: 'cascade',
+        foreignKey: 'community_id',
+      });
     }
   }
   Community.init(
