@@ -154,6 +154,7 @@ module.exports.findUser = async function (req, res, next) {
       },
       attributes: ['id', 'name', 'profile_pict'],
     });
+
     return res.json({
       success: true,
       data: findUser,

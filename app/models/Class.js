@@ -10,10 +10,11 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Class.belongsTo(models.Community);
+      Class.belongsTo(Community, { foreignKey: 'community_id' });
       Class.hasMany(models.Module, { onDelete: 'cascade' });
       Class.hasMany(models.Video, { onDelete: 'cascade' });
       Class.hasMany(models.Assessment, { onDelete: 'cascade' });
+      Class.hasMany(models.Webinar, { onDelete: 'cascade',foreignKey: { name: 'class_id' } });
     }
   }
   Class.init(

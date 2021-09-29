@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'community_id',
         uniqueKey: false,
         sourceKey: 'id',
-        as: 'user',
+        as: 'users',
       });
       Community.hasMany(Request_Membership, {
         onDelete: 'cascade',
@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'community_id',
       });
       Community.hasMany(Community_Post, {
+        onDelete: 'cascade',
+        foreignKey: 'community_id',
+      });
+      Community.hasMany(Class, {
         onDelete: 'cascade',
         foreignKey: 'community_id',
       });

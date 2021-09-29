@@ -11,12 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate({ Community, User, Community_Post_Attachment, Comment }) {
       Community_Post.belongsTo(Community, { foreignKey: 'community_id' });
-      Community_Post.belongsTo(User, { foreignKey: 'user_id' });
+      Community_Post.belongsTo(User, {
+        foreignKey: 'user_id',
+        targetKey: 'id',
+      });
       Community_Post.hasMany(Community_Post_Attachment, {
         onDelete: 'cascade',
         foreignKey: 'community_post_id',
         sourceKey: 'id',
-        as: 'post_attachment',
+        // as: 'post_attachment',
       });
       Community_Post.hasMany(Comment, {
         onDelete: 'cascade',

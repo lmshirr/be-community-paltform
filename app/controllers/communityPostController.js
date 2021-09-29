@@ -49,6 +49,7 @@ module.exports.getPostDetails = async function (req, res, next) {
       ],
     });
   } catch (error) {
+    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 
@@ -62,6 +63,7 @@ module.exports.createPost = async function (req, res, next) {
   const { content } = req.body;
   const { id: user_id } = req.user;
   console.log(community_id);
+  console.log(user_id);
 
   try {
     const post = await Community_Post.create({

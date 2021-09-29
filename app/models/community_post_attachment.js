@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Community_Post_Attachment.belongsTo(Community_Post, {
         foreignKey: 'community_post_id',
         targetKey: 'id',
-        as: 'post_attachment',
+        // as: 'post_attachment',
       });
     }
   }

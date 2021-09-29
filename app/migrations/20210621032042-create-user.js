@@ -15,32 +15,43 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
         allowNull: false,
       },
+      google_id: {
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false,
+      },
       email: {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false,
       },
-      password: {
-        type: Sequelize.STRING,
+      verified_email: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
-      },
-      profile_pict: {
-        type: Sequelize.STRING,
       },
       name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      phone_number: {
+      given_name: {
         type: Sequelize.STRING,
-      },
-      birthday: {
-        type: Sequelize.DATE,
-      },
-      confirmed: {
-        type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: false,
+      },
+      family_name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      profile_pict: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      locale: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      hd: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       created_at: {
         allowNull: false,

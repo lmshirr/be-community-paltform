@@ -17,16 +17,19 @@ module.exports.findCommunity = async function (req, res, next) {
       },
       include: [
         {
-          model: db.User,
+          model: User,
           attributes: ['id', 'name', 'profile_pict'],
+          as: 'users',
         },
       ],
     });
+
     return res.json({
       success: true,
       data: findCommunities,
     });
   } catch (error) {
+    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 };
@@ -47,7 +50,7 @@ module.exports.getCommunityDetails = async function (req, res, next) {
           'name',
           'email',
           'profile_pict',
-          'phone_number',
+          // 'phone_number',
         ],
         as: 'user',
         through: {
