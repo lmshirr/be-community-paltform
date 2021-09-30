@@ -1,7 +1,6 @@
 'use strict';
 
 const { Model } = require('sequelize');
-const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -36,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'cascade',
         foreignKey: 'user_id',
         sourceKey: 'id',
+        // as: 'user',
       });
       User.hasMany(Comment, {
         onDelete: 'cascade',

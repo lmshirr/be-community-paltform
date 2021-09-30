@@ -30,8 +30,10 @@ module.exports.getCommunityPosts = async function (req, res, next) {
 
 module.exports.getPostDetails = async function (req, res, next) {
   const { postId: id } = req.params;
+  console.log(id);
 
   let post;
+  console.log(post);
   try {
     post = await Community_Post.findOne({
       where: { id },
@@ -39,16 +41,18 @@ module.exports.getPostDetails = async function (req, res, next) {
         {
           model: User,
           attributes: ['id', 'name', 'profile_pict'],
+          as: 'user',
         },
-      ],
-      include: [
         {
           model: Community_Post_Attachment,
           attributes: ['id', 'filename'],
+          as: 'post_attachment',
         },
       ],
     });
+    console.log(post);
   } catch (error) {
+    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 
