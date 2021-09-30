@@ -1,4 +1,4 @@
-const express = require('express');
+const { Router } = require('express');
 const classController = require('../../controllers/classController');
 const moduleController = require('../../controllers/moduleController');
 const videoController = require('../../controllers/videoController');
@@ -9,13 +9,13 @@ const {
   uploadClassModuleOrVideo,
 } = require('../../utils/multer/uploadImage.service');
 
-const classRouter = express.Router();
+const classRouter = Router();
 
 classRouter.get('/search/:key', classController.findClass);
 classRouter.post(
   '/',
   authorizationMiddleware.checkLogin,
-  classMiddleware.checkAdmin_post,
+  classMiddleware.checkAdmin_community,
   classController.createClass
 );
 classRouter

@@ -28,7 +28,7 @@ const communityStorage = multer.diskStorage({
 const postStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
-    callback(null, '../assets/post');
+    callback(null, '../assets/post_pict');
   },
   filename: (req, file, callback) => {
     callback(null, uuid.v4() + path.extname(file.originalname));

@@ -19,9 +19,10 @@ module.exports.getCommunityPosts = async function (req, res, next) {
       where: {
         community_id,
       },
-      include: { model: Community_Post_Attachment, as: 'post_attachment' },
+      include: { model: Community_Post_Attachment },
     });
   } catch (error) {
+    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 

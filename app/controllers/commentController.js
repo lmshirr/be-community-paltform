@@ -1,6 +1,7 @@
 const {
   BadRequestException,
   InternalServerException,
+  NotFoundException,
 } = require('../utils/httpExceptions');
 const { Comment, User } = require('../models');
 
@@ -78,4 +79,21 @@ module.exports.getComments = async (req, res, next) => {
   }
 
   return res.json({ data: comments });
+};
+
+module.exports.deleteComment = async (req, res, next) => {
+  const { commentId: id } = req.params;
+
+  let comment;
+  try {
+    comment = await Comment.findOne({ where: { id } });
+
+    if (!comment) {
+      return next(new NotFoundException('Comment not found'));
+    }
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({ message: 'Comment deleted', data: comment });
 };

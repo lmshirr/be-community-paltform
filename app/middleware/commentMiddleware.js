@@ -1,4 +1,4 @@
-const { Community_Member } = require('../models');
+const { Community_Member, Community_Post } = require('../models');
 const { Op } = require('sequelize');
 const {
   InternalServerException,
@@ -33,4 +33,25 @@ const checkMembership = async (req, res, next) => {
   next();
 };
 
-module.exports = { checkMembership };
+const checkOwnPost = async (req, res, next) => {
+  const { id: user_id } = req.user;
+  const { id: community_id, postId: post_id } = req.params;
+
+  try {
+    const isOwnPost = await Community_Post.findOne({
+      where: { [Op.and]: [{ id: post_id }, { community_id }, { user_id }] },
+    });
+
+    if (!isOwnPost) {
+      return next(
+        new ForbiddenException('You are not allowed to do this action!')
+      );
+    }
+  } catch (error) {
+    return next(new InternalServerException());
+  }
+
+  next();
+};
+
+module.exports = { checkMembership, checkOwnPost };

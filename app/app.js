@@ -19,6 +19,7 @@ app.use(
     withCredentials: true,
   })
 );
+app.use(express.static('assets'));
 
 app.use('/api', apiRoutes);
 
@@ -48,4 +49,5 @@ app.use(
       .json({ statusCode: err.statusCode, message: err.message });
   }
 );
+
 app.listen(port, () => console.log(`This App is Running on port ${port}`));

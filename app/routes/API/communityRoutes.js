@@ -129,7 +129,7 @@ communityRouter
 
 // comments
 communityRouter
-  .route('/:id/post/:postId/comments')
+  .route('/:id/posts/:postId/comments')
   .get(
     authorizationMiddleware.checkLogin,
     commentMiddleware.checkMembership,
@@ -140,6 +140,11 @@ communityRouter
     commentMiddleware.checkMembership,
     uploadCommentImage.single('comment_pict'),
     commentController.postComment
+  )
+  .delete(
+    authorizationMiddleware.checkLogin,
+    commentMiddleware.checkOwnPost,
+    commentController.deleteComment
   );
 
 // classes

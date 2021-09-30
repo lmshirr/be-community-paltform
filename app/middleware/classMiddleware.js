@@ -1,34 +1,28 @@
-require('dotenv').config({ path: '../.env' });
-const db = require('../models/index');
+const { Community_Member, Class, Module, Video } = require('../models/index');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
+const { ForbiddenException } = require('../utils/httpExceptions');
 
-const checkAdmin_post = (req, res, next) => {
-  const token = req.cookies.jwt;
-  jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken) => {
-    if (error) {
-      return res.status(200).json({
-        success: false,
-        message: error,
-      });
-    }
-    const role = await db.Community_Member.findOne({
-      where: {
-        [Op.and]: [
-          { UserId: decodedToken.UserId },
-          { CommunityId: req.body.CommunityId },
-          { [Op.or]: [{ role: 'Owner' }, { role: 'Administrator' }] },
-        ],
-      },
-    });
-    if (!role) {
-      return res.status(200).json({
-        success: false,
-        messages: 'You dont have permission to this action!',
-      });
-    }
-    next();
+const checkAdmin_community = async (req, res, next) => {
+  const { id: user_id } = req.user;
+  const { community_id } = req.body;
+
+  const member = await Community_Member.findOne({
+    where: {
+      [Op.and]: [
+        { user_id },
+        { community_id },
+        { [Op.or]: [{ role: 'owner' }, { role: 'administrator' }] },
+      ],
+    },
   });
+  if (!member) {
+    return next(
+      new ForbiddenException('You dont have permission to this action!')
+    );
+  }
+
+  next();
 };
 
 const checkAdmin_delete_patch = (req, res, next) => {
@@ -40,8 +34,8 @@ const checkAdmin_delete_patch = (req, res, next) => {
         message: error,
       });
     }
-    const classDetails = await db.Class.findByPk(req.params.id);
-    const role = await db.Community_Member.findOne({
+    const classDetails = await Class.findByPk(req.params.id);
+    const role = await Community_Member.findOne({
       where: {
         [Op.and]: [
           { UserId: decodedToken.UserId },
@@ -69,8 +63,8 @@ const checkAdmin_video_module = (req, res, next) => {
         message: error,
       });
     }
-    const classDetails = await db.Class.findByPk(req.params.ClassId);
-    const role = await db.Community_Member.findOne({
+    const classDetails = await Class.findByPk(req.params.ClassId);
+    const role = await Community_Member.findOne({
       where: {
         [Op.and]: [
           { UserId: decodedToken.UserId },
@@ -100,15 +94,15 @@ const checkMembership = (req, res, next) => {
     }
     let classDetails;
     if (req.url.includes('module')) {
-      const module = await db.Module.findByPk(req.params.ModuleId);
-      classDetails = await db.Class.findByPk(module.ClassId);
+      const module = await Module.findByPk(req.params.ModuleId);
+      classDetails = await Class.findByPk(module.ClassId);
     } else if (req.url.includes('video')) {
-      const video = await db.Video.findByPk(req.params.VideoId);
-      classDetails = await db.Class.findByPk(video.ClassId);
+      const video = await Video.findByPk(req.params.VideoId);
+      classDetails = await Class.findByPk(video.ClassId);
     } else {
-      classDetails = await db.Class.findByPk(req.params.id);
+      classDetails = await Class.findByPk(req.params.id);
     }
-    const checkMember = await db.Community_Member.findOne({
+    const checkMember = await Community_Member.findOne({
       where: {
         [Op.and]: [
           { UserId: decodedToken.UserId },
@@ -127,7 +121,7 @@ const checkMembership = (req, res, next) => {
 };
 
 module.exports = {
-  checkAdmin_post,
+  checkAdmin_community,
   checkAdmin_delete_patch,
   checkAdmin_video_module,
   checkMembership,

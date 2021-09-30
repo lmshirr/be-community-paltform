@@ -9,7 +9,13 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ User, Request_Membership, Invitation, Community_Post }) {
+    static associate({
+      User,
+      Request_Membership,
+      Invitation,
+      Community_Post,
+      Class,
+    }) {
       Community.belongsToMany(User, {
         through: 'Community_Member',
         onDelete: 'cascade',
