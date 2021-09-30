@@ -1,13 +1,16 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const apiRoutes = require('./routes/index');
 const { NotFoundException } = require('./utils/httpExceptions');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const basicInfo = require('../docs/info');
 
 require('dotenv').config({ path: './.env' });
 
 const app = express();
-const port = 5000;
 
 app.use(cookieParser());
 app.use(express.json());
@@ -19,8 +22,15 @@ app.use(
     withCredentials: true,
   })
 );
+// express static file
 app.use(express.static('assets'));
 
+// swagger documentation
+const swaggerSpec = swaggerJsdoc(basicInfo);
+console.log(swaggerSpec);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// route
 app.use('/api', apiRoutes);
 
 // not found routes
@@ -28,6 +38,7 @@ app.all('*', (_, __, next) => {
   next(new NotFoundException('Route not found'));
 });
 
+// catch global error
 app.use(
   /**
    *
@@ -50,4 +61,16 @@ app.use(
   }
 );
 
-app.listen(port, () => console.log(`This App is Running on port ${port}`));
+process.on('unhandledRejection', (reason) => {
+  // I just caught an unhandled promise rejection,
+  // since we already have fallback handler for unhandled errors (see below),
+  // let throw and let him handle that
+  throw reason;
+});
+
+process.on('uncaughtException', (error) => {
+  // I just received an error that was never handled, time to handle it and then decide whether a restart is needed
+  process.exit(1);
+});
+
+module.exports = app;

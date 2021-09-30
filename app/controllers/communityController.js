@@ -19,7 +19,6 @@ module.exports.findCommunity = async function (req, res, next) {
         {
           model: User,
           attributes: ['id', 'name', 'profile_pict'],
-          as: 'users',
         },
       ],
     });
@@ -52,7 +51,6 @@ module.exports.getCommunityDetails = async function (req, res, next) {
           'profile_pict',
           // 'phone_number',
         ],
-        as: 'user',
         through: {
           attributes: ['created_at'],
           as: 'join_time',

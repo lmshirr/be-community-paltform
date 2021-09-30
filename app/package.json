@@ -18,7 +18,6 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "pg": "^8.6.0",
     "sequelize": "^6.6.2",
-    "sequelize-cli": "^6.2.0",
     "uuid": "^8.3.2",
     "validator": "^13.6.0"
   },
@@ -28,15 +27,17 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.4.0",
     "nodemon": "^2.0.12",
-    "sequelize-cli": "^6.2.0"
+    "prettier": "^2.4.0",
+    "sequelize-cli": "^6.2.0",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm install",
     "development": "node app.js",
-    "start:dev": "nodemon ./app.js",
+    "start:dev": "nodemon --watch ../app --watch ../docs ./server.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:undo": "npx sequelize-cli db:migrate:undo",
     "db:undo:all": "npx sequelize-cli db:migrate:undo:all",
