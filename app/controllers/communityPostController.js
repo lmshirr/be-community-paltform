@@ -30,10 +30,8 @@ module.exports.getCommunityPosts = async function (req, res, next) {
 
 module.exports.getPostDetails = async function (req, res, next) {
   const { postId: id } = req.params;
-  console.log(id);
 
   let post;
-  console.log(post);
   try {
     post = await Community_Post.findOne({
       where: { id },
@@ -50,9 +48,7 @@ module.exports.getPostDetails = async function (req, res, next) {
         },
       ],
     });
-    console.log(post);
   } catch (error) {
-    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 
@@ -65,7 +61,6 @@ module.exports.createPost = async function (req, res, next) {
   const { id: community_id } = req.params;
   const { content } = req.body;
   const { id: user_id } = req.user;
-  console.log(community_id);
 
   try {
     const post = await Community_Post.create({
