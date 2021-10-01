@@ -10,3 +10,4 @@ PORT=5000
 GOOGLE_CLIENT_ID=812372317084-lkquhgjvc99e86845flit78ds3n9pt1d.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=-__R3tTMBcSh63xeqX-IR9ZO
 CLIENT_ROOT_URL=http://localhost:3000
+LOCALHOST_URL=http://localhost:5000

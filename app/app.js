@@ -23,7 +23,7 @@ app.use(
   })
 );
 // express static file
-app.use(express.static('assets'));
+app.use('/assets', express.static('../assets'));
 
 // swagger documentation
 const swaggerSpec = swaggerJsdoc(basicInfo);

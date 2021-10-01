@@ -32,13 +32,24 @@ module.exports.postComment = async (req, res, next) => {
     );
   }
 
+  let imagePath;
+  if (file?.filename) {
+    const path =
+      process.env.NODE_ENV === 'production'
+        ? process.env.PRODUCTION_URL
+        : process.env.LOCALHOST_URL;
+    imagePath = `${path}/assets/comment_pict/${file.filename}`;
+  } else {
+    imagePath = null;
+  }
+
   let comment;
   try {
     comment = await Comment.create({
       post_id,
       body,
       user_id,
-      comment_pict: file.filename,
+      comment_pict: imagePath,
     });
   } catch (err) {
     if (err.name === 'SequelizeValidationError') {
