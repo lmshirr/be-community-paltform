@@ -40,12 +40,12 @@ module.exports.getPostDetails = async function (req, res, next) {
         {
           model: User,
           attributes: ['id', 'name', 'profile_pict'],
+          as: 'user',
         },
-      ],
-      include: [
         {
           model: Community_Post_Attachment,
           attributes: ['id', 'filename'],
+          as: 'post_attachment',
         },
       ],
     });
@@ -63,8 +63,8 @@ module.exports.createPost = async function (req, res, next) {
   const { id: community_id } = req.params;
   const { content } = req.body;
   const { id: user_id } = req.user;
-  console.log(community_id);
-  console.log(user_id);
+  // console.log(community_id);
+  // console.log(user_id);
 
   try {
     const post = await Community_Post.create({

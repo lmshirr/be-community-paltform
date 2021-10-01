@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Community_Post.belongsTo(User, {
         foreignKey: 'user_id',
         targetKey: 'id',
+        as: 'user',
       });
       Community_Post.hasMany(Community_Post_Attachment, {
         onDelete: 'cascade',

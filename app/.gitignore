@@ -126,3 +126,4 @@ adminer-4.8.1.php
 
 # test file
 app/migration/testmigration.js
+migration/20210923154640-create-google-user.js

@@ -12,14 +12,31 @@ const checkUser_delete_patch = (req, res, next) => {
         message: error,
       });
     }
-    const post = await db.Community_Post.findByPk(req.params.id);
-    if (decodedToken.UserId !== post.UserId) {
-      return res.status(200).json({
+    try {
+      const post = await db.Community_Post.findOne({
+        where: {
+          id: req.params.postId,
+        },
+      });
+      if (decodedToken.id !== post.user_id) {
+        return res.status(200).json({
+          success: false,
+          message: 'You dont have permission to this action!',
+        });
+      }
+      next();
+    } catch (err) {
+      if (err.name === 'SequelizeDatabaseError') {
+        return res.status(400).json({
+          success: false,
+          message: err.message,
+        });
+      }
+      return res.status(500).json({
         success: false,
-        message: 'You dont have permission to this action!',
+        message: err,
       });
     }
-    next();
   });
 };
 
