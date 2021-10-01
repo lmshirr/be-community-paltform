@@ -18,6 +18,8 @@
  *   get:
  *     tags:
  *       - Comment
+ *     security:
+ *       - jwtToken: []
  *     description: Post comment
  *     responses:
  *       200:

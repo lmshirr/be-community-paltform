@@ -5,6 +5,8 @@
  *   delete:
  *     tags:
  *       - Comment
+ *     security:
+ *       - jwtToken: []
  *     description: Delete comment
  *     responses:
  *       200:

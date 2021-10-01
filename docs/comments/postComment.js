@@ -18,6 +18,8 @@
  *   post:
  *     tags:
  *       - Comment
+ *     security:
+ *       - jwtToken: []
  *     description: Post comment
  *     requestBody:
  *       required: true
