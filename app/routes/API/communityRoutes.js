@@ -140,7 +140,9 @@ communityRouter
     commentMiddleware.checkMembership,
     uploadCommentImage.single('comment_pict'),
     commentController.postComment
-  )
+  );
+communityRouter
+  .route('/:id/posts/:postId/comments/:commentId')
   .delete(
     authorizationMiddleware.checkLogin,
     commentMiddleware.checkOwnPost,

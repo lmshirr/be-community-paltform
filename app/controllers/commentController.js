@@ -38,7 +38,6 @@ module.exports.postComment = async (req, res, next) => {
       post_id,
       body,
       user_id,
-      // comment_pict: file?.filename,
       comment_pict: file.filename,
     });
   } catch (err) {
@@ -71,6 +70,7 @@ module.exports.getComments = async (req, res, next) => {
       include: {
         model: User,
         required: true,
+        // as: 'user',
       },
     });
   } catch (err) {

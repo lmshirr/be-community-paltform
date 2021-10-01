@@ -36,6 +36,7 @@ const checkMembership = async (req, res, next) => {
 const checkOwnPost = async (req, res, next) => {
   const { id: user_id } = req.user;
   const { id: community_id, postId: post_id } = req.params;
+  console.log('-----------------------------------------------------')
 
   try {
     const isOwnPost = await Community_Post.findOne({
