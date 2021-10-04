@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Webinar.belongsTo(models.Class);
+            Webinar.belongsTo(Class,  { foreignKey: 'class_id' });
+    }
     }
   };
   Webinar.init({
