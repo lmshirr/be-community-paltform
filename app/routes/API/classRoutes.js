@@ -2,6 +2,7 @@ const { Router } = require('express');
 const classController = require('../../controllers/classController');
 const moduleController = require('../../controllers/moduleController');
 const videoController = require('../../controllers/videoController');
+const webinarController = require('../../controllers/webinarController');
 const assessmentController = require('../../controllers/assessmentController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const classMiddleware = require('../../middleware/classMiddleware');
@@ -10,6 +11,9 @@ const {
 } = require('../../utils/multer/uploadImage.service');
 
 const classRouter = Router();
+
+// tes webianr router
+classRouter.get('/:class_id/webinar/', webinarController.showWebinar)
 
 classRouter.get('/search/:key', classController.findClass);
 classRouter.post(
