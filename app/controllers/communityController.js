@@ -5,6 +5,7 @@ const communityRouter = require('../routes/API/communityRoutes');
 const {
   BadRequestException,
   InternalServerException,
+  NotFoundException,
 } = require('../utils/httpExceptions');
 
 module.exports.findCommunity = async function (req, res, next) {
@@ -57,6 +58,10 @@ module.exports.getCommunityDetails = async function (req, res, next) {
         },
       },
     });
+
+    if (!community) {
+      return next(new NotFoundException('Community not found'));
+    }
 
     total_member = await Community_Member.count({
       where: { community_id: id },
@@ -140,6 +145,10 @@ module.exports.editCommunity = async function (req, res, next) {
   try {
     community = await db.Community.findOne({ where: { id } });
 
+    if (!community) {
+      return next(new NotFoundException('Community not found'));
+    }
+
     community.update({
       name,
       type,
@@ -164,6 +173,10 @@ module.exports.deleteCommunity = async function (req, res, next) {
   let community;
   try {
     community = await Community.destroy({ where: { id } });
+
+    if (!community) {
+      return next(new NotFoundException('Community not found'));
+    }
   } catch (error) {
     return next(new InternalServerException('Internal server error', error));
   }
@@ -176,7 +189,9 @@ module.exports.deleteCommunity = async function (req, res, next) {
 module.exports.getAllCommunity = async function (req, res, next) {
   let communities;
   try {
-    communities = await Community.findAll();
+    communities = await Community.findAll({
+      order: [['created_at', 'DESC']],
+    });
   } catch (error) {
     return next(new InternalServerException('Internal server error', error));
   }

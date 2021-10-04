@@ -5,6 +5,7 @@ const {
   ConflictException,
   BadRequestException,
   ForbiddenException,
+  NotFoundException,
 } = require('../utils/httpExceptions');
 
 module.exports.getInvitationCommunity = async function (req, res, next) {
@@ -29,7 +30,7 @@ module.exports.getInvitationCommunity = async function (req, res, next) {
 
 module.exports.createInvitation = async function (req, res, next) {
   const { id: community_id } = req.params;
-  const { user_id } = req.body;
+  const { user_id } = req.query;
   const { id } = req.user;
 
   let invite;
@@ -65,7 +66,7 @@ module.exports.createInvitation = async function (req, res, next) {
     return next(new InternalServerException('Internal server error', error));
   }
 
-  return res.status(200).json({
+  return res.status(201).json({
     messages: 'User invited',
     data: invite,
   });
@@ -73,14 +74,25 @@ module.exports.createInvitation = async function (req, res, next) {
 
 module.exports.respondInvite = async function (req, res, next) {
   const { respond } = req.body;
-  const { id } = req.params;
+  const { invitationId: id } = req.params;
+  const { id: userId } = req.user;
+
+  if (!respond) {
+    return BadRequestException('Please input the respond');
+  }
 
   try {
-    if (!respond) {
-      return BadRequestException('Please input the respond');
+    const invite = await Invitation.findOne({ where: { id } });
+
+    if (!invite) {
+      return next(new NotFoundException('Invitation not found'));
     }
 
-    const invite = await Invitation.findOne({ where: { id } });
+    if (userId !== invite.inviter) {
+      return next(
+        new ForbiddenException('You are not allowed to do this action')
+      );
+    }
 
     if (respond === 'approve') {
       const { user_id, community_id } = invite;
@@ -93,7 +105,7 @@ module.exports.respondInvite = async function (req, res, next) {
       await Invitation.destroy({ where: { id } });
 
       return res.status(200).json({
-        messages: 'Community Joined',
+        messages: 'You joined the community',
       });
     }
 
@@ -102,7 +114,7 @@ module.exports.respondInvite = async function (req, res, next) {
         status: 'refused',
       });
 
-      return res.status(200).json({
+      return res.json({
         messages: 'Invitation refused',
       });
     }
@@ -112,16 +124,21 @@ module.exports.respondInvite = async function (req, res, next) {
 };
 
 module.exports.deleteInvite = async function (req, res, next) {
-  const { id: community_id, invitationId } = req.params;
+  const { invitationId } = req.params;
 
+  let invitation;
   try {
-    await Invitation.destroy({ where: { id: invitationId } });
-
-    return res.status(200).json({
-      success: true,
-      messages: 'Delete success!',
-    });
+    invitation = await Invitation.destroy({ where: { id: invitationId } });
+    console.log(invitation);
+    if (!invitation) {
+      return next(new NotFoundException('Invitation not found'));
+    }
   } catch (error) {
     return next(new InternalServerException('Internal server error', error));
   }
+
+  return res.json({
+    message: 'Success delete invitation',
+    data: invitation,
+  });
 };

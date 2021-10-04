@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /communities/{communityId}:
+ * /communities/{communityId}/memberships:
  *   parameters:
  *     - name: communityId
  *       in: path
@@ -8,17 +8,15 @@
  *       required: true
  *       schema:
  *         type: string
- *   delete:
+ *   get:
  *     tags:
  *       - Community
  *     security:
  *       - jwtToken: []
- *     description: Delete community
+ *     description: Get all member in community
  *     responses:
  *       200:
- *         description: Success delete community
- *       404:
- *         description: Community or Post not found
+ *         description: Success get all member in community
  *       500:
  *         description: Internal server error
  *

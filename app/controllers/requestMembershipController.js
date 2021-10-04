@@ -3,6 +3,7 @@ const {
   InternalServerException,
   BadRequestException,
   ForbiddenException,
+  NotFoundException,
 } = require('../utils/httpExceptions');
 
 module.exports.getRequestCommunity = async function (req, res, next) {
@@ -28,14 +29,18 @@ module.exports.respondRequest = async function (req, res, next) {
   const { requestId: request_id, id: community_id } = req.params;
   const { respond } = req.body;
 
-  try {
-    if (!respond) {
-      return next(new BadRequestException('Please input the respond'));
-    }
+  if (!respond) {
+    return next(new BadRequestException('Please input the respond'));
+  }
 
+  try {
     let request = await Request_Membership.findOne({
       where: { id: request_id },
     });
+
+    if (!request) {
+      return next(new NotFoundException('Request not found'));
+    }
 
     if (respond === 'refuse') {
       request = await request.update({

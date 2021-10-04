@@ -8,6 +8,7 @@ const {
 const {
   InternalServerException,
   BadRequestException,
+  NotFoundException,
 } = require('../utils/httpExceptions/index');
 
 module.exports.getCommunityPosts = async function (req, res, next) {
@@ -20,9 +21,9 @@ module.exports.getCommunityPosts = async function (req, res, next) {
         community_id,
       },
       include: { model: Community_Post_Attachment },
+      order: [['created_at', 'DESC']],
     });
   } catch (error) {
-    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 
@@ -40,17 +41,14 @@ module.exports.getPostDetails = async function (req, res, next) {
         {
           model: User,
           attributes: ['id', 'name', 'profile_pict'],
-          as: 'user',
         },
         {
           model: Community_Post_Attachment,
           attributes: ['id', 'filename'],
-          as: 'post_attachment',
         },
       ],
     });
   } catch (error) {
-    console.log(error);
     return next(new InternalServerException('Internal server error', error));
   }
 
@@ -63,8 +61,6 @@ module.exports.createPost = async function (req, res, next) {
   const { id: community_id } = req.params;
   const { content } = req.body;
   const { id: user_id } = req.user;
-  // console.log(community_id);
-  // console.log(user_id);
 
   try {
     const post = await Community_Post.create({
@@ -112,11 +108,15 @@ module.exports.createPost = async function (req, res, next) {
 };
 
 module.exports.editPost = async function (req, res, next) {
-  const { id: community_id, postId: post_id } = req.params;
+  const { postId: post_id } = req.params;
   const { content } = req.body;
 
   try {
     const post = await Community_Post.findOne({ where: { id: post_id } });
+
+    if (!post) {
+      return next(new NotFoundException('Post not found'));
+    }
 
     post.update({
       content,
@@ -148,18 +148,22 @@ module.exports.editPost = async function (req, res, next) {
 };
 
 module.exports.deletePost = async function (req, res, next) {
-  const { id: community_id, postId: post_id } = req.params;
+  const { postId: post_id } = req.params;
 
+  let post;
   try {
-    await Community_Post.destroy({ where: { id: post_id } });
+    post = await Community_Post.destroy({ where: { id: post_id } });
 
-    return res.json({
-      success: true,
-      messages: 'Delete success!',
-    });
+    if (!post) {
+      return next(new NotFoundException('Post not found'));
+    }
   } catch (error) {
     return next(new InternalServerException('Internal server error', error));
   }
+
+  return res.json({
+    messages: 'Delete success!',
+  });
 };
 
 module.exports.deleteAttachment = async function (req, res, next) {

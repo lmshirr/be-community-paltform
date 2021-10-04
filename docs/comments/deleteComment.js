@@ -1,7 +1,25 @@
 /**
  * @swagger
- * /communities/{communityId}/posts/{postId}/comments:
- *   description: Delete comment
+ * /communities/{communityId}/posts/{postId}/comments/{commentId}:
+ *   parameters:
+ *     - name: communityId
+ *       in: path
+ *       description: community id
+ *       required: true
+ *       schema:
+ *         type: string
+ *     - name: postId
+ *       in: path
+ *       description: post id
+ *       required: true
+ *       schema:
+ *         type: string
+ *     - name: commentId
+ *       in: path
+ *       description: comment id
+ *       required: true
+ *       schema:
+ *         type: string
  *   delete:
  *     tags:
  *       - Comment

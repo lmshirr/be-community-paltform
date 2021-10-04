@@ -2,12 +2,14 @@ const {
   Community,
   Community_Member,
   Request_Membership,
+  User,
 } = require('../models/index');
 const {
   ConflictException,
   InternalServerException,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
 } = require('../utils/httpExceptions');
 const { Op } = require('sequelize');
 
@@ -77,6 +79,12 @@ module.exports.updateRole = async function (req, res, next) {
   const { id: community_id, memberId: user_id } = req.params;
   const { role } = req.body;
   const { id } = req.user;
+
+  if (!role) {
+    return next(
+      new BadRequestException('Please insert role in request body first')
+    );
+  }
 
   let newMemberRole;
   try {
@@ -150,6 +158,7 @@ module.exports.updateRole = async function (req, res, next) {
 
 module.exports.leaveCommunity = async function (req, res, next) {
   const { id: community_id, memberId: user_id } = req.params;
+  const { id: userLoginId } = req.user;
 
   let member;
   try {
@@ -158,6 +167,16 @@ module.exports.leaveCommunity = async function (req, res, next) {
         [Op.and]: [{ user_id }, { community_id }],
       },
     });
+
+    if (!member) {
+      return next(new NotFoundException('Member not found'));
+    }
+
+    if (member.user_id !== userLoginId) {
+      return next(
+        new ForbiddenException('You are not allowed to do this action')
+      );
+    }
 
     if (member.role === 'owner') {
       return next(
@@ -178,7 +197,27 @@ module.exports.leaveCommunity = async function (req, res, next) {
   }
 
   return res.json({
-    messages: 'You leave the group',
+    messages: 'You leave the community',
     data: member,
   });
+};
+
+module.exports.getCommunityMember = async (req, res, next) => {
+  const { id: community_id } = req.params;
+
+  let members;
+  try {
+    members = await Community.findOne({
+      where: { id: community_id },
+      include: {
+        model: User,
+        required: true,
+        order: [[User, 'created_at', 'DESC']],
+      },
+    });
+  } catch (error) {
+    return next(new InternalServerException('Internal server error', error));
+  }
+
+  return res.json({ data: members });
 };

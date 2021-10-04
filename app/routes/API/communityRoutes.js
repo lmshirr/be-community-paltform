@@ -7,17 +7,14 @@ const communityController = require('../../controllers/communityController');
 const requestController = require('../../controllers/requestMembershipController');
 const invitationController = require('../../controllers/invitationController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
-const invitationMiddleware = require('../../middleware/invitationMiddleware');
 const communityPostController = require('../../controllers/communityPostController');
-const roleMiddleware = require('../../middleware/roleMiddleware');
 const { uploadPostImage } = require('../../utils/multer/uploadImage.service');
-const postMiddleware = require('../../middleware/postMiddleware');
 const classController = require('../../controllers/classController');
-const commentMiddleware = require('../../middleware/commentMiddleware');
 const commentController = require('../../controllers/commentController');
 const {
   uploadCommentImage,
 } = require('../../utils/multer/uploadImage.service');
+const communityMiddleware = require('../../middleware/communityMiddleware');
 
 const communityRouter = express.Router();
 
@@ -35,13 +32,13 @@ communityRouter
   .get(communityController.getCommunityDetails)
   .patch(
     authorizationMiddleware.checkLogin,
-    authorizationMiddleware.checkAdmin,
+    communityMiddleware.checkAdmin,
     uploadCommunityImage.single('community_pict'),
     communityController.editCommunity
   )
   .delete(
     authorizationMiddleware.checkLogin,
-    authorizationMiddleware.checkOwner,
+    communityMiddleware.checkOwner,
     communityController.deleteCommunity
   );
 
@@ -51,11 +48,17 @@ communityRouter.post(
   authorizationMiddleware.checkLogin,
   memberController.joinCommunity
 );
+communityRouter.get(
+  '/:id/memberships',
+  authorizationMiddleware.checkLogin,
+  communityMiddleware.checkMember,
+  memberController.getCommunityMember
+);
 communityRouter
   .route('/:id/memberships/:memberId')
   .patch(
     authorizationMiddleware.checkLogin,
-    authorizationMiddleware.checkOwner,
+    communityMiddleware.checkOwner,
     memberController.updateRole
   )
   .delete(authorizationMiddleware.checkLogin, memberController.leaveCommunity);
@@ -64,13 +67,13 @@ communityRouter
 communityRouter.get(
   '/:id/requests',
   authorizationMiddleware.checkLogin,
-  authorizationMiddleware.checkAdmin,
+  communityMiddleware.checkAdmin,
   requestController.getRequestCommunity
 );
 communityRouter.patch(
   '/:id/requests/:requestId',
   authorizationMiddleware.checkLogin,
-  authorizationMiddleware.checkAdmin,
+  communityMiddleware.checkAdmin,
   requestController.respondRequest
 );
 
@@ -79,12 +82,12 @@ communityRouter
   .route('/:id/invitations')
   .get(
     authorizationMiddleware.checkLogin,
-    authorizationMiddleware.checkAdmin,
+    communityMiddleware.checkAdmin,
     invitationController.getInvitationCommunity
   )
   .post(
     authorizationMiddleware.checkLogin,
-    roleMiddleware.checkMembership,
+    communityMiddleware.checkMember,
     invitationController.createInvitation
   );
 
@@ -92,38 +95,45 @@ communityRouter
   .route('/:id/invitations/:ivitationId')
   .patch(
     authorizationMiddleware.checkLogin,
-    invitationMiddleware.checkUser,
+    communityMiddleware.checkMember,
     invitationController.respondInvite
   )
   .delete(
     authorizationMiddleware.checkLogin,
-    invitationMiddleware.checkAdmin,
+    communityMiddleware.checkAdmin,
     invitationController.deleteInvite
   );
 
 // post routes
 communityRouter
   .route('/:id/posts')
-  .get(communityPostController.getCommunityPosts)
+  .get(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkMember,
+    communityPostController.getCommunityPosts
+  )
   .post(
     authorizationMiddleware.checkLogin,
+    communityMiddleware.checkMember,
     uploadPostImage.array('attachments'),
-    postMiddleware.checkMembership_post,
     communityPostController.createPost
   );
 
 communityRouter
   .route('/:id/posts/:postId')
-  .get(communityPostController.getPostDetails)
+  .get(
+    authorizationMiddleware.checkLogin,
+    communityPostController.getPostDetails
+  )
   .patch(
     authorizationMiddleware.checkLogin,
+    communityMiddleware.checkPostOwner,
     uploadPostImage.array('attachments'),
-    postMiddleware.checkUser_delete_patch,
     communityPostController.editPost
   )
   .delete(
     authorizationMiddleware.checkLogin,
-    postMiddleware.checkUser_delete_patch,
+    communityMiddleware.checkPostOwner,
     communityPostController.deletePost
   );
 
@@ -132,12 +142,12 @@ communityRouter
   .route('/:id/posts/:postId/comments')
   .get(
     authorizationMiddleware.checkLogin,
-    commentMiddleware.checkMembership,
+    communityMiddleware.checkMember,
     commentController.getComments
   )
   .post(
     authorizationMiddleware.checkLogin,
-    commentMiddleware.checkMembership,
+    communityMiddleware.checkMember,
     uploadCommentImage.single('comment_pict'),
     commentController.postComment
   );
@@ -145,7 +155,7 @@ communityRouter
   .route('/:id/posts/:postId/comments/:commentId')
   .delete(
     authorizationMiddleware.checkLogin,
-    commentMiddleware.checkOwnPost,
+    communityMiddleware.checkPostOwner,
     commentController.deleteComment
   );
 

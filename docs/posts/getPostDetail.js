@@ -1,28 +1,28 @@
 /**
  * @swagger
  * /communities/{communityId}/posts/{postId}:
- *   description: Delete post
+ *   description: Get post detail
  *   parameters:
  *     - name: communityId
- *       required: true
  *       in: path
+ *       required: true
+ *       description: community id
  *       schema:
  *         type: string
  *     - name: postId
- *       required: true
  *       in: path
+ *       required: true
+ *       description: post id
  *       schema:
  *         type: string
- *   delete:
+ *   get:
  *     tags:
  *       - Post
  *     security:
  *       - jwtToken: []
  *     responses:
  *       200:
- *         description: Success delete post
- *       404:
- *         description: Post not found
+ *         description: Success get community post detail
  *       500:
  *         description: Internal server error
  *
