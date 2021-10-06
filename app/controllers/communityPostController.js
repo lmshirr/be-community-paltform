@@ -1,5 +1,4 @@
 /* eslint-disable no-dupe-keys */
-const db = require('../models/index');
 const {
   Community_Post,
   User,
@@ -20,7 +19,7 @@ module.exports.getCommunityPosts = async function (req, res, next) {
       where: {
         community_id,
       },
-      include: { model: Community_Post_Attachment },
+      include: [{ model: Community_Post_Attachment }, { model: User }],
       order: [['created_at', 'DESC']],
     });
   } catch (error) {
@@ -52,7 +51,7 @@ module.exports.getPostDetails = async function (req, res, next) {
     return next(new InternalServerException('Internal server error', error));
   }
 
-  return res.status(200).json({
+  return res.json({
     data: post,
   });
 };
@@ -73,10 +72,18 @@ module.exports.createPost = async function (req, res, next) {
       const CommunityPostId = post.id;
       req.files.forEach(async function (file) {
         const { filename } = file;
+
+        const path =
+          process.env.NODE_ENV === 'production'
+            ? process.env.PRODUCTION_URL
+            : process.env.LOCALHOST_URL;
+
+        const file_url = `${path}/assets/post_pict/${filename}`;
+
         try {
           await Community_Post_Attachment.create({
             community_post_id: CommunityPostId,
-            filename,
+            filename: file_url,
           });
         } catch (error) {
           return next(

@@ -14,7 +14,7 @@ const { Comment, User } = require('../models');
 module.exports.postComment = async (req, res, next) => {
   const { postId: post_id } = req.params;
   const { body } = req.body;
-  const { id: user_id } = req.user;
+  const { id: user_id, email, given_name, profile_pict, locale, hd } = req.user;
   const { file } = req;
 
   // if doesnt have query or body throw bad request
@@ -22,7 +22,6 @@ module.exports.postComment = async (req, res, next) => {
     return next(new BadRequestException('Post id or user id must not empty'));
   }
 
-  console.log(!file);
   // check is comment body not empty or is there have image?
   if (!file && !body) {
     return next(
@@ -60,9 +59,19 @@ module.exports.postComment = async (req, res, next) => {
         )
       );
     }
-    console.log(err);
     return next(new InternalServerException('Internal server error', err));
   }
+
+  // add user in response
+  const user = {
+    given_name,
+    locale,
+    email,
+    hd,
+    profile_pict,
+  };
+
+  comment.setDataValue('user', user);
 
   return res.status(201).json({ message: 'Comment created', data: comment });
 };
@@ -81,7 +90,6 @@ module.exports.getComments = async (req, res, next) => {
       include: {
         model: User,
         required: true,
-        // as: 'user',
       },
     });
   } catch (err) {
