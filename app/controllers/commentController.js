@@ -64,6 +64,7 @@ module.exports.postComment = async (req, res, next) => {
 
   // add user in response
   const user = {
+    id: user_id,
     given_name,
     locale,
     email,
