@@ -5,12 +5,6 @@ const {
 } = require('../utils/httpExceptions');
 const { Comment, User } = require('../models');
 
-/**
- *
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @param {import('express').NextFunction} next
- */
 module.exports.postComment = async (req, res, next) => {
   const { postId: post_id } = req.params;
   const { body } = req.body;
