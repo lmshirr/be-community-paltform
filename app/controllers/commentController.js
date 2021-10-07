@@ -1,72 +1,52 @@
 const {
-  BadRequestException,
   InternalServerException,
   NotFoundException,
 } = require('../utils/httpExceptions');
 const { Comment, User } = require('../models');
+const commentService = require('../services/commentServices');
 
 module.exports.postComment = async (req, res, next) => {
   const { postId: post_id } = req.params;
   const { body } = req.body;
-  const { id: user_id, email, given_name, profile_pict, locale, hd } = req.user;
+  const {
+    id: user_id,
+    email,
+    given_name,
+    profile_pict,
+    locale,
+    hd,
+    name,
+    google_id,
+    verified_email,
+    family_name,
+  } = req.user;
   const { file } = req;
-
-  // if doesnt have query or body throw bad request
-  if (!post_id || !user_id) {
-    return next(new BadRequestException('Post id or user id must not empty'));
-  }
-
-  // check is comment body not empty or is there have image?
-  if (!file && !body) {
-    return next(
-      new BadRequestException(
-        'Must at least send comment body or send an image'
-      )
-    );
-  }
-
-  let imagePath;
-  if (file?.filename) {
-    const path =
-      process.env.NODE_ENV === 'production'
-        ? process.env.PRODUCTION_URL
-        : process.env.LOCALHOST_URL;
-    imagePath = `${path}/assets/comment_pict/${file.filename}`;
-  } else {
-    imagePath = null;
-  }
 
   let comment;
   try {
-    comment = await Comment.create({
-      post_id,
-      body,
-      user_id,
-      comment_pict: imagePath,
-    });
-  } catch (err) {
-    if (err.name === 'SequelizeValidationError') {
-      return next(
-        new BadRequestException(
-          'Validation error',
-          err.errors.map((e) => ({ attribute: e.path, message: e.message }))
-        )
-      );
-    }
-    return next(new InternalServerException('Internal server error', err));
+    comment = await commentService.postComment(
+      { post_id, user_id, body },
+      file
+    );
+  } catch (error) {
+    return next(error);
   }
 
   // add user in response
   const user = {
     id: user_id,
+    name,
     given_name,
     locale,
     email,
     hd,
     profile_pict,
+    google_id,
+    family_name,
+    verified_email,
   };
 
-  comment.setDataValue('user', user);
+  comment.setDataValue('User', user);
 
   return res.status(201).json({ message: 'Comment created', data: comment });
 };
@@ -74,39 +54,25 @@ module.exports.postComment = async (req, res, next) => {
 module.exports.getComments = async (req, res, next) => {
   const { postId: post_id } = req.params;
 
-  console.log(post_id);
-
   let comments;
+
   try {
-    comments = await Comment.findAll({
-      where: {
-        post_id,
-      },
-      include: {
-        model: User,
-        required: true,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    return next(new InternalServerException());
+    comments = await commentService.getComments({ post_id });
+  } catch (error) {
+    return next(error);
   }
 
   return res.json({ data: comments });
 };
 
 module.exports.deleteComment = async (req, res, next) => {
-  const { commentId: id } = req.params;
+  const { commentId } = req.params;
 
   let comment;
   try {
-    comment = await Comment.findOne({ where: { id } });
-
-    if (!comment) {
-      return next(new NotFoundException('Comment not found'));
-    }
+    comment = await commentService.deleteComment(commentId);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.json({ message: 'Comment deleted', data: comment });
