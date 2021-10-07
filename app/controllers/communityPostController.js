@@ -1,29 +1,13 @@
-/* eslint-disable no-dupe-keys */
-const {
-  Community_Post,
-  User,
-  Community_Post_Attachment,
-} = require('../models/index');
-const {
-  InternalServerException,
-  BadRequestException,
-  NotFoundException,
-} = require('../utils/httpExceptions/index');
+const communityPostService = require('../services/communityPostServices');
 
 module.exports.getCommunityPosts = async function (req, res, next) {
-  const { id: community_id } = req.params;
+  const { id } = req.params;
 
   let post;
   try {
-    post = await Community_Post.findAll({
-      where: {
-        community_id,
-      },
-      include: [{ model: Community_Post_Attachment }, { model: User }],
-      order: [['created_at', 'DESC']],
-    });
+    post = await communityPostService.getPostInCommunity(id);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.json({ data: post });
@@ -33,22 +17,11 @@ module.exports.getPostDetails = async function (req, res, next) {
   const { postId: id } = req.params;
 
   let post;
+
   try {
-    post = await Community_Post.findOne({
-      where: { id },
-      include: [
-        {
-          model: User,
-          attributes: ['id', 'name', 'profile_pict'],
-        },
-        {
-          model: Community_Post_Attachment,
-          attributes: ['id', 'filename'],
-        },
-      ],
-    });
+    post = await communityPostService.getPostDetail(id);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.json({
@@ -60,130 +33,76 @@ module.exports.createPost = async function (req, res, next) {
   const { id: community_id } = req.params;
   const { content } = req.body;
   const { id: user_id } = req.user;
+  const { files } = req;
+
+  console.log(files);
+
+  let post;
 
   try {
-    const post = await Community_Post.create({
-      community_id,
-      user_id,
-      content,
-    });
-
-    if (req.files) {
-      const CommunityPostId = post.id;
-      req.files.forEach(async function (file) {
-        const { filename } = file;
-
-        const path =
-          process.env.NODE_ENV === 'production'
-            ? process.env.PRODUCTION_URL
-            : process.env.LOCALHOST_URL;
-
-        const file_url = `${path}/assets/post_pict/${filename}`;
-
-        try {
-          await Community_Post_Attachment.create({
-            community_post_id: CommunityPostId,
-            filename: file_url,
-          });
-        } catch (error) {
-          return next(
-            new InternalServerException('Internal server error', error)
-          );
-        }
-      });
-    }
-    res.status(201).json({
-      messages: 'Post created',
-      data: post,
-    });
+    post = await communityPostService.createPost(
+      { community_id, user_id, content },
+      files
+    );
   } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
-      return next(
-        new BadRequestException(
-          'Validation error',
-          error.errors.map((e) => {
-            return {
-              attribute: e.path,
-              message: e.message,
-            };
-          })
-        )
-      );
-    }
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
+
+  res.status(201).json({
+    messages: 'Post created',
+    data: post,
+  });
 };
 
 module.exports.editPost = async function (req, res, next) {
-  const { postId: post_id } = req.params;
+  const { postId } = req.params;
   const { content } = req.body;
+  const { files } = req;
+
+  let post;
 
   try {
-    const post = await Community_Post.findOne({ where: { id: post_id } });
-
-    if (!post) {
-      return next(new NotFoundException('Post not found'));
-    }
-
-    post.update({
-      content,
-    });
-
-    if (req.files) {
-      req.files.forEach(async function (file) {
-        const { filename } = file;
-
-        try {
-          await Community_Post_Attachment.create({
-            community_post_id: post_id,
-            filename,
-          });
-        } catch (error) {
-          return next(
-            new InternalServerException('Internal server error', error)
-          );
-        }
-      });
-    }
-    return res.status(200).json({
-      messages: 'Post updated!',
-      data: post,
-    });
+    post = await communityPostService.editPost({ content }, postId, files);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
+
+  return res.json({
+    messages: 'Post updated!',
+    data: post,
+  });
 };
 
 module.exports.deletePost = async function (req, res, next) {
-  const { postId: post_id } = req.params;
+  const { postId } = req.params;
 
   let post;
   try {
-    post = await Community_Post.destroy({ where: { id: post_id } });
-
-    if (!post) {
-      return next(new NotFoundException('Post not found'));
-    }
+    post = await communityPostService.deletePost(postId);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.json({
     messages: 'Delete success!',
+    post,
   });
 };
 
 module.exports.deleteAttachment = async function (req, res, next) {
   const { id } = req.params;
 
-  try {
-    await Community_Post_Attachment.destroy({ where: { id } });
+  let community_post_attachment;
 
-    return res.json({
-      success: true,
-      messages: 'Delete success!',
-    });
+  try {
+    community_post_attachment = await communityPostService.deleteAttachment(id);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
+
+  return res.json({
+    success: true,
+    messages: 'Delete success!',
+    community_post_attachment,
+  });
 };

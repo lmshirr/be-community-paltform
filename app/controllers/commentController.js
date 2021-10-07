@@ -1,8 +1,3 @@
-const {
-  InternalServerException,
-  NotFoundException,
-} = require('../utils/httpExceptions');
-const { Comment, User } = require('../models');
 const commentService = require('../services/commentServices');
 
 module.exports.postComment = async (req, res, next) => {

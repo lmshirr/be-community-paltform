@@ -1,37 +1,17 @@
-const db = require('../models/index');
-const { Community, Community_Member, User } = require('../models/index');
-const { Op } = require('sequelize');
-const communityRouter = require('../routes/API/communityRoutes');
-const {
-  BadRequestException,
-  InternalServerException,
-  NotFoundException,
-} = require('../utils/httpExceptions');
+const communityService = require('../services/communityServices');
 
 module.exports.findCommunity = async function (req, res, next) {
-  try {
-    const findCommunities = await db.Community.findAll({
-      where: {
-        name: {
-          [Op.iLike]: `%${req.params.key}%`,
-        },
-      },
-      include: [
-        {
-          model: User,
-          attributes: ['id', 'name', 'profile_pict'],
-        },
-      ],
-    });
+  const { key } = req.params;
 
-    return res.json({
-      success: true,
-      data: findCommunities,
-    });
+  let community;
+
+  try {
+    community = await communityService.findCommunity(key);
   } catch (error) {
-    console.log(error);
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
+
+  return res.json({ community });
 };
 
 module.exports.getCommunityDetails = async function (req, res, next) {
@@ -39,36 +19,12 @@ module.exports.getCommunityDetails = async function (req, res, next) {
 
   let community;
   let total_member;
+
   try {
-    community = await Community.findOne({
-      where: { id },
-      include: {
-        model: User,
-        attributes: [
-          'pk',
-          'id',
-          'name',
-          'email',
-          'profile_pict',
-          // 'phone_number',
-        ],
-        through: {
-          attributes: ['created_at'],
-          as: 'join_time',
-        },
-      },
-    });
-
-    if (!community) {
-      return next(new NotFoundException('Community not found'));
-    }
-
-    total_member = await Community_Member.count({
-      where: { community_id: id },
-    });
+    community = await communityService.getCommunityDetail(id);
+    total_member = await communityService.getCommunityTotalMember(id);
   } catch (error) {
-    console.log(error);
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.json({
@@ -81,46 +37,24 @@ module.exports.getCommunityDetails = async function (req, res, next) {
 
 module.exports.createCommunity = async function (req, res, next) {
   const { name, type, description, privacy } = req.body;
-  const { id } = req.user;
+  const { id: userId } = req.user;
+  const { file } = req;
 
-  let community_pict = 'com_pict.jpg';
+  let community_pict;
 
-  if (req.file) {
-    community_pict = req.file.filename;
+  if (file) {
+    community_pict = file.filename;
   }
 
   let community;
+
   try {
-    community = await Community.create({
-      name,
-      type,
-      description,
-      community_pict,
-      privacy,
-    });
-
-    const community_id = community.id;
-
-    await Community_Member.create({
-      community_id,
-      user_id: id,
-      role: 'owner',
-    });
+    community = await communityService.createCommunity(
+      { name, type, description, privacy, community_pict },
+      userId
+    );
   } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
-      return next(
-        new BadRequestException(
-          'Validation error',
-          error.errors.map((e) => {
-            return {
-              attribute: e.path,
-              message: e.message,
-            };
-          })
-        )
-      );
-    }
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.status(201).json({
@@ -133,8 +67,6 @@ module.exports.editCommunity = async function (req, res, next) {
   const { id } = req.params;
   const { privacy, name, type, description } = req.body;
 
-  console.log(privacy);
-
   let community_pict;
 
   if (req.file) {
@@ -143,22 +75,12 @@ module.exports.editCommunity = async function (req, res, next) {
 
   let community;
   try {
-    community = await db.Community.findOne({ where: { id } });
-
-    if (!community) {
-      return next(new NotFoundException('Community not found'));
-    }
-
-    community.update({
-      name,
-      type,
-      description,
-      community_pict,
-      privacy,
-    });
+    community = await communityService.editCommunity(
+      { name, privacy, type, description, community_pict },
+      id
+    );
   } catch (error) {
-    console.log(error);
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.json({
@@ -172,13 +94,9 @@ module.exports.deleteCommunity = async function (req, res, next) {
 
   let community;
   try {
-    community = await Community.destroy({ where: { id } });
-
-    if (!community) {
-      return next(new NotFoundException('Community not found'));
-    }
+    community = await communityService.deleteCommunity(id);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
   return res.status(200).json({
     messages: 'Delete success!',
@@ -189,11 +107,9 @@ module.exports.deleteCommunity = async function (req, res, next) {
 module.exports.getAllCommunity = async function (req, res, next) {
   let communities;
   try {
-    communities = await Community.findAll({
-      order: [['created_at', 'DESC']],
-    });
+    communities = await communityService.getAllCommunity();
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   return res.json({ data: communities });
