@@ -4,7 +4,7 @@ const { default: axios } = require('axios');
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `http://localhost:${process.env.PORT}/api/users/auth/google`
+  `http://${process.env.SERVER_URL}:${process.env.PORT}/api/users/auth/google`
 );
 
 const getGoogleAuthURL = () => {
