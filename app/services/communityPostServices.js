@@ -1,6 +1,7 @@
 const {
   Community_Post,
   User,
+  Community_Member,
   Community_Post_Attachment,
 } = require('../models/index');
 const {
@@ -11,7 +12,7 @@ const {
 
 /**
  *
- * @param {{community_id: string, user_id: string, content: string}} createPostDto
+ * @param {{community_id: string, member_id: string, content: string}} createPostDto
  * @param {object} files
  * @returns {object} post
  */
@@ -21,9 +22,9 @@ const createPost = async (createPostDto, files) => {
   try {
     post = await Community_Post.create(createPostDto);
 
-    if (files) {
-      const { id: postId } = post;
+    const { id: postId } = post.dataValues;
 
+    if (files) {
       files.forEach(async (file) => {
         const { filename } = file;
 
@@ -40,6 +41,12 @@ const createPost = async (createPostDto, files) => {
         });
       });
     }
+
+    // get post
+    post = await Community_Post.findOne({
+      where: { id: postId },
+      include: [{ model: Community_Member, include: User }],
+    });
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
       throw new BadRequestException(
@@ -52,7 +59,7 @@ const createPost = async (createPostDto, files) => {
         })
       );
     }
-    throw InternalServerException('Internal server error', error);
+    throw new InternalServerException('Internal server error', error);
   }
 
   return post;
@@ -71,12 +78,12 @@ const getPostDetail = async (id) => {
       where: { id },
       include: [
         {
-          model: User,
-          attributes: ['id', 'name', 'profile_pict'],
+          model: Community_Member,
+          required: true,
         },
         {
           model: Community_Post_Attachment,
-          attributes: ['id', 'filename'],
+          required: true,
         },
       ],
     });
@@ -100,7 +107,10 @@ const getPostInCommunity = async (community_id) => {
       where: {
         community_id,
       },
-      include: [{ model: Community_Post_Attachment }, { model: User }],
+      include: [
+        { model: Community_Post_Attachment },
+        { model: Community_Member, include: User },
+      ],
       order: [['created_at', 'DESC']],
     });
   } catch (error) {
@@ -127,7 +137,7 @@ const editPost = async (editPostDto, post_id, files) => {
       throw new NotFoundException('Post not found');
     }
 
-    await post.update(editPostDto);
+    post = await post.update(editPostDto);
 
     if (files) {
       files.forEach(async (file) => {

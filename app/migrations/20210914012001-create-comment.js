@@ -29,10 +29,10 @@ module.exports = {
         allowNull: true,
         unique: false,
       },
-      user_id: {
+      member_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: { model: 'user', key: 'id' },
+        references: { model: 'community_member', key: 'id' },
       },
       created_at: {
         allowNull: false,

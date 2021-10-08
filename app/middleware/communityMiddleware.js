@@ -61,6 +61,8 @@ const checkMember = async (req, res, next) => {
     return next(new ForbiddenException('You are not member on this community'));
   }
 
+  req.member = member.dataValues;
+
   next();
 };
 

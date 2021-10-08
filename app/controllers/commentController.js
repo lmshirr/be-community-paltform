@@ -3,45 +3,24 @@ const commentService = require('../services/commentServices');
 module.exports.postComment = async (req, res, next) => {
   const { postId: post_id } = req.params;
   const { body } = req.body;
-  const {
-    id: user_id,
-    email,
-    given_name,
-    profile_pict,
-    locale,
-    hd,
-    name,
-    google_id,
-    verified_email,
-    family_name,
-  } = req.user;
+  const { id: member_id } = req.member;
   const { file } = req;
 
   let comment;
   try {
     comment = await commentService.postComment(
-      { post_id, user_id, body },
+      { post_id, member_id, body },
       file
     );
+
+    const commentId = comment.dataValues.id;
+
+    console.log(commentId);
+
+    comment = await commentService.getCommentDetail(commentId);
   } catch (error) {
     return next(error);
   }
-
-  // add user in response
-  const user = {
-    id: user_id,
-    name,
-    given_name,
-    locale,
-    email,
-    hd,
-    profile_pict,
-    google_id,
-    family_name,
-    verified_email,
-  };
-
-  comment.setDataValue('User', user);
 
   return res.status(201).json({ message: 'Comment created', data: comment });
 };

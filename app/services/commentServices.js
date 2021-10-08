@@ -1,4 +1,4 @@
-const { Comment, User } = require('../models');
+const { Comment, Community_Member, User } = require('../models');
 const {
   InternalServerException,
   BadRequestException,
@@ -7,14 +7,14 @@ const {
 
 /**
  *
- * @param {{post_id: string, user_id: string, body: string}} postCommentDto
+ * @param {{post_id: string, member_id: string, body: string}} postCommentDto
  * @param {filename: Object} file
  * @returns
  */
 const postComment = async (postCommentDto, file) => {
-  const { post_id, user_id, body } = postCommentDto;
+  const { post_id, member_id, body } = postCommentDto;
   // validation
-  if (!post_id && !user_id) {
+  if (!post_id && !member_id) {
     throw new BadRequestException('Post id or user id must not empty');
   }
 
@@ -38,10 +38,15 @@ const postComment = async (postCommentDto, file) => {
   let comment;
 
   try {
-    comment = await Comment.create({
-      ...postCommentDto,
-      comment_pict: imageUrl,
-    });
+    comment = await Comment.create(
+      {
+        ...postCommentDto,
+        comment_pict: imageUrl,
+      },
+      {
+        include: { model: Community_Member },
+      }
+    );
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
       throw new BadRequestException(
@@ -70,11 +75,13 @@ const getComments = async (getCommentDto) => {
         post_id,
       },
       include: {
-        model: User,
+        model: Community_Member,
         required: true,
+        include: User,
       },
     });
   } catch (error) {
+    console.log(error);
     throw new InternalServerException('Internal server error', error);
   }
 
@@ -84,6 +91,7 @@ const getComments = async (getCommentDto) => {
 /**
  *
  * @param {string} commentId
+ * @returns comment
  */
 const deleteComment = async (commentId) => {
   let comment;
@@ -94,9 +102,33 @@ const deleteComment = async (commentId) => {
     if (!comment) {
       throw new NotFoundException('Comment not found');
     }
+
+    comment = await comment.destroy();
   } catch (error) {
     throw new InternalServerException('Internal server error', error);
   }
+
+  return comment;
 };
 
-module.exports = { postComment, getComments, deleteComment };
+/**
+ *
+ * @param {string} id
+ * @returns comment
+ */
+const getCommentDetail = async (id) => {
+  let comment;
+
+  try {
+    comment = await Comment.findOne({
+      where: { id },
+      include: { model: Community_Member, include: User },
+    });
+  } catch (error) {
+    throw new InternalServerException('Internal server error', error);
+  }
+
+  return comment;
+};
+
+module.exports = { postComment, getComments, deleteComment, getCommentDetail };

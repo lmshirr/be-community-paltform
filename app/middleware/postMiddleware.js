@@ -1,4 +1,4 @@
-const db = require('../models/index');
+const { Community_Member, Community_Post } = require('../models/index');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { ForbiddenException } = require('../utils/httpExceptions');
@@ -13,7 +13,7 @@ const checkUser_delete_patch = (req, res, next) => {
       });
     }
     try {
-      const post = await db.Community_Post.findOne({
+      const post = await Community_Post.findOne({
         where: {
           id: req.params.postId,
         },
@@ -44,7 +44,7 @@ const checkMembership_post = async (req, res, next) => {
   const { id: user_id } = req.user;
   const { id: community_id } = req.params;
 
-  const checkMember = await db.Community_Member.findOne({
+  const checkMember = await Community_Member.findOne({
     where: {
       [Op.and]: [{ user_id }, { community_id }],
     },
