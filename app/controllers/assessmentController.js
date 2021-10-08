@@ -1,7 +1,7 @@
 const db = require('../models/index.js');
 const fs = require('fs');
 const { Op } = require('sequelize');
-require("dotenv").config({ path: "../.env" });
+require('dotenv').config({ path: '../.env' });
 
 module.exports.getAssessment = async function (req, res) {
   try {
@@ -42,7 +42,7 @@ module.exports.addAssessment = async function (req, res) {
 module.exports.editAssessment = async function (req, res) {
   const { name } = req.body;
   try {
-    const assessment = await db.Assessment.findByPk(req.params.AssessmentId)
+    const assessment = await db.Assessment.findByPk(req.params.AssessmentId);
     // if (req.file) {
     //   fs.unlinkSync(`./assets/class/modules/${assessment.filename}`)
     //   assessment.update({
@@ -62,13 +62,13 @@ module.exports.editAssessment = async function (req, res) {
       errors: error,
     });
   }
-}
+};
 
 module.exports.deleteAssessment = async function (req, res) {
   try {
-    const assessment = await db.Assessment.findByPk(req.params.AssessmentId)
-    fs.unlinkSync(`./assets/class/modules/${assessment.filename}`)
-    await db.Assessment.destroy({ where: { id: req.params.AssessmentId } })
+    const assessment = await db.Assessment.findByPk(req.params.AssessmentId);
+    fs.unlinkSync(`./assets/class/modules/${assessment.filename}`);
+    await db.Assessment.destroy({ where: { id: req.params.AssessmentId } });
     return res.status(200).json({
       messages: 'Delete success!',
     });
@@ -78,4 +78,4 @@ module.exports.deleteAssessment = async function (req, res) {
       errors: error,
     });
   }
-}
+};

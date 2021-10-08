@@ -32,7 +32,7 @@ module.exports = {
       user_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: { model: 'user', key: 'id' },
+        references: { model: 'person', key: 'id' },
       },
       created_at: {
         allowNull: false,

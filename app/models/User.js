@@ -109,60 +109,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: DataTypes.NOW,
       },
-      // email: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      //   unique: true,
-      //   validate: {
-      //     isEmail: true,
-      //   },
-      // },
-      // password: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      // },
-      // confirmed: {
-      //   type: DataTypes.BOOLEAN,
-      //   allowNull: false,
-      //   defaultValue: false,
-      // },
-      // profile_pict: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      //   defaultValue: 'profile_pict.jpg',
-      // },
-      // name: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      // },
-      // phone_number: {
-      //   type: DataTypes.STRING,
-      //   allowNull: false,
-      //   validate: {
-      //     isNumeric: true,
-      //   },
-      // },
-      // birthday: {
-      //   type: DataTypes.DATE,
-      //   allowNull: false,
-      // },
     },
     {
-      // hooks: {
-      //   beforeCreate: async (user, options) => {
-      //     const salt = await bcrypt.genSalt();
-      //     const encryptedPassword = await bcrypt.hash(user.password, salt);
-      //     user.password = encryptedPassword;
-      //   },
-      //   beforeValidate: (user, options) => {
-      //     user.email = user.email.toLowerCase();
-      //   },
-      // },
       sequelize,
       modelName: 'User',
       timestamps: false,
       freezeTableName: true,
-      tableName: 'user',
+      tableName: 'person',
     }
   );
   return User;

@@ -77,7 +77,9 @@ module.exports.googleLogin = async (req, res, next) => {
       hd: user.hd,
     };
 
-    const token = await jwt.sign(userPayload, process.env.SECRET_KEY, { expiresIn: tokenAge });
+    const token = await jwt.sign(userPayload, process.env.SECRET_KEY, {
+      expiresIn: tokenAge,
+    });
     res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
     res.redirect(`${process.env.CLIENT_ROOT_URL}`);
     // res.status(201).json({
@@ -87,7 +89,7 @@ module.exports.googleLogin = async (req, res, next) => {
   } catch (error) {
     return next(new InternalServerException(error));
   }
-}
+};
 
 module.exports.getCurrentUser = (req, res) => {
   const token = req.cookies.jwt;
@@ -98,14 +100,14 @@ module.exports.getCurrentUser = (req, res) => {
       content: {
         loggedIn: true,
         user,
-      }
+      },
     });
   } else {
     res.status(401).json({
       success: false,
       content: {
         loggedIn: false,
-      }
+      },
     });
   }
-}
+};

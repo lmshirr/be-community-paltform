@@ -6,7 +6,7 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       id: {
         type: Sequelize.UUID,
@@ -15,43 +15,43 @@ module.exports = {
         unique: true,
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       speaker: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
-      speaker_job :{
-        type : Sequelize.STRING
+      speaker_job: {
+        type: Sequelize.STRING,
       },
       class_id: {
         type: Sequelize.UUID,
-        references: {model: 'class', key:'id'},
+        references: { model: 'class', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
       },
       description: {
-        type: Sequelize.STRING 
+        type: Sequelize.STRING,
       },
       date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       time: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       link: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Webinars');
-  }
+  },
 };

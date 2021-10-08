@@ -17,13 +17,13 @@ module.exports = {
       },
       inviter_id: {
         type: Sequelize.UUID,
-        references: { model: 'user', key: 'id' },
+        references: { model: 'person', key: 'id' },
         onDelete: 'CASCADE',
         allowNull: false,
       },
       user_id: {
         type: Sequelize.UUID,
-        references: { model: 'user', key: 'id' },
+        references: { model: 'person', key: 'id' },
         onDelete: 'CASCADE',
         allowNull: false,
       },

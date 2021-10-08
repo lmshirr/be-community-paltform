@@ -14,6 +14,10 @@ module.exports = {
         url: "http://localhost:5000/api",
         description: "Localhost server",
       },
+      {
+        url: "http://http://139.162.3.23/:5000/api",
+        description: "Production server",
+      },
     ],
   },
   apis: ["../docs/**/*.js"],

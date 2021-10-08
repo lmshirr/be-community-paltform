@@ -9,31 +9,34 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Assessment.belongsTo(models.Class)
+      Assessment.belongsTo(models.Class);
     }
-  };
-  Assessment.init({
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
+  }
+  Assessment.init(
+    {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      ClassId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      total_questions: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-    ClassId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    total_questions: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+    {
+      sequelize,
+      modelName: 'Assessment',
     }
-  }, {
-    sequelize,
-    modelName: 'Assessment',
-  });
+  );
   return Assessment;
-}
+};
