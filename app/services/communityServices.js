@@ -1,43 +1,26 @@
 const { Community, Community_Member, User } = require('../models/index');
 const { Op } = require('sequelize');
-const {
-  NotFoundException,
-  InternalServerException,
-  BadRequestException,
-} = require('../utils/httpExceptions');
+const { NotFoundException } = require('../utils/httpExceptions');
 
 /**
  *
  * @param {string} id community id
  */
 const getCommunityDetail = async (id) => {
-  let community;
-
-  try {
-    community = await Community.findOne({
-      where: { id },
-      include: {
-        model: User,
-        attributes: [
-          'pk',
-          'id',
-          'name',
-          'email',
-          'profile_pict',
-          // 'phone_number',
-        ],
-        through: {
-          attributes: ['created_at'],
-          as: 'join_time',
-        },
+  const community = await Community.findOne({
+    where: { id },
+    include: {
+      model: User,
+      attributes: ['pk', 'id', 'name', 'email', 'profile_pict'],
+      through: {
+        attributes: ['created_at'],
+        as: 'join_time',
       },
-    });
+    },
+  });
 
-    if (!community) {
-      throw new NotFoundException('Community not found');
-    }
-  } catch (error) {
-    throw new InternalServerException('Internal server error', error);
+  if (!community) {
+    throw new NotFoundException('Community not found');
   }
 
   return community;
@@ -48,15 +31,9 @@ const getCommunityDetail = async (id) => {
  * @param {string} id community id
  */
 const getCommunityTotalMember = async (id) => {
-  let total_member;
-
-  try {
-    total_member = await Community_Member.count({
-      where: { community_id: id },
-    });
-  } catch (error) {
-    throw new InternalServerException('Internal server error', error);
-  }
+  const total_member = await Community_Member.count({
+    where: { community_id: id },
+  });
 
   return total_member;
 };
@@ -68,32 +45,15 @@ const getCommunityTotalMember = async (id) => {
  * @returns {object} community
  */
 const createCommunity = async (createCommunityDto, userId) => {
-  let community;
+  const community = await Community.create(createCommunityDto);
 
-  try {
-    community = await Community.create(createCommunityDto);
+  const { id: community_id } = community;
 
-    const { id: community_id } = community;
-
-    await Community_Member.create({
-      community_id,
-      role: 'owner',
-      user_id: userId,
-    });
-  } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
-      throw new BadRequestException(
-        'Validation error',
-        error.errors.map((e) => {
-          return {
-            attribute: e.path,
-            message: e.message,
-          };
-        })
-      );
-    }
-    throw new InternalServerException('Internal server error', error);
-  }
+  await Community_Member.create({
+    community_id,
+    role: 'owner',
+    user_id: userId,
+  });
 
   return community;
 };
@@ -105,19 +65,13 @@ const createCommunity = async (createCommunityDto, userId) => {
  * @returns {object} community
  */
 const editCommunity = async (editCommunityDto, id) => {
-  let community;
+  let community = await Community.findOne({ where: { id } });
 
-  try {
-    community = await Community.findOne({ where: { id } });
-
-    if (!community) {
-      throw new NotFoundException('Community not found');
-    }
-
-    community = await community.update(editCommunityDto);
-  } catch (error) {
-    throw new InternalServerException('Internal server error', error);
+  if (!community) {
+    throw new NotFoundException('Community not found');
   }
+
+  community = await community.update(editCommunityDto);
 
   return community;
 };
@@ -128,31 +82,19 @@ const editCommunity = async (editCommunityDto, id) => {
  * @returns {object} community
  */
 const deleteCommunity = async (id) => {
-  let community;
+  const community = await Community.destroy({ where: { id } });
 
-  try {
-    community = await Community.destroy({ where: { id } });
-
-    if (!community) {
-      throw new NotFoundException('Community not found');
-    }
-  } catch (error) {
-    throw new InternalServerException('Internal server error', error);
+  if (!community) {
+    throw new NotFoundException('Community not found');
   }
 
   return community;
 };
 
 const getAllCommunity = async () => {
-  let communities;
-
-  try {
-    communities = await Community.findAll({
-      order: [['created_at', 'DESC']],
-    });
-  } catch (error) {
-    throw new InternalServerException('Internal server error', error);
-  }
+  const communities = await Community.findAll({
+    order: [['created_at', 'DESC']],
+  });
 
   return communities;
 };
@@ -163,25 +105,19 @@ const getAllCommunity = async () => {
  * @returns {object} community
  */
 const findCommunity = async (key) => {
-  let community;
-
-  try {
-    community = await Community.findAll({
-      where: {
-        name: {
-          [Op.iLike]: `%${key}%`,
-        },
+  const community = await Community.findAll({
+    where: {
+      name: {
+        [Op.iLike]: `%${key}%`,
       },
-      include: [
-        {
-          model: User,
-          attributes: ['id', 'name', 'profile_pict'],
-        },
-      ],
-    });
-  } catch (error) {
-    throw new InternalServerException('Internal server error', error);
-  }
+    },
+    include: [
+      {
+        model: User,
+        attributes: ['id', 'name', 'profile_pict'],
+      },
+    ],
+  });
 
   return community;
 };

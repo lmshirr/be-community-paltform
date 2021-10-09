@@ -162,6 +162,41 @@ communityRouter
 // classes
 communityRouter
   .route('/:id/classes')
-  .post(authorizationMiddleware.checkLogin, classController.createClass);
+  .post(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkAdmin,
+    classController.createClass
+  )
+  .get(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkMember,
+    classController.getClassInCommunity
+  );
+
+communityRouter
+  .route('/:id/classes/search')
+  .get(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkMember,
+    classController.findClass
+  );
+
+communityRouter
+  .route('/:id/classes/:classId')
+  .get(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkMember,
+    classController.getClassDetail
+  )
+  .patch(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkAdmin,
+    classController.editClass
+  )
+  .delete(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkAdmin,
+    classController.deleteClass
+  );
 
 module.exports = communityRouter;

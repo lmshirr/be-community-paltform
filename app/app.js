@@ -7,6 +7,7 @@ const { NotFoundException } = require('./utils/httpExceptions');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const basicInfo = require('../docs/info');
+const HttpException = require('./utils/httpExceptions/httpException');
 
 require('dotenv').config({ path: './.env' });
 
@@ -43,21 +44,24 @@ app.use(
   /**
    *
    * @param {{message: string, description: object, statusCode: number, isOperational: boolean}} err
-   * @param {import("express").Request} req
+   * @param {import("express").Request} _req
    * @param {import("express").Response} res
    * @param {import("express").NextFunction} next
    */
-  function (err, req, res, next) {
-    if (err.description) {
-      return res.status(err.statusCode || 500).json({
+  function (err, _req, res, _next) {
+    if (err instanceof HttpException) {
+      return res.status(err.statusCode).json({
         statusCode: err.statusCode,
         message: err.message,
         errors: err.description,
       });
     }
-    return res
-      .status(err.statusCode || 500)
-      .json({ statusCode: err.statusCode, message: err.message });
+
+    return res.status(500).json({
+      statusCode: 500,
+      message: 'Internal server error',
+      errors: err,
+    });
   }
 );
 

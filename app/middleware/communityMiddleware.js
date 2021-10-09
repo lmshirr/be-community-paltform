@@ -25,6 +25,9 @@ const checkAdmin = async (req, res, next) => {
       new ForbiddenException('You dont have permission to this action!')
     );
   }
+
+  req.member = admin.dataValues;
+
   next();
 };
 
@@ -43,6 +46,8 @@ const checkOwner = async (req, res, next) => {
       new ForbiddenException('You dont have permission to this action!')
     );
   }
+
+  req.member = owner.dataValues;
 
   next();
 };

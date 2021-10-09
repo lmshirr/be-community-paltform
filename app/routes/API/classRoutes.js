@@ -13,28 +13,7 @@ const {
 const classRouter = Router();
 
 // tes webianr router
-classRouter.get('/:class_id/webinar/', webinarController.showWebinar)
-
-classRouter.get('/search/:key', classController.findClass);
-classRouter.post(
-  '/',
-  authorizationMiddleware.checkLogin,
-  classMiddleware.checkAdmin_community,
-  classController.createClass
-);
-classRouter
-  .route('/:id')
-  .get(classMiddleware.checkMembership, classController.getClassDetails)
-  .patch(
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_delete_patch,
-    classController.editClass
-  )
-  .delete(
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_delete_patch,
-    classController.deleteClass
-  );
+classRouter.get('/:class_id/webinar/', webinarController.showWebinar);
 
 // Module routes
 classRouter.get(

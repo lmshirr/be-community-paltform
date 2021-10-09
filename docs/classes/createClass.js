@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /communities/{communityId}:
+ * /communities/{communityId}/classes:
  *   parameters:
  *     - name: communityId
  *       in: path
@@ -8,15 +8,16 @@
  *       required: true
  *       schema:
  *         type: string
- *   patch:
- *     description: Update or edit community
+ *   post:
  *     tags:
- *       - Community
+ *       - Class
  *     security:
  *       - jwtToken: []
+ *     description: Create class comment
  *     requestBody:
+ *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
@@ -24,16 +25,21 @@
  *                 type: string
  *               description:
  *                 type: string
- *               privacy:
+ *               summary:
  *                 type: string
- *               type:
+ *               about:
  *                 type: string
- *               community_pict:
+ *               banner_pict:
  *                 type: string
  *                 format: binary
+ *             required:
+ *               - name
+ *               - summary
+ *               - about
+ *               - description
  *     responses:
- *       200:
- *         description: success update community
+ *       201:
+ *         description: success create class
  *       404:
  *         description: Community not found
  *       500:
