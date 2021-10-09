@@ -27,7 +27,7 @@ const postComment = async (postCommentDto, file) => {
 
   // make link path
   let imageUrl;
-  if (file?.filename) {
+  if (file.filename) {
     const path =
       process.env.NODE_ENV === 'production'
         ? process.env.PRODUCTION_URL

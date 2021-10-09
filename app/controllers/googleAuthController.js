@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const { getGoogleAuthURL, getTokens } = require('../helpers/googleAuth');
-const { GoogleUser, User } = require('../models/index');
+const { User } = require('../models/index');
 const {
   InternalServerException,
   BadRequestException,
