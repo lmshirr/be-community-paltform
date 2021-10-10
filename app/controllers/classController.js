@@ -4,11 +4,12 @@ const communityPostService = require('../services/communityPostServices');
 
 module.exports.findClass = async (req, res, next) => {
   const { key } = req.query;
+  const { id: communityId } = req.params;
 
   let _class;
 
   try {
-    _class = await classService.findClass(key);
+    _class = await classService.findClass(communityId, key);
   } catch (error) {
     return next(error);
   }

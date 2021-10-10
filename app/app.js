@@ -8,9 +8,12 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const basicInfo = require('../docs/info');
 const HttpException = require('./utils/httpExceptions/httpException');
+// development only
+const morgan = require('morgan');
 
 require('dotenv').config({ path: './.env' });
 
+// app
 const app = express();
 
 app.use(cookieParser());
@@ -23,6 +26,12 @@ app.use(
     withCredentials: true,
   })
 );
+
+// logging http req and res for development
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
+
 // express static file
 app.use('/assets', express.static('../assets'));
 
@@ -74,6 +83,7 @@ process.on('unhandledRejection', (reason) => {
 
 process.on('uncaughtException', (error) => {
   // I just received an error that was never handled, time to handle it and then decide whether a restart is needed
+  console.log(error);
   process.exit(1);
 });
 

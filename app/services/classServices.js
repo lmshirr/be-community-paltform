@@ -52,15 +52,15 @@ const editClass = async (id, editClassDto, file) => {
     banner_pict = file.filename;
   }
 
-  let _class = await Class.findOne({ where: { id } });
+  let classData = await Class.findOne({ where: { id } });
 
-  if (_class) {
+  if (classData) {
     throw new NotFoundException('Class not found');
   }
 
-  _class = await _class.update({ ...editClassDto, banner_pict });
+  classData = await classData.update({ ...editClassDto, banner_pict });
 
-  return _class;
+  return classData;
 };
 
 /**
@@ -77,23 +77,22 @@ const deleteClass = async (id) => {
 
 /**
  *
+ * @param {string} community_id
  * @param {string} key search key by name
- * @returns _class
+ * @returns classData
  */
-const findClass = async (key) => {
-  const _class = await Class.findAll({
+const findClass = async (community_id, key) => {
+  const classData = await Class.findAll({
     where: {
-      name: {
-        [Op.iLike]: `%${key}%`,
-      },
+      [Op.and]: [{ community_id }, { name: { [Op.iLike]: `%${key}%` } }],
     },
   });
 
-  if (!_class) {
+  if (!classData) {
     throw new NotFoundException('Class not found');
   }
 
-  return _class;
+  return classData;
 };
 
 /**

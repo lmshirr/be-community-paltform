@@ -8,17 +8,15 @@
  *       required: true
  *       schema:
  *         type: string
- *   post:
+ *   get:
  *     tags:
  *       - Class
  *     security:
  *       - jwtToken: []
- *     description: Create class comment
+ *     description: Get class in community
  *     responses:
- *       201:
- *         description: success create class
- *       404:
- *         description: Community not found
+ *       200:
+ *         description: Success get class
  *       500:
  *         description: Internal server error
  *
