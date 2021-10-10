@@ -9,10 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Community, User, Community_Post_Attachment, Comment }) {
+    static associate({
+      Community,
+      Community_Member,
+      Community_Post_Attachment,
+      Comment,
+    }) {
       Community_Post.belongsTo(Community, { foreignKey: 'community_id' });
-      Community_Post.belongsTo(User, {
-        foreignKey: 'user_id',
+      Community_Post.belongsTo(Community_Member, {
+        foreignKey: 'member_id',
         targetKey: 'id',
       });
       Community_Post.hasMany(Community_Post_Attachment, {
@@ -41,10 +46,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         allowNull: false,
       },
-      user_id: {
+      member_id: {
         type: DataTypes.UUID,
         allowNull: false,
-        references: { model: 'User', key: 'id' },
+        references: { model: 'Community_Member', key: 'id' },
       },
       community_id: {
         type: DataTypes.UUID,

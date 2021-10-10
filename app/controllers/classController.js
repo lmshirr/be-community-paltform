@@ -1,108 +1,126 @@
-const { Op } = require('sequelize');
-const jwt = require('jsonwebtoken');
-const { Class, Community_Post } = require('../models/index');
-const {
-  InternalServerException,
-  BadRequestException,
-} = require('../utils/httpExceptions');
+/* eslint-disable no-underscore-dangle */
+const classService = require('../services/classServices');
+const communityPostService = require('../services/communityPostServices');
 
-module.exports.findClass = async function (req, res, next) {
-  try {
-    const findClass = await Class.findAll({
-      where: {
-        name: {
-          [Op.iLike]: `%${req.params.key}%`,
-        },
-      },
-    });
-    return res.json({
-      success: true,
-      findClass,
-    });
-  } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
-  }
-};
+module.exports.findClass = async (req, res, next) => {
+  const { key } = req.query;
+  const { id: communityId } = req.params;
 
-module.exports.getClassDetails = async function (req, res, next) {
-  const { id } = req.params;
+  let _class;
 
   try {
-    const classDetails = await Class.findOne({ where: { id } });
-
-    return res.json({
-      data: classDetails,
-    });
+    _class = await classService.findClass(communityId, key);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
+
+  return res.json({
+    data: _class,
+  });
 };
 
-module.exports.createClass = async function (req, res, next) {
-  const { community_id, name, description } = req.body;
-  const { user_id } = req.user;
-  const content = `There is a new class "${name}", go check it out!`;
+module.exports.getClassDetail = async (req, res, next) => {
+  const { classId: id } = req.params;
+
+  let classDetail;
+
+  try {
+    classDetail = await classService.getClassDetail(id);
+  } catch (error) {
+    return next(error);
+  }
+
+  return res.json({
+    data: classDetail,
+  });
+};
+
+module.exports.createClass = async (req, res, next) => {
+  const { name, description, summary, about } = req.body;
+  const { id: member_id } = req.member;
+  const { id: community_id } = req.params;
+  const { file } = req;
 
   let dataClass;
+  let post;
+
   try {
-    dataClass = await Class.create({
-      community_id,
-      user_id,
-      name,
-      description,
-    });
+    dataClass = await classService.createClass(
+      {
+        community_id,
+        member_id,
+        name,
+        description,
+        summary,
+        about,
+      },
+      file
+    );
 
     // create post info
-    await Community_Post.create({
+    const content = `There is a new class ${name}, go check it out!`;
+
+    post = await communityPostService.createPost({
       community_id,
-      user_id,
+      member_id,
       content,
     });
   } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
-      return BadRequestException(
-        'Validation error',
-        error.errors.map((e) => ({
-          attribute: e.path,
-          message: e.message,
-        }))
-      );
-    }
-    console.log(error);
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
 
   res.status(201).json({
     message: 'Class Created',
-    data: dataClass,
+    data: { dataClass, post },
   });
 };
 
-module.exports.editClass = async function (req, res, next) {
+module.exports.editClass = async (req, res, next) => {
+  const { classId } = req.params;
+  const { name, description, summary, about } = req.body;
+  const { file } = req;
+
+  let _class;
   try {
-    const { name, description } = req.body;
-    const classDetails = await Class.findByPk(req.params.id);
-    classDetails.update({
-      name,
-      description,
-    });
-    return res.status(200).json({
-      success: true,
-      messages: 'Class updated!',
-    });
+    _class = await classService.editClass(
+      classId,
+      { about, description, summary, name },
+      file
+    );
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
+
+  return res.json({
+    messages: 'Class updated!',
+    data: _class,
+  });
 };
 
-module.exports.deleteClass = async function (req, res, next) {
+module.exports.deleteClass = async (req, res, next) => {
+  const { classId } = req.params;
+
   try {
-    await Class.destroy({ where: { id: req.params.id } });
-    return res.status(200).json({
-      success: true,
-      messages: 'Delete success!',
-    });
+    await classService.deleteClass(classId);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    return next(error);
   }
+
+  return res.json({
+    messages: 'Delete success!',
+  });
+};
+
+module.exports.getClassInCommunity = async (req, res, next) => {
+  const { id: communityId } = req.params;
+
+  let classes;
+
+  try {
+    classes = await classService.getClassInCommunity(communityId);
+  } catch (error) {
+    return next(error);
+  }
+
+  return res.json({ data: classes });
 };

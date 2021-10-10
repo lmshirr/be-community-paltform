@@ -9,8 +9,22 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Community, Module, Video, Assessment, Webinar }) {
-      Class.belongsTo(Community, { foreignKey: 'community_id' });
+    static associate({
+      Community,
+      Module,
+      Video,
+      Assessment,
+      Webinar,
+      Community_Member,
+    }) {
+      Class.belongsTo(Community, {
+        foreignKey: 'community_id',
+        targetKey: 'id',
+      });
+      Class.belongsTo(Community_Member, {
+        foreignKey: 'member_id',
+        targetKey: 'id',
+      });
       Class.hasMany(Module, { onDelete: 'cascade' });
       Class.hasMany(Video, { onDelete: 'cascade' });
       Class.hasMany(Assessment, { onDelete: 'cascade' });
@@ -39,6 +53,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         references: { model: 'Community', key: 'id' },
       },
+      member_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Community_Member', key: 'id' },
+      },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -47,10 +66,18 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      user_id: {
-        type: DataTypes.UUID,
+      banner_pict: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'banner.jpg',
+      },
+      summary: {
+        type: DataTypes.TEXT,
         allowNull: false,
-        references: { model: 'User', key: 'id' },
+      },
+      about: {
+        type: DataTypes.TEXT,
+        allowNull: false,
       },
       created_at: {
         type: DataTypes.DATE,

@@ -7,9 +7,13 @@ const { NotFoundException } = require('./utils/httpExceptions');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const basicInfo = require('../docs/info');
+const HttpException = require('./utils/httpExceptions/httpException');
+// development only
+const morgan = require('morgan');
 
 require('dotenv').config({ path: './.env' });
 
+// app
 const app = express();
 
 app.use(cookieParser());
@@ -22,6 +26,12 @@ app.use(
     withCredentials: true,
   })
 );
+
+// logging http req and res for development
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
+
 // express static file
 app.use('/assets', express.static('../assets'));
 
@@ -43,21 +53,24 @@ app.use(
   /**
    *
    * @param {{message: string, description: object, statusCode: number, isOperational: boolean}} err
-   * @param {import("express").Request} req
+   * @param {import("express").Request} _req
    * @param {import("express").Response} res
    * @param {import("express").NextFunction} next
    */
-  function (err, req, res, next) {
-    if (err.description) {
-      return res.status(err.statusCode || 500).json({
+  function (err, _req, res, _next) {
+    if (err instanceof HttpException) {
+      return res.status(err.statusCode).json({
         statusCode: err.statusCode,
         message: err.message,
         errors: err.description,
       });
     }
-    return res
-      .status(err.statusCode || 500)
-      .json({ statusCode: err.statusCode, message: err.message });
+
+    return res.status(500).json({
+      statusCode: 500,
+      message: 'Internal server error',
+      errors: err,
+    });
   }
 );
 
@@ -70,6 +83,7 @@ process.on('unhandledRejection', (reason) => {
 
 process.on('uncaughtException', (error) => {
   // I just received an error that was never handled, time to handle it and then decide whether a restart is needed
+  console.log(error);
   process.exit(1);
 });
 

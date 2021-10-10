@@ -32,16 +32,14 @@ module.exports.getPostDetails = async function (req, res, next) {
 module.exports.createPost = async function (req, res, next) {
   const { id: community_id } = req.params;
   const { content } = req.body;
-  const { id: user_id } = req.user;
+  const { id: member_id } = req.member;
   const { files } = req;
-
-  console.log(files);
 
   let post;
 
   try {
     post = await communityPostService.createPost(
-      { community_id, user_id, content },
+      { community_id, member_id, content },
       files
     );
   } catch (error) {

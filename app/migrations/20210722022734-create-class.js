@@ -21,9 +21,9 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false,
       },
-      user_id: {
+      member_id: {
         type: Sequelize.UUID,
-        references: { model: 'person', key: 'id' },
+        references: { model: 'community_member', key: 'id' },
         onDelete: 'cascade',
         allowNull: false,
       },
@@ -32,6 +32,19 @@ module.exports = {
         allowNull: false,
       },
       description: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      banner_pict: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: 'banner.jpg',
+      },
+      summary: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      about: {
         type: Sequelize.TEXT,
         allowNull: false,
       },

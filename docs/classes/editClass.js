@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /communities/{communityId}:
+ * /communities/{communityId}/classes/{classId}:
  *   parameters:
  *     - name: communityId
  *       in: path
@@ -8,15 +8,22 @@
  *       required: true
  *       schema:
  *         type: string
+ *     - name: classId
+ *       in: path
+ *       description: class id
+ *       required: true
+ *       schema:
+ *         type: string
  *   patch:
- *     description: Update or edit community
  *     tags:
- *       - Community
+ *       - Class
  *     security:
  *       - jwtToken: []
+ *     description: Get class in community
  *     requestBody:
+ *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
@@ -24,18 +31,18 @@
  *                 type: string
  *               description:
  *                 type: string
- *               privacy:
+ *               summary:
  *                 type: string
- *               type:
+ *               about:
  *                 type: string
- *               community_pict:
+ *               banner_pict:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
- *         description: success update community
+ *         description: Success edit/update class
  *       404:
- *         description: Community not found
+ *         description: Class not found
  *       500:
  *         description: Internal server error
  *

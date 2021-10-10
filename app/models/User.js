@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate({
       Activation,
       Community,
+      Community_Member,
       Request_Membership,
       Invitation,
       Community_Post,
@@ -29,18 +30,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'user_id',
         sourceKey: 'id',
       });
-      User.hasMany(Invitation, { onDelete: 'cascade', foreignKey: 'user_id' });
-      User.hasMany(Community_Post, {
-        onDelete: 'cascade',
+      User.hasMany(Community_Member, {
         foreignKey: 'user_id',
         sourceKey: 'id',
-        // as: 'user',
-      });
-      User.hasMany(Comment, {
         onDelete: 'cascade',
-        foreignKey: { name: 'user_id' },
-        sourceKey: 'id',
       });
+      User.hasMany(Invitation, { onDelete: 'cascade', foreignKey: 'user_id' });
     }
   }
   User.init(

@@ -1,11 +1,14 @@
+/* eslint-disable import/no-dynamic-require */
+
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
+
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.js')[env];
+const config = require(`${__dirname}/../config/config.js`)[env];
 const db = {};
 
 let sequelize;
@@ -27,7 +30,8 @@ fs.readdirSync(__dirname)
     );
   })
   .forEach((file) => {
-    let model = require(path.join(__dirname, file))(
+    // eslint-disable-next-line global-require
+    const model = require(path.join(__dirname, file))(
       sequelize,
       Sequelize.DataTypes
     );

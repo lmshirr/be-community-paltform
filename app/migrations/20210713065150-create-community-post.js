@@ -21,10 +21,10 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false,
       },
-      user_id: {
+      member_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: { model: 'person', key: 'id' },
+        references: { model: 'community_member', key: 'id' },
         onDelete: 'CASCADE',
       },
       content: {
