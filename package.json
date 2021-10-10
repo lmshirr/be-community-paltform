@@ -3,6 +3,20 @@
   "version": "1.0.0",
   "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
   "main": "app.js",
+  "scripts": {
+    "build": "npm install",
+    "development": "node app.js",
+    "start:dev": "nodemon --watch app --watch docs app/server.js",
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "db:undo": "npx sequelize-cli db:migrate:undo",
+    "db:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "db:drop": "npx sequelize-cli db:drop",
+    "db:create": "npx sequelize-cli db:create",
+    "db:seed:all": "npx sequelize-cli db:seed:all",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
   "dependencies": {
     "axios": "^0.21.4",
     "bcrypt": "^5.0.1",
@@ -35,17 +49,12 @@
     "swagger-ui-express": "^4.1.6",
     "winston": "^3.3.3"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm install",
-    "development": "node app.js",
-    "start:dev": "nodemon --watch ../app --watch ../docs ./server.js",
-    "db:migrate": "npx sequelize-cli db:migrate",
-    "db:undo": "npx sequelize-cli db:migrate:undo",
-    "db:undo:all": "npx sequelize-cli db:migrate:undo:all",
-    "db:drop": "npx sequelize-cli db:drop",
-    "db:create": "npx sequelize-cli db:create",
-    "db:seed:all": "npx sequelize-cli db:seed:all"
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "coverageDirectory": "./coverage"
   },
   "repository": {
     "type": "git",
