@@ -21,7 +21,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://139.162.6.97'],
+    origin: [
+      'http://localhost:3000',
+      'http://139.162.6.97',
+      'https://community-platform.nikici.com',
+    ],
     credentials: true,
     withCredentials: true,
   })
