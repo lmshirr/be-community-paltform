@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   uploadCommunityImage,
+  uploadClassImage,
 } = require('../../utils/multer/uploadImage.service');
 const memberController = require('../../controllers/communityMemberController');
 const communityController = require('../../controllers/communityController');
@@ -165,6 +166,7 @@ communityRouter
   .post(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
+    uploadClassImage('class_banner'),
     classController.createClass
   )
   .get(

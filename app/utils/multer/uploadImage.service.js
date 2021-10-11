@@ -61,6 +61,16 @@ const commentStorage = multer.diskStorage({
   },
 });
 
+//
+const classStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, '../assets/class_banner');
+  },
+  filename: (req, file, callback) => {
+    callback(null, uuid.v4() + path.extname(file.originalname));
+  },
+});
+
 // file filter for image
 const imageFileFilter = (req, file, cb) => {
   if (
@@ -121,10 +131,16 @@ const uploadCommentImage = multer({
   fileFilter: imageFileFilter,
 });
 
+const uploadClassImage = multer({
+  storage: classStorage,
+  fileFilter: imageFileFilter,
+});
+
 module.exports = {
   uploadCommunityImage,
   uploadProfileImage,
   uploadPostImage,
   uploadClassModuleOrVideo,
   uploadCommentImage,
+  uploadClassImage,
 };

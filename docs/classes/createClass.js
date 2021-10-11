@@ -29,7 +29,7 @@
  *                 type: string
  *               about:
  *                 type: string
- *               banner_pict:
+ *               class_banner:
  *                 type: string
  *                 format: binary
  *             required:
