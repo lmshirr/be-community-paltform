@@ -1,4 +1,4 @@
-DB_HOST=database
+DB_HOST=localhost
 DB_USER=postgres
 DB_NAME=community-platform
 DB_PASSWORD=
@@ -11,3 +11,4 @@ GOOGLE_CLIENT_ID=812372317084-lkquhgjvc99e86845flit78ds3n9pt1d.apps.googleuserco
 GOOGLE_CLIENT_SECRET=-__R3tTMBcSh63xeqX-IR9ZO
 CLIENT_ROOT_URL=http://localhost:3000
 LOCALHOST_URL=http://localhost:5000
+SERVER_URL = localhost

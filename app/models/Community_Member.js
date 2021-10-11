@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       user_id: {
         type: DataTypes.UUID,
         allowNull: false,
-        references: { model: 'user', key: 'id' },
+        references: { model: 'person', key: 'id' },
       },
       community_id: {
         type: DataTypes.UUID,

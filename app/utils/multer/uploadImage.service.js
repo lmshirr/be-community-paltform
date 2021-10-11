@@ -6,7 +6,7 @@ const path = require('path');
 const profileStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
-    callback(null, '../assets/profile_pict');
+    callback(null, 'assets/profile_pict');
   },
   filename: (req, file, callback) => {
     callback(null, uuid.v4() + path.extname(file.originalname));
@@ -17,7 +17,7 @@ const profileStorage = multer.diskStorage({
 const communityStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
-    callback(null, '../assets/community_pict');
+    callback(null, 'assets/community_pict');
   },
   filename: (req, file, callback) => {
     callback(null, uuid.v4() + path.extname(file.originalname));
@@ -28,7 +28,7 @@ const communityStorage = multer.diskStorage({
 const postStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
-    callback(null, '../assets/post_pict');
+    callback(null, 'assets/post_pict');
   },
   filename: (req, file, callback) => {
     callback(null, uuid.v4() + path.extname(file.originalname));
@@ -54,7 +54,7 @@ const moduleAndVideoStorage = multer.diskStorage({
 const commentStorage = multer.diskStorage({
   destination: (req, file, callback) => {
     console.log(req.body);
-    callback(null, '../assets/comment_pict');
+    callback(null, 'assets/comment_pict');
   },
   filename: (req, file, callback) => {
     callback(null, uuid.v4() + path.extname(file.originalname));
@@ -64,7 +64,7 @@ const commentStorage = multer.diskStorage({
 //
 const classStorage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, '../assets/class_banner');
+    callback(null, 'assets/class_banner');
   },
   filename: (req, file, callback) => {
     callback(null, uuid.v4() + path.extname(file.originalname));

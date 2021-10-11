@@ -166,7 +166,7 @@ communityRouter
   .post(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
-    uploadClassImage('class_banner'),
+    uploadClassImage.single('class_banner'),
     classController.createClass
   )
   .get(

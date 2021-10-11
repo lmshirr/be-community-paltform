@@ -33,7 +33,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // express static file
-app.use('/assets', express.static('../assets'));
+app.use('/assets', express.static('assets'));
 
 // swagger documentation
 const swaggerSpec = swaggerJsdoc(basicInfo);

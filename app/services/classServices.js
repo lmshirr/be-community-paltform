@@ -7,20 +7,24 @@ const { NotFoundException } = require('../utils/httpExceptions');
  *
  * @param {{community_id: string, member_id: string, name: string, description: string, summary: string, about: string}} createClassDto
  * @param {Object} file
- * @returns _class
+ * @returns dataClass
  */
 const createClass = async (createClassDto, file) => {
   let banner_pict;
 
-  console.log(createClassDto);
-
   if (file) {
-    banner_pict = file.filename;
+    const { filename } = file;
+    const path =
+      process.env.NODE_ENV === 'production'
+        ? process.env.PRODUCTION_URL
+        : process.env.LOCALHOST_URL;
+
+    banner_pict = `${path}/assets/class_banner/${filename}`;
   }
 
-  const _class = await Class.create({ ...createClassDto, banner_pict });
+  const dataClass = await Class.create({ ...createClassDto, banner_pict });
 
-  return _class;
+  return dataClass;
 };
 
 /**
@@ -43,7 +47,7 @@ const getClassDetail = async (id) => {
  * @param {string} id class id
  * @param {{name: string, summary: string, description: string, about: string}} editClassDto
  * @param {Object} file
- * @returns _class
+ * @returns classData
  */
 const editClass = async (id, editClassDto, file) => {
   let banner_pict;
@@ -68,9 +72,9 @@ const editClass = async (id, editClassDto, file) => {
  * @param {string} id class id
  */
 const deleteClass = async (id) => {
-  const _class = await Class.destroy({ where: { id } });
+  const classData = await Class.destroy({ where: { id } });
 
-  if (!_class) {
+  if (!classData) {
     throw new NotFoundException('Class not found');
   }
 };
