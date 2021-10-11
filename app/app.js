@@ -11,7 +11,7 @@ const HttpException = require('./utils/httpExceptions/httpException');
 // development only
 const morgan = require('morgan');
 
-require('dotenv').config({ path: './.env' });
+require('dotenv').config({ path: '../.env' });
 
 // app
 const app = express();
