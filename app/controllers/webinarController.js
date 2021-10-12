@@ -3,33 +3,24 @@ const fs = require('fs');
 const { Op } = require('sequelize');
 require('dotenv').config({ path: '../.env' });
 
-module.exports.addWebinar = function (req, res) {
-  const { date, time, link, name, speaker, speaker_job, description } =
-    req.body;
-  const { class_id } = req.params;
-  console.log(req.body);
-  console.log(class_id);
-  db.Webinar.create({
-    name,
-    speaker,
-    speaker_job,
-    class_id,
-    description,
-    date,
-    time,
-    link,
-  })
-    .then(() => {
-      res.status(200).json({
-        success: true,
-        msg: 'webinar added',
-      });
+module.exports.addWebinar = function (req, res){
+    const {title, timezone, start, end, class_id, link, filename} = req.body;
+    const {class_id} = req.params;
+    const { file } = req;
+    console.log(req.body);
+    console.log(class_id);
+    db.Webinar.create({title, timezone, start, end, description, class_id, link, speaker, filename, filename: file.filename})
+    .then(()=>{
+        res.status(200).json({
+            success : true,
+            msg : "webinar added"
+        })
     })
-    .catch((error) => {
-      res.status(500).json({
-        success: false,
-        error: error,
-      });
+    .catch((error)=>{
+        res.status(500).json({
+            success : false,
+            error : error
+        })
     });
 };
 
@@ -49,20 +40,24 @@ module.exports.getWebinar = async function (req, res) {
   }
 };
 
-module.exports.showWebinar = async function (req, res) {
-  try {
-    const webinar = await db.Webinar.findAll();
-    res.status(200).json({
-      success: true,
-      list: webinar,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      msg: error,
-    });
-  }
-};
+module.exports.showWebinar = async function(req, res){
+    try{
+        const webinar = await db.Webinar.findAll({
+            where: {
+              class_id,
+            }}
+            )
+        res.status(200).json({
+            success : true,
+            list : webinar
+        })
+    } catch (error){
+        res.status(500).json({
+            success : false,
+            msg : error
+        })
+    }
+}
 
 module.exports.deleteWebinar = function (req, res) {
   db.Webinar.destroy({ where: { id: req.params.webinarId } }).then(() => {
