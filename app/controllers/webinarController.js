@@ -4,12 +4,12 @@ const { Op } = require('sequelize');
 require('dotenv').config({ path: '../.env' });
 
 module.exports.addWebinar = function (req, res){
-    const {title, timezone, start, end, class_id, link, filename} = req.body;
+    const {title, timezone, start, end, class_id, link, speaker, description} = req.body;
     const {class_id} = req.params;
     const { file } = req;
     console.log(req.body);
     console.log(class_id);
-    db.Webinar.create({title, timezone, start, end, description, class_id, link, speaker, filename, filename: file.filename})
+    db.Webinar.create({title, timezone, start, end, description, class_id, link, speaker, filename: file.filename})
     .then(()=>{
         res.status(200).json({
             success : true,
