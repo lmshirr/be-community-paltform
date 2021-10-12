@@ -14,6 +14,8 @@ const classRouter = Router();
 
 // tes webianr router
 classRouter.get('/:class_id/webinar/', webinarController.showWebinar);
+classRouter.get('/:class_id/webinar/:id', webinarController.getWebinar);
+classRouter.get('/:class_id/webinar/', webinarController.showWebinar);
 
 // Module routes
 classRouter.get(
