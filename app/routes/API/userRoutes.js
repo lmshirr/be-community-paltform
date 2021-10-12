@@ -5,6 +5,7 @@ const authorizationMiddleware = require('../../middleware/authorizationMiddlewar
 const {
   uploadProfileImage,
 } = require('../../utils/multer/uploadImage.service');
+const invitationController = require('../../controllers/invitationController');
 
 const userRouter = express.Router();
 
@@ -24,10 +25,16 @@ userRouter.post('/logout', userController.logout);
 
 // invitation
 userRouter.get(
-  '/invitation',
+  '/invitations',
   authorizationMiddleware.checkLogin,
   userController.getInvitationUser
 );
+userRouter
+  .route('/invitations/:invitationId')
+  .patch(
+    authorizationMiddleware.checkLogin,
+    invitationController.respondInvite
+  );
 
 // request
 userRouter.get(

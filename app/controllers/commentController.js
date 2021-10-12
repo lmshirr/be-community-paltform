@@ -15,8 +15,6 @@ module.exports.postComment = async (req, res, next) => {
 
     const commentId = comment.dataValues.id;
 
-    console.log(commentId);
-
     comment = await commentService.getCommentDetail(commentId);
   } catch (error) {
     return next(error);

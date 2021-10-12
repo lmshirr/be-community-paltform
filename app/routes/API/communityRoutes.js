@@ -56,13 +56,19 @@ communityRouter.get(
   memberController.getCommunityMember
 );
 communityRouter
-  .route('/:id/memberships/:memberId')
+  .route('/:id/memberships/:userId')
   .patch(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkOwner,
     memberController.updateRole
-  )
-  .delete(authorizationMiddleware.checkLogin, memberController.leaveCommunity);
+  );
+communityRouter
+  .route('/:id/memberships/leave')
+  .delete(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkMember,
+    memberController.leaveCommunity
+  );
 
 // request join
 communityRouter.get(
@@ -94,11 +100,6 @@ communityRouter
 
 communityRouter
   .route('/:id/invitations/:ivitationId')
-  .patch(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkMember,
-    invitationController.respondInvite
-  )
   .delete(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
