@@ -27,7 +27,7 @@ module.exports.googleLogin = async (req, res, next) => {
     code,
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    `http://${process.env.SERVER_URL}:${process.env.PORT}/api/users/auth/google`
+    `${process.env.SERVER_URL}/api/users/auth/google`
   );
 
   try {
