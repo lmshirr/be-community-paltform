@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Webinar extends Model {
     /**
@@ -9,17 +7,18 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({Class}) {
+    static associate({ Class }) {
       // define association here
-      Webinar.belongsTo(Class,  { foreignKey: 'class_id' });
+      Webinar.belongsTo(Class, { foreignKey: 'class_id' });
     }
-  };
-  Webinar.init({
+  }
+  Webinar.init(
+    {
       pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
       },
       id: {
         type: DataTypes.UUID,
@@ -28,69 +27,69 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
       },
       title: {
-        type: Sequelize.STRING,
-        allowNull:false 
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       timezone: {
-        type: Sequelize.STRING,
-        allowNull:false 
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       start: {
-        type: Sequelize.DATE,
-        allowNull:false 
+        type: DataTypes.DATE,
+        allowNull: false,
       },
       end: {
-        type: Sequelize.DATE,
-        allowNull:false 
+        type: DataTypes.DATE,
+        allowNull: false,
       },
       description: {
-        type: Sequelize.STRING,
-        allowNull:false  
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       speaker: {
-        type: Sequelize.STRING,
-        allowNull:false 
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       visibility: {
-        type: Sequelize.ENUM('open', 'closed'),
+        type: DataTypes.ENUM('open', 'closed'),
         allowNull: false,
         defaultValue: 'open',
       },
       class_id: {
-        type: Sequelize.UUID,
-        references: {model: 'class', key:'id'},
+        type: DataTypes.UUID,
+        references: { model: 'class', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
       },
       link: {
-        type: Sequelize.STRING,
-        allowNull:false
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       filename: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: true,
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: DataTypes.NOW
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
       },
-  }, {
-    sequelize,
-    modelName: 'Webinar',
-    freezeTableName: true,
-    timestamps: false,
-    tableName: 'Webinars'
-  });
+    },
+    {
+      sequelize,
+      modelName: 'Webinar',
+      freezeTableName: true,
+      timestamps: false,
+      tableName: 'Webinars',
+    }
+  );
   return Webinar;
 };
-
-
 
 // id: {
 //   type: DataTypes.UUID,
@@ -118,7 +117,7 @@ module.exports = (sequelize, DataTypes) => {
 // },
 // description: {
 //   type: DataTypes.STRING,
-//   allowNull:false 
+//   allowNull:false
 // },
 // date: {
 //   type: DataTypes.DATE,
