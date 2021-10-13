@@ -1,4 +1,4 @@
-const commentService = require('../services/commentServices');
+const commentService = require('../services/commentService');
 
 module.exports.postComment = async (req, res, next) => {
   const { postId: post_id } = req.params;

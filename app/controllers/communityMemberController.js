@@ -1,4 +1,4 @@
-const communityMemberService = require('../services/communityMemberServices');
+const communityMemberService = require('../services/communityMemberService');
 
 module.exports.joinCommunity = async function (req, res, next) {
   const { id: userId } = req.user;

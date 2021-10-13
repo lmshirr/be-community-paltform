@@ -52,7 +52,7 @@ userRouter.delete(
 userRouter.get(
   '/:id/communities',
   authorizationMiddleware.checkLogin,
-  userController.getAllUserCommunity
+  userController.getAllUserCommunityJoinOrNot
 );
 
 // Google OAuth

@@ -18,6 +18,7 @@ const {
   ForbiddenException,
 } = require('../utils/httpExceptions/index');
 const mailService = require('../utils/email/mail.service');
+const userService = require('../services/userService');
 
 const tokenAge = 60 * 60;
 
@@ -289,14 +290,16 @@ module.exports.deleteUserRequest = async function (req, res, next) {
   });
 };
 
-module.exports.getAllUserCommunity = async (req, res, next) => {
-  const { id: user_id } = req.user;
+module.exports.getAllUserCommunityJoinOrNot = async (req, res, next) => {
+  const { id } = req.user;
+  const { status } = req.query;
 
   let communities;
   try {
-    communities = await Community_Member.findAll({ where: { user_id } });
+    communities = await userService.getCommunityUserJoinOrNot(id, status);
   } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
+    console.log(error);
+    return next(error);
   }
 
   return res.json({ data: communities });

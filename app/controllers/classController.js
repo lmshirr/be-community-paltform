@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-const classService = require('../services/classServices');
-const communityPostService = require('../services/communityPostServices');
+const classService = require('../services/classService');
+const communityPostService = require('../services/communityPostService');
 
 module.exports.findClass = async (req, res, next) => {
   const { key } = req.query;

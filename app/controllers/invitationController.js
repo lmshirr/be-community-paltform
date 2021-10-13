@@ -1,4 +1,4 @@
-const invitationService = require('../services/invitationServices');
+const invitationService = require('../services/invitationService');
 
 const getInvitationCommunity = async function (req, res, next) {
   const { id: community_id } = req.params;

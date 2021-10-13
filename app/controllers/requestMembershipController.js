@@ -1,4 +1,4 @@
-const requestMembershipService = require('../services/requestMembershipServices');
+const requestMembershipService = require('../services/requestMembershipService');
 
 const getRequestCommunity = async function (req, res, next) {
   const { id: communityId } = req.params;

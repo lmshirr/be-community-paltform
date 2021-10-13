@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       Invitation,
       Community_Post,
       Class,
+      Community_Member,
     }) {
       Community.belongsToMany(User, {
         through: 'Community_Member',
@@ -38,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       Community.hasMany(Class, {
         onDelete: 'cascade',
         foreignKey: 'community_id',
+      });
+      Community.hasMany(Community_Member, {
+        onDelete: 'cascade',
+        foreignKey: 'community_id',
+        sourceKey: 'id',
       });
     }
   }
