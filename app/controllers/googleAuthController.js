@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
-const { getGoogleAuthURL, getTokens } = require('../helpers/googleAuth');
+const { getGoogleAuthURL, getTokens } = require('../utils/googleOAuth/googleOAuth');
 const { User } = require('../models/index');
 const {
   InternalServerException,
@@ -9,6 +9,8 @@ const {
   UnauthorizedException,
   ForbiddenException,
 } = require('../utils/httpExceptions/index');
+
+const userService = require('../services/userServices');
 
 const tokenAge = 60 * 60 * 1000;
 
@@ -46,7 +48,7 @@ module.exports.googleLogin = async (req, res, next) => {
       where: { google_id: googleUser.id },
     });
     if (!user) {
-      const newUser = await User.create({
+      const newUser = await userService.createUser({
         google_id: googleUser.id,
         email: googleUser.email,
         verified_email: googleUser.verified_email,
@@ -57,6 +59,17 @@ module.exports.googleLogin = async (req, res, next) => {
         locale: googleUser.locale,
         hd: googleUser.hd,
       });
+      // const newUser = await User.create({
+      //   google_id: googleUser.id,
+      //   email: googleUser.email,
+      //   verified_email: googleUser.verified_email,
+      //   name: googleUser.name,
+      //   given_name: googleUser.given_name,
+      //   family_name: googleUser.family_name,
+      //   profile_pict: googleUser.picture,
+      //   locale: googleUser.locale,
+      //   hd: googleUser.hd,
+      // });
 
       user = await User.findOne({
         where: { google_id: newUser.google_id },
