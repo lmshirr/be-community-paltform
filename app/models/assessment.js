@@ -1,4 +1,5 @@
 'use strict';
+
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
@@ -14,21 +15,36 @@ module.exports = (sequelize, DataTypes) => {
   }
   Assessment.init(
     {
-      id: {
+      pk: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      ClassId: {
-        type: DataTypes.INTEGER,
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
+        unique: true,
+      },
+      class_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Class', key: 'id' },
       },
       title: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      total_questions: {
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      duration: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      question_count: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
