@@ -75,12 +75,17 @@ module.exports = (sequelize, DataTypes) => {
       },
       community_pict: {
         type: DataTypes.STRING,
-        defaultValue: 'com_pict.jpg',
+        defaultValue: '/assets/community/com_pict.jpg',
+        allowNull: false,
+      },
+      community_banner: {
+        type: DataTypes.STRING,
+        defaultValue: '/assets/community/com_banner.jpg',
         allowNull: false,
       },
       privacy: {
-        type: DataTypes.ENUM('open', 'closed'),
-        defaultValue: 'open',
+        type: DataTypes.ENUM('private', 'public'),
+        defaultValue: 'public',
         allowNull: false,
       },
       created_at: {

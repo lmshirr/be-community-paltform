@@ -40,18 +40,13 @@ module.exports.createCommunity = async function (req, res, next) {
   const { id: userId } = req.user;
   const { file } = req;
 
-  let community_pict;
-
-  if (file) {
-    community_pict = file.filename;
-  }
-
   let community;
 
   try {
     community = await communityService.createCommunity(
-      { name, type, description, privacy, community_pict },
-      userId
+      { name, type, description, privacy },
+      userId,
+      file
     );
   } catch (error) {
     return next(error);
@@ -66,18 +61,15 @@ module.exports.createCommunity = async function (req, res, next) {
 module.exports.editCommunity = async function (req, res, next) {
   const { id } = req.params;
   const { privacy, name, type, description } = req.body;
-
-  let community_pict;
-
-  if (req.file) {
-    community_pict = req.file.filename;
-  }
+  const { files } = req;
 
   let community;
+
   try {
     community = await communityService.editCommunity(
-      { name, privacy, type, description, community_pict },
-      id
+      { name, privacy, type, description },
+      id,
+      files
     );
   } catch (error) {
     return next(error);

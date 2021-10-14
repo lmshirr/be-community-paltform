@@ -31,6 +31,9 @@
  *               community_pict:
  *                 type: string
  *                 format: binary
+ *               community_banner:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: success update community

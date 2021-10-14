@@ -24,9 +24,9 @@ module.exports = {
         allowNull: false,
       },
       privacy: {
-        type: Sequelize.ENUM('open', 'closed'),
+        type: Sequelize.ENUM('private', 'public'),
         allowNull: false,
-        defaultValue: 'open',
+        defaultValue: 'public',
       },
       description: {
         type: Sequelize.TEXT,
@@ -34,7 +34,12 @@ module.exports = {
       },
       community_pict: {
         type: Sequelize.STRING,
-        defaultValue: 'com_pict.jpg',
+        defaultValue: '/assets/community/com_pict.jpg',
+        allowNull: false,
+      },
+      community_banner: {
+        type: Sequelize.STRING,
+        defaultValue: '/assets/community/com_banner.jpg',
         allowNull: false,
       },
       created_at: {

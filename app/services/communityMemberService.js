@@ -38,14 +38,14 @@ const joinCommunity = async (community_id, user_id) => {
   let member;
   let message;
 
-  if (community.privacy === 'open') {
+  if (community.privacy === 'public') {
     member = await Community_Member.create({
       user_id,
       community_id,
     });
 
     message = 'Join success';
-  } else if (community.privacy === 'closed') {
+  } else if (community.privacy === 'private') {
     // check is already request, if yes return please wait for confirmation from admin
     const isAlreadyRequest = await Request_Membership.findOne({
       where: { user_id, community_id },

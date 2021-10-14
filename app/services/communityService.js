@@ -42,10 +42,20 @@ const getCommunityTotalMember = async (id) => {
  *
  * @param {{name: string, type: string, description: string, community_pict: string, privacy: string}} createCommunityDto
  * @param {string} userId
- * @returns {object} community
+ * @param {Object} file
+ * @returns {Object} community
  */
-const createCommunity = async (createCommunityDto, userId) => {
-  const community = await Community.create(createCommunityDto);
+const createCommunity = async (createCommunityDto, userId, file) => {
+  let community_pict;
+  if (file) {
+    const { filename } = file;
+    community_pict = `/assets/community_pict/${filename}`;
+  }
+
+  const community = await Community.create({
+    ...createCommunityDto,
+    community_pict,
+  });
 
   const { id: community_id } = community;
 
@@ -62,16 +72,42 @@ const createCommunity = async (createCommunityDto, userId) => {
  *
  * @param {{name: string, type: string, description: string, community_pict: string, privacy: string}} editCommunityDto
  * @param {string} id community id
+ * @param {Array} files
  * @returns {object} community
  */
-const editCommunity = async (editCommunityDto, id) => {
+const editCommunity = async (editCommunityDto, id, files) => {
+  let community_banner;
+  let community_pict;
+
+  if (files) {
+    if (files.community_banner) {
+      const { community_banner: communityBannerFile } = files;
+
+      const { filename } = communityBannerFile[0];
+
+      community_banner = `/assets/community/${filename}`;
+    }
+
+    if (files.community_pict) {
+      const { community_pict: communityPictFile } = files;
+
+      const { filename } = communityPictFile[0];
+
+      community_pict = `/assets/community/${filename}`;
+    }
+  }
+
   let community = await Community.findOne({ where: { id } });
 
   if (!community) {
     throw new NotFoundException('Community not found');
   }
 
-  community = await community.update(editCommunityDto);
+  community = await community.update({
+    ...editCommunityDto,
+    community_banner,
+    community_pict,
+  });
 
   return community;
 };

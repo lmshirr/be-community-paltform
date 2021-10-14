@@ -9,12 +9,13 @@ const requestController = require('../../controllers/requestMembershipController
 const invitationController = require('../../controllers/invitationController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const communityPostController = require('../../controllers/communityPostController');
-const { uploadPostImage } = require('../../utils/multer/uploadImage.service');
+const {
+  uploadPostImage,
+  uploadCommentImage,
+  uploadCommunityBanner,
+} = require('../../utils/multer/uploadImage.service');
 const classController = require('../../controllers/classController');
 const commentController = require('../../controllers/commentController');
-const {
-  uploadCommentImage,
-} = require('../../utils/multer/uploadImage.service');
 const communityMiddleware = require('../../middleware/communityMiddleware');
 
 const communityRouter = express.Router();
@@ -34,7 +35,10 @@ communityRouter
   .patch(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
-    uploadCommunityImage.single('community_pict'),
+    uploadCommunityImage.fields([
+      { name: 'community_pict' },
+      { name: 'community_banner' },
+    ]),
     communityController.editCommunity
   )
   .delete(
