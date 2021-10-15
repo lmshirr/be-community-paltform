@@ -1,6 +1,9 @@
 const { Community, Community_Member, User } = require('../models/index');
 const { Op } = require('sequelize');
-const { NotFoundException } = require('../utils/httpExceptions');
+const {
+  NotFoundException,
+  BadRequestException,
+} = require('../utils/httpExceptions');
 
 /**
  *
@@ -47,9 +50,10 @@ const getCommunityTotalMember = async (id) => {
  */
 const createCommunity = async (createCommunityDto, userId, file) => {
   let community_pict;
+
   if (file) {
     const { filename } = file;
-    community_pict = `/assets/community_pict/${filename}`;
+    community_pict = `/assets/community/${filename}`;
   }
 
   const community = await Community.create({
