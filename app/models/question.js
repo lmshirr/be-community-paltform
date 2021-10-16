@@ -3,26 +3,19 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Assessment extends Model {
+  class Question extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Assessment.belongsTo(models.Class, {
-        foreignKey: { name: 'class_id' },
-        targetKey: 'id',
-        // as: 'class',
-      });
-      Assessment.hasMany(models.Question, {
-        onDelete: 'cascade',
+      Question.belongsTo(models.Assessment, {
         foreignKey: { name: 'assessment_id' },
-        // as: 'questions',
       });
     }
   }
-  Assessment.init(
+  Question.init(
     {
       pk: {
         allowNull: false,
@@ -36,32 +29,41 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
-      class_id: {
+      assessment_id: {
         type: DataTypes.UUID,
         allowNull: false,
-        references: { model: 'Class', key: 'id' },
-      },
-      title: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        references: { model: 'Assessment', key: 'id' },
       },
       description: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      duration: {
-        type: DataTypes.INTEGER,
+      choice_a: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
-      question_count: {
-        type: DataTypes.INTEGER,
+      choice_b: {
+        type: DataTypes.TEXT,
         allowNull: false,
+      },
+      choice_c: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      choice_d: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      correct_answer: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        enum: ['A', 'B', 'C', 'D'],
       },
     },
     {
       sequelize,
-      modelName: 'Assessment',
+      modelName: 'Question',
     }
   );
-  return Assessment;
+  return Question;
 };
