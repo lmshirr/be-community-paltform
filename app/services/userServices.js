@@ -33,31 +33,6 @@ const getUserDetail = async (id) => {
 /**
  *
  * @param {string} id user id
- * @param {{name: string, summary: string, description: string, about: string}} editUserDto
- * @param {Object} file
- * @returns userData
- */
-const editUser = async (id, editUserDto, file) => {
-  let banner_pict;
-
-  if (file) {
-    banner_pict = file.filename;
-  }
-
-  let userData = await User.findOne({ where: { id } });
-
-  if (userData) {
-    throw new NotFoundException('User not found');
-  }
-
-  userData = await userData.update({ ...editUserDto, banner_pict });
-
-  return userData;
-};
-
-/**
- *
- * @param {string} id user id
  */
 const deleteUser = async (id) => {
   const userData = await User.destroy({ where: { id } });
@@ -101,7 +76,6 @@ const getUserInCommunity = async (id) => {
 module.exports = {
   createUser,
   getUserDetail,
-  editUser,
   deleteUser,
   findUser,
   getUserInCommunity,

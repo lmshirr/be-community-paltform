@@ -2,14 +2,7 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const { getGoogleAuthURL, getTokens } = require('../utils/googleOAuth/googleOAuth');
 const { User } = require('../models/index');
-const {
-  InternalServerException,
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
-  ForbiddenException,
-} = require('../utils/httpExceptions/index');
-
+const { InternalServerException } = require('../utils/httpExceptions/index');
 const userService = require('../services/userServices');
 
 const tokenAge = 60 * 60 * 1000;
