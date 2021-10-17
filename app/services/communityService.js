@@ -1,13 +1,11 @@
 const { Community, Community_Member, User } = require('../models/index');
 const { Op } = require('sequelize');
-const {
-  NotFoundException,
-  BadRequestException,
-} = require('../utils/httpExceptions');
+const { NotFoundException } = require('../utils/httpExceptions');
 
 /**
  *
  * @param {string} id community id
+ * @returns {Object} community
  */
 const getCommunityDetail = async (id) => {
   const community = await Community.findOne({
@@ -131,6 +129,9 @@ const deleteCommunity = async (id) => {
   return community;
 };
 
+/**
+ * @returns {Array} communities
+ */
 const getAllCommunity = async () => {
   const communities = await Community.findAll({
     order: [['created_at', 'DESC']],

@@ -12,9 +12,9 @@ const communityPostController = require('../../controllers/communityPostControll
 const {
   uploadPostImage,
   uploadCommentImage,
-  uploadCommunityBanner,
 } = require('../../utils/multer/uploadImage.service');
 const classController = require('../../controllers/classController');
+const classEnrollmentController = require('../../controllers/classEnrollmentController');
 const commentController = require('../../controllers/commentController');
 const communityMiddleware = require('../../middleware/communityMiddleware');
 
@@ -31,7 +31,10 @@ communityRouter
   );
 communityRouter
   .route('/:id')
-  .get(communityController.getCommunityDetails)
+  .get(
+    authorizationMiddleware.checkLogin,
+    communityController.getCommunityDetails
+  )
   .patch(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
@@ -204,6 +207,14 @@ communityRouter
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
     classController.deleteClass
+  );
+
+communityRouter
+  .route('/:id/classes/:classId/enroll')
+  .post(
+    authorizationMiddleware.checkLogin,
+    communityMiddleware.checkMember,
+    classEnrollmentController.enrollUser
   );
 
 module.exports = communityRouter;
