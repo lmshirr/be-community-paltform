@@ -1,8 +1,8 @@
 const classController = require('../../app/controllers/classController');
-const classService = require('../../app/services/classServices');
+const classService = require('../../app/services/classService');
 const uuid = require('uuid');
 
-describe('Class Controller', () => {
+describe('ClassController', () => {
   const mockClassService = {
     getClassInCommunity: jest
       .fn()
@@ -20,6 +20,7 @@ describe('Class Controller', () => {
         const res = {};
         res.json = jest.fn().mockReturnValue({});
       };
+
       expect(
         await classController.getClassInCommunity(
           mockRequest(),
@@ -27,6 +28,10 @@ describe('Class Controller', () => {
           jest.fn()
         )
       ).toBeDefined();
+
+      expect(
+        await mockClassService.getClassInCommunity('12jkjfd-323dfs')
+      ).toHaveBeenCalled();
     });
   });
 });
