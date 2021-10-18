@@ -1,14 +1,14 @@
 /**
  * @swagger
- * /classes/{classId}:
+ * /classes:
  *   parameters:
- *     - name: classId
- *       in: path
- *       description: class id
+ *     - name: sort
+ *       in: query
+ *       description: class sort by recommended|newest|latest
  *       required: true
  *       schema:
  *         type: string
- *   delete:
+ *   get:
  *     tags:
  *       - Class
  *     security:
@@ -16,9 +16,7 @@
  *     description: Get class in community
  *     responses:
  *       200:
- *         description: Success delete class
- *       404:
- *         description: Class not found
+ *         description: Success get class
  *       500:
  *         description: Internal server error
  *

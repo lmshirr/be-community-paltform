@@ -1,7 +1,10 @@
 /* eslint-disable no-underscore-dangle */
-const { Class, sequelize } = require('../models/index');
+const { Class, Class_Enrollment, Community } = require('../models');
 const { Op } = require('sequelize');
-const { NotFoundException } = require('../utils/httpExceptions');
+const {
+  NotFoundException,
+  ForbiddenException,
+} = require('../utils/httpExceptions');
 
 /**
  *
@@ -30,16 +33,34 @@ const createClass = async (createClassDto, file) => {
 /**
  *
  * @param {string} id class id
- * @returns classDetail
+ * @param {{user_id: string, meta: string}} options meta=check_enrollment
+ * @returns {classDetail: Object, isStuden: boolean}
  */
-const getClassDetail = async (id) => {
-  const classDetail = await Class.findOne({ where: { id } });
+const getClassDetail = async (classId, memberId, options) => {
+  const { user_id, meta } = options;
+
+  const classDetail = await Class.findOne({ where: { id: classId } });
 
   if (!classDetail) {
     throw new NotFoundException('Class not found');
   }
 
-  return classDetail;
+  let student;
+
+  if (user_id && meta === 'check_enrollment') {
+    console.log('in');
+    student = await Class_Enrollment.findOne({
+      where: { [Op.and]: [{ id: classId }, { member_id: memberId }] },
+    });
+
+    if (student) {
+      student = true;
+    } else {
+      student = false;
+    }
+  }
+
+  return { class: classDetail, student };
 };
 
 /**
@@ -135,11 +156,77 @@ const getClassInCommunity = async (communityId, sort) => {
   return classes;
 };
 
+/**
+ *
+ * @param {string} sort getClassSortBy recommended, newest, latest
+ * @returns {Array} classes
+ */
+const getClasses = async (sort) => {
+  let classes;
+
+  switch (sort) {
+    case 'recommended':
+      classes = await Class.findAll({
+        order: [
+          ['students', 'DESC'],
+          ['created_at', 'DESC'],
+        ],
+        include: { model: Community, required: true, attributes: ['name'] },
+      });
+      break;
+    case 'newest':
+      classes = await Class.findAll({
+        order: [['created_at', 'DESC']],
+      });
+      break;
+    case 'latest':
+      classes = await Class.findAll({
+        order: [['created_at', 'ASC']],
+      });
+      break;
+    default:
+      classes = await Class.findAll({ order: [['created_at', 'DESC']] });
+      break;
+  }
+
+  return classes;
+};
+
+/**
+ *
+ * @param {{member_id: string, class_id: string}} createEnrollmentDto
+ * @returns {Object} classEnrollment
+ */
+const createEnrollment = async (createEnrollmentDto) => {
+  const { member_id, class_id } = createEnrollmentDto;
+
+  // find is already enroll class ?
+  const isAlreadyEnroll = await Class_Enrollment.findOne({
+    where: { [Op.and]: [{ member_id }, { class_id }] },
+  });
+
+  if (isAlreadyEnroll) {
+    throw new ForbiddenException('You already enroll this class');
+  }
+
+  const classEnrollment = await Class_Enrollment.create(createEnrollmentDto);
+
+  if (classEnrollment) {
+    // increment student in class
+    const dataClass = await Class.findOne({ where: { id: class_id } });
+    await dataClass.increment('students', { by: 1 });
+  }
+
+  return classEnrollment;
+};
+
 module.exports = {
+  createEnrollment,
   createClass,
   getClassDetail,
   editClass,
   deleteClass,
   findClass,
   getClassInCommunity,
+  getClasses,
 };

@@ -53,7 +53,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull:false
       },
-      filename: {
+      filename_thumbnail: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      filename_dp: {
         type: Sequelize.STRING,
         allowNull: true,
       },

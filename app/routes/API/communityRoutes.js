@@ -191,30 +191,4 @@ communityRouter
     classController.findClass
   );
 
-communityRouter
-  .route('/:id/classes/:classId')
-  .get(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkMember,
-    classController.getClassDetail
-  )
-  .patch(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkAdmin,
-    classController.editClass
-  )
-  .delete(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkAdmin,
-    classController.deleteClass
-  );
-
-communityRouter
-  .route('/:id/classes/:classId/enroll')
-  .post(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkMember,
-    classEnrollmentController.enrollUser
-  );
-
 module.exports = communityRouter;
