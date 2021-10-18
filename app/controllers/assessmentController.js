@@ -20,11 +20,12 @@ module.exports.getAssessment = async function (req, res) {
 
 module.exports.addAssessment = async function (req, res) {
   const { title, total_questions } = req.body;
-  const { ClassId } = req.params;
+  const { classId } = req.params;
   try {
     const assessment = await db.Assessment.create({
-      ClassId,
+      class_id: classId,
       title,
+      description,
       total_questions,
     });
     res.status(200).json({
