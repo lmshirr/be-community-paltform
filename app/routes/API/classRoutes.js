@@ -12,6 +12,39 @@ const {
 
 const classRouter = Router();
 
+// class
+classRouter.get(
+  '/',
+  authorizationMiddleware.checkLogin,
+  classController.getClasses
+);
+
+classRouter
+  .route('/:classId')
+  .get(
+    authorizationMiddleware.checkLogin,
+    classMiddleware.checkMember,
+    classController.getClassDetail
+  )
+  .patch(
+    authorizationMiddleware.checkLogin,
+    classMiddleware.checkAdminCommunity,
+    classController.editClass
+  )
+  .delete(
+    authorizationMiddleware.checkLogin,
+    classMiddleware.checkAdminCommunity,
+    classController.deleteClass
+  );
+
+classRouter
+  .route('/:classId/enroll')
+  .post(
+    authorizationMiddleware.checkLogin,
+    classMiddleware.checkMember,
+    classController.enrollUser
+  );
+
 // tes webianr router
 classRouter.get('/:class_id/webinar/', webinarController.showWebinar);
 classRouter.get('/:class_id/webinar/:id', webinarController.getWebinar);
