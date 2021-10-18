@@ -65,7 +65,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      filename: {
+      filename_thumbnail: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      filename_dp: {
         type: DataTypes.STRING,
         allowNull: true,
       },
