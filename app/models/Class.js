@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       Assessment,
       Webinar,
       Community_Member,
+      Class_Enrollment,
     }) {
       Class.belongsTo(Community, {
         foreignKey: 'community_id',
@@ -23,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       });
       Class.belongsTo(Community_Member, {
         foreignKey: 'member_id',
+        targetKey: 'id',
+      });
+      Class.hasMany(Class_Enrollment, {
+        foreignKey: 'class_id',
         targetKey: 'id',
       });
       Class.hasMany(Module, { onDelete: 'cascade' });
@@ -78,6 +83,16 @@ module.exports = (sequelize, DataTypes) => {
       about: {
         type: DataTypes.TEXT,
         allowNull: false,
+      },
+      students: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      video_intro: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: '/assets/videos/video_intro.mp4',
       },
       created_at: {
         type: DataTypes.DATE,

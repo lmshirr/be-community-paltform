@@ -48,6 +48,16 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      students: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      video_intro: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: '/assets/videos/video_intro.mp4',
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
