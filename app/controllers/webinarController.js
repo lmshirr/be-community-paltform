@@ -1,21 +1,15 @@
-const db = require('../models/index.js');
+const db = require('../models/index');
 const fs = require('fs');
 const { Op } = require('sequelize');
 require('dotenv').config({ path: '../.env' });
 
 module.exports.addWebinar = function (req, res) {
-  const { title, timezone, start, end, link, speaker, description, filename_thumbnail, filename_dp } =
-    req.body;
-  const {class_id} = req.params;
+  // const {title, timezone, start, end, class_id, link, speaker, description} = req.body;
+  const { title, timezone, start, end, link, speaker, description } = req.body;
+  const { class_id } = req.params;
   const { file } = req;
   console.log(req.body);
   console.log(class_id);
-  const path =
-  process.env.NODE_ENV === 'production'
-    ? process.env.PRODUCTION_URL
-    : process.env.LOCALHOST_URL;
-  const file_url_thumbnail = `${path}/assets/werbinar_thumbnail_pict/${filename_thumbnail}`;
-  const file_url_dp = `${path}/assets/werbinar_dp_pict/${filename_dp}`;
   db.Webinar.create({
     title,
     timezone,
@@ -25,20 +19,19 @@ module.exports.addWebinar = function (req, res) {
     class_id,
     link,
     speaker,
-    filename_thumbnail: file_url_thumbnail,
-    filename_dp : file_url_dp
+    filename: file.filename,
   })
     .then(() => {
       res.status(200).json({
         success: true,
         msg: 'webinar added',
-      });
+      })
     })
     .catch((error) => {
       res.status(500).json({
         success: false,
-        error: error,
-      });
+        error,
+      })
     });
 };
 
@@ -48,7 +41,7 @@ module.exports.getWebinar = async function (req, res) {
     const webinar = await db.Webinar.findOne({ where: { id } });
     res.status(200).json({
       success: true,
-      webinar: webinar,
+      webinar,
     });
   } catch (error) {
     res.status(500).json({
@@ -58,24 +51,16 @@ module.exports.getWebinar = async function (req, res) {
   }
 };
 
-
 module.exports.showWebinar = async function (req, res) {
-  const { class_id } = req.params;
-  const { page } = req.query;
   try {
     const webinar = await db.Webinar.findAll({
       where: {
         class_id,
-      },
-      offset: (page-1)*5,
-      limit: 5,
-      order: [['start']],
+      }
     });
-    const total = await db.Webinar.count();
     res.status(200).json({
       success: true,
       list: webinar,
-      total : total
     });
   } catch (error) {
     res.status(500).json({
@@ -83,7 +68,7 @@ module.exports.showWebinar = async function (req, res) {
       msg: error,
     });
   }
-};
+}
 
 module.exports.deleteWebinar = function (req, res) {
   db.Webinar.destroy({ where: { id: req.params.webinarId } }).then(() => {
@@ -96,7 +81,7 @@ module.exports.deleteWebinar = function (req, res) {
       .catch((error) => {
         res.status(500).json({
           success: false,
-          error: error,
+          error,
         });
       });
   });
@@ -109,16 +94,16 @@ module.exports.editWebinar = async function (req, res) {
       req.body;
     console.log(webinar);
     webinar.update({
-      name: name,
+      name,
     });
     res.status(200).json({
       success: true,
-      webinar: webinar,
+      webinar,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error,
+      error,
     });
   }
 };
