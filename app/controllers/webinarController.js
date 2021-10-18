@@ -71,9 +71,11 @@ module.exports.showWebinar = async function (req, res) {
       limit: 5,
       order: [['start']],
     });
+    const total = await db.Webinar.count();
     res.status(200).json({
       success: true,
       list: webinar,
+      total : total
     });
   } catch (error) {
     res.status(500).json({
