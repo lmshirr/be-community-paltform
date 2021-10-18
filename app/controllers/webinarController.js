@@ -53,6 +53,7 @@ module.exports.getWebinar = async function (req, res) {
 
 module.exports.showWebinar = async function (req, res) {
   try {
+    const {class_id} = req.params;
     const webinar = await db.Webinar.findAll({
       where: {
         class_id,
