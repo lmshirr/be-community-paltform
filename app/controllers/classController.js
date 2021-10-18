@@ -113,11 +113,12 @@ module.exports.deleteClass = async (req, res, next) => {
 
 module.exports.getClassInCommunity = async (req, res, next) => {
   const { id: communityId } = req.params;
+  const { sort } = req.query;
 
   let classes;
 
   try {
-    classes = await classService.getClassInCommunity(communityId);
+    classes = await classService.getClassInCommunity(communityId, sort);
   } catch (error) {
     return next(error);
   }

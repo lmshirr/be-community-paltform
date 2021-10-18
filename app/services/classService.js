@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const { Class } = require('../models/index');
+const { Class, sequelize } = require('../models/index');
 const { Op } = require('sequelize');
 const { NotFoundException } = require('../utils/httpExceptions');
 
@@ -101,11 +101,36 @@ const findClass = async (community_id, key) => {
 
 /**
  *
- * @param {string} id community id
- * @returns
+ * @param {string} communityId community id
+ * @param {string} sort getClassSortBy recommended, newest, latest
+ * @returns {Array} classes
  */
-const getClassInCommunity = async (id) => {
-  const classes = await Class.findAll({ where: { community_id: id } });
+const getClassInCommunity = async (communityId, sort) => {
+  let classes;
+
+  switch (sort) {
+    case 'recommended':
+      classes = await Class.findAll({
+        where: { community_id: communityId },
+        order: [['students', 'DESC']],
+      });
+      break;
+    case 'newest':
+      classes = await Class.findAll({
+        where: { community_id: communityId },
+        order: [['created_at', 'DESC']],
+      });
+      break;
+    case 'latest':
+      classes = await Class.findAll({
+        where: { community_id: communityId },
+        order: [['created_at', 'ASC']],
+      });
+      break;
+    default:
+      classes = await Class.findAll({ where: { community_id: communityId } });
+      break;
+  }
 
   return classes;
 };
