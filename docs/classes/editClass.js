@@ -13,11 +13,11 @@
  *       - Class
  *     security:
  *       - jwtToken: []
- *     description: Get class in community
+ *     description: Edit class
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
