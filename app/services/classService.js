@@ -34,7 +34,7 @@ const createClass = async (createClassDto, file) => {
  *
  * @param {string} id class id
  * @param {{user_id: string, meta: string}} options meta=check_enrollment
- * @returns {classDetail: Object, isStuden: boolean}
+ * @returns {classDetail: Object, student: boolean}
  */
 const getClassDetail = async (classId, memberId, options) => {
   const { user_id, meta } = options;
@@ -48,9 +48,8 @@ const getClassDetail = async (classId, memberId, options) => {
   let student;
 
   if (user_id && meta === 'check_enrollment') {
-    console.log('in');
     student = await Class_Enrollment.findOne({
-      where: { [Op.and]: [{ id: classId }, { member_id: memberId }] },
+      where: { [Op.and]: [{ class_id: classId }, { member_id: memberId }] },
     });
 
     if (student) {
