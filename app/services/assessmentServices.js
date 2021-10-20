@@ -4,6 +4,7 @@ const {
   NotFoundException,
 } = require('../utils/httpExceptions');
 const { createQuestion, getQuestions } = require('./questionServices');
+const questionServices = require('./questionServices');
 
 /**
  *
@@ -16,11 +17,11 @@ const getAssessments = async (getAssessmentDto) => {
     where: {
       class_id: classId,
     },
-    // include: {
-    //   model: Community_Member,
-    //   required: true,
-    //   include: User,
-    // },
+    include: {
+      model: Question,
+      required: true,
+      // include: User,
+    },
   });
 
   return assessments;
@@ -36,7 +37,8 @@ const createAssessment = async (createAssessmentDto, questions) => {
 
   let createQuestion = [];
   questions.forEach((element) => {
-    const question = createQuestion(element, assessment.id);
+    // const question = createQuestion(element, assessment.id);
+    const question = questionServices.createQuestion(element, assessment.id);
     createQuestion.push(question);
   });
 

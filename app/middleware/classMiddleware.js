@@ -63,13 +63,18 @@ const checkAdmin_video_module = (req, res, next) => {
         message: error,
       });
     }
-    const classDetails = await Class.findByPk(req.params.ClassId);
+    // const classDetails = await Class.findByPk(req.params.classId);
+    const classDetails = await Class.findOne({
+      where: {
+        id: req.params.classId,
+      },
+    });
     const role = await Community_Member.findOne({
       where: {
         [Op.and]: [
-          { UserId: decodedToken.UserId },
-          { CommunityId: classDetails.CommunityId },
-          { [Op.or]: [{ role: 'Owner' }, { role: 'Administrator' }] },
+          { user_id: decodedToken.id },
+          { community_id: classDetails.community_id },
+          { [Op.or]: [{ role: 'owner' }, { role: 'administrator' }] },
         ],
       },
     });

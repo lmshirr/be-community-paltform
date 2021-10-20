@@ -23,7 +23,7 @@ const getQuestions = async (getQuestionDto) => {
 };
 
 /**
- * @param {{title: string, description: string, duration: string}} createQuestionDto
+ * @param {{description: string, choiceA: string, choiceB: string, choiceC: string, choiceD: string, correctAnswer: string}} createQuestionDto
  * @param {string} assessmentId
  * @returns {object} question
  */

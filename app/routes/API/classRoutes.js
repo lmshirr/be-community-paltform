@@ -71,26 +71,39 @@ classRouter.delete(
   videoController.deleteVideo
 );
 
+const test = (req, res, next) => {
+  console.log('test');
+  console.log('--------------------------------------------------------');
+  next();
+};
+
 // Assessment routes
 classRouter.get(
-  '/assessment/:AssessmentId',
+  '/:classId/assessments',
+  test,
+  classMiddleware.checkMembership,
+  assessmentController.getAssessment
+);
+classRouter.get(
+  '/:classId/assessments/:AssessmentId',
   classMiddleware.checkMembership,
   assessmentController.getAssessment
 );
 classRouter.post(
-  '/:ClassId/assessment',
+  '/:classId/assessments',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
+  test,
   assessmentController.addAssessment
 );
 classRouter.patch(
-  '/:ClassId/assessment/:AssessmentId',
+  '/:classId/assessments/:AssessmentId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   assessmentController.editAssessment
 );
 classRouter.delete(
-  '/:ClassId/assessment/:AssessmentId',
+  '/:classId/assessments/:AssessmentId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   assessmentController.deleteAssessment

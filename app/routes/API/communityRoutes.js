@@ -17,6 +17,7 @@ const {
   uploadCommentImage,
 } = require('../../utils/multer/uploadImage.service');
 const communityMiddleware = require('../../middleware/communityMiddleware');
+const classMiddleware = require('../../middleware/classMiddleware');
 
 const communityRouter = express.Router();
 
@@ -203,18 +204,43 @@ communityRouter
     classController.deleteClass
   );
 
-// assessments
-communityRouter
-  .route('/:id/classes/:classId/assessments')
-  .get(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkMember,
-    assessmentController.getAssessment
-  )
-  .post(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkAdmin,
-    assessmentController.createAssessment
-  );
+
+
+const test = (req, res, next) => {
+  console.log('test');
+  console.log('--------------------------------------------------------');
+  next();
+};
+
+// Assessment routes
+communityRouter.get(
+  '/:id/classes/:classId/assessments',
+  test,
+  classMiddleware.checkMembership,
+  assessmentController.getAssessment
+);
+communityRouter.get(
+  '/:id/classes/:classId/assessments/:AssessmentId',
+  classMiddleware.checkMembership,
+  assessmentController.getAssessment
+);
+communityRouter.post(
+  '/:id/classes/:classId/assessments',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.addAssessment
+);
+communityRouter.patch(
+  '/:id/classes/:classId/assessments/:AssessmentId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.editAssessment
+);
+communityRouter.delete(
+  '/:id/classes/:classId/assessments/:AssessmentId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.deleteAssessment
+);
 
 module.exports = communityRouter;
