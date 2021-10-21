@@ -1,4 +1,4 @@
-const { Assessment, Question } = require('../models');
+const { Assessment, Question } = require('../models/index');
 const {
   BadRequestException,
   NotFoundException,
@@ -33,11 +33,11 @@ const getAssessments = async (getAssessmentDto) => {
  * @returns {object} assessment
  */
 const createAssessment = async (createAssessmentDto, questions) => {
-  questions.forEach((element) => {
-    console.log(element);
-  });
-  console.log("-----------------------------------------------");
-  console.log(createAssessmentDto);
+  // questions.forEach((element) => {
+  //   console.log(element);
+  // });
+  // console.log("-----------------------------------------------");
+  // console.log(createAssessmentDto);
   const assessment = await Assessment.create(createAssessmentDto);
   console.log("-----------------------------------------------");
   console.log(assessment);

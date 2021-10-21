@@ -60,10 +60,23 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         enum: ['A', 'B', 'C', 'D'],
       },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
     {
       sequelize,
       modelName: 'Question',
+      tableName: 'question',
+      freezeTableName: true,
+      timestamps: false,
     }
   );
   return Question;
