@@ -24,10 +24,11 @@ module.exports = {
       assessment_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        reference: {
+        references: {
           model: 'assessment',
           key: 'id',
         },
+        onDelete: 'CASCADE',
       },
       description: {
         type: Sequelize.TEXT,

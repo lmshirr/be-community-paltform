@@ -9,15 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      Assessment.belongsTo(models.Class, {
-        foreignKey: { name: 'class_id' },
+    static associate({ Class, Question }) {
+      Assessment.belongsTo(Class, {
+        foreignKey: 'class_id',
         targetKey: 'id',
         // as: 'class',
       });
-      Assessment.hasMany(models.Question, {
+      Assessment.hasMany(Question, {
         onDelete: 'cascade',
-        foreignKey: { name: 'assessment_id' },
+        foreignKey: 'assessment_id',
         // as: 'questions',
       });
     }

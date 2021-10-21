@@ -33,11 +33,19 @@ const getAssessments = async (getAssessmentDto) => {
  * @returns {object} assessment
  */
 const createAssessment = async (createAssessmentDto, questions) => {
+  questions.forEach((element) => {
+    console.log(element);
+  });
+  console.log("-----------------------------------------------");
+  console.log(createAssessmentDto);
   const assessment = await Assessment.create(createAssessmentDto);
+  console.log("-----------------------------------------------");
+  console.log(assessment);
 
   let createQuestion = [];
   questions.forEach((element) => {
     // const question = createQuestion(element, assessment.id);
+    console.log(element);
     const question = questionServices.createQuestion(element, assessment.id);
     createQuestion.push(question);
   });
