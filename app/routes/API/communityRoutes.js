@@ -204,25 +204,16 @@ communityRouter
     classController.deleteClass
   );
 
-
-
-const test = (req, res, next) => {
-  console.log('test');
-  console.log('--------------------------------------------------------');
-  next();
-};
-
 // Assessment routes
 communityRouter.get(
   '/:id/classes/:classId/assessments',
-  test,
   classMiddleware.checkMembership,
   assessmentController.getAssessment
 );
 communityRouter.get(
   '/:id/classes/:classId/assessments/:AssessmentId',
   classMiddleware.checkMembership,
-  assessmentController.getAssessment
+  assessmentController.getAssessmentDetail
 );
 communityRouter.post(
   '/:id/classes/:classId/assessments',

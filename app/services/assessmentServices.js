@@ -14,14 +14,8 @@ const getAssessments = async (getAssessmentDto) => {
   const { classId } = getAssessmentDto;
 
   const assessments = await Assessment.findAll({
-    where: {
-      class_id: classId,
-    },
-    include: {
-      model: Question,
-      required: true,
-      // include: User,
-    },
+    where: { class_id: classId },
+    include: { model: Question, required: true },
   });
 
   return assessments;
@@ -32,27 +26,20 @@ const getAssessments = async (getAssessmentDto) => {
  * @param {Question[]} questions
  * @returns {object} assessment
  */
-const createAssessment = async (createAssessmentDto, questions) => {
-  // questions.forEach((element) => {
-  //   console.log(element);
-  // });
-  // console.log("-----------------------------------------------");
-  // console.log(createAssessmentDto);
+const createAssessment = async (createAssessmentDto) => {
   const assessment = await Assessment.create(createAssessmentDto);
-  console.log("-----------------------------------------------");
-  console.log(assessment);
+  // console.log(assessment);
 
-  let createQuestion = [];
-  questions.forEach((element) => {
-    // const question = createQuestion(element, assessment.id);
-    console.log(element);
-    const question = questionServices.createQuestion(element, assessment.id);
-    createQuestion.push(question);
-  });
+  // let createQuestion = [];
+  // questions.forEach((element) => {
+  //   // const question = createQuestion(element, assessment.id);
+  //   console.log(element);
+  //   const question = questionServices.createQuestion(element, assessment.id);
+  //   createQuestion.push(question);
+  // });
 
   // const { id: assessment_id } = assessment;
-  assessment.questions = createQuestion;
-  console.log(assessment);
+  // assessment.questions = createQuestion;
 
   return assessment;
 };
@@ -76,15 +63,15 @@ const deleteAssessment = async (assessmentId) => {
 /**
  *
  * @param {string} id
- * @returns comment
+ * @returns assessment
  */
-const getAssessmentDetail = async (id) => {
-  const comment = await Assessment.findOne({
-    where: { id },
-    include: { model: Community_Member, include: User },
+const getAssessmentDetail = async (assessmentId) => {
+  const assessment = await Assessment.findOne({
+    where: { id: assessmentId },
+    include: { model: Question, required: true, as: 'questions' },
   });
 
-  return comment;
+  return assessment;
 };
 
 module.exports = {

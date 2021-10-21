@@ -30,7 +30,12 @@ const getQuestions = async (getQuestionDto) => {
 const createQuestion = async (createQuestionDto, assessmentId) => {
   const question = await Question.create({
     assessment_id: assessmentId,
-    ...createQuestionDto,
+    description: createQuestionDto.description,
+    choice_a: createQuestionDto.choiceA,
+    choice_b: createQuestionDto.choiceB,
+    choice_c: createQuestionDto.choiceC,
+    choice_d: createQuestionDto.choiceD,
+    correct_answer: createQuestionDto.correctAnswer,
   });
 
   return question;

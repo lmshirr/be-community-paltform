@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
       Assessment.hasMany(Question, {
         onDelete: 'cascade',
         foreignKey: 'assessment_id',
-        // as: 'questions',
+        sourceKey: 'id',
+        as: 'questions',
       });
     }
   }

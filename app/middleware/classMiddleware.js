@@ -1,7 +1,9 @@
-const { Community_Member, Class, Module, Video } = require('../models/index');
+const { Community_Member, Class, Module, Video, Assessment } = require('../models/index');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { ForbiddenException } = require('../utils/httpExceptions');
+const assessmentService = require('../services/assessmentServices');
+const classService = require('../services/classServices');
 
 const checkAdmin_community = async (req, res, next) => {
   const { id: user_id } = req.user;
@@ -104,14 +106,19 @@ const checkMembership = (req, res, next) => {
     } else if (req.url.includes('video')) {
       const video = await Video.findByPk(req.params.VideoId);
       classDetails = await Class.findByPk(video.ClassId);
+    } else if (req.url.includes('assessments')) {
+      const assessment = await assessmentService.getAssessmentDetail(req.params.AssessmentId);
+      classDetails = await classService.getClassDetail(assessment.class_id);
     } else {
       classDetails = await Class.findByPk(req.params.id);
     }
+    console.log(decodedToken);
+
     const checkMember = await Community_Member.findOne({
       where: {
         [Op.and]: [
-          { UserId: decodedToken.UserId },
-          { CommunityId: classDetails.CommunityId },
+          { user_id: decodedToken.id },
+          { community_id: classDetails.community_id },
         ],
       },
     });
