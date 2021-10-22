@@ -18,8 +18,10 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
+    "@google-cloud/storage": "^5.15.3",
     "axios": "^0.21.4",
     "bcrypt": "^5.0.1",
+    "config": "^3.3.6",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
@@ -32,6 +34,7 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "pg": "^8.6.0",
     "sequelize": "^6.6.2",
+    "url-join": "^4.0.1",
     "uuid": "^8.3.2",
     "validator": "^13.6.0"
   },

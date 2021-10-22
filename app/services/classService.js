@@ -5,6 +5,7 @@ const {
   NotFoundException,
   ForbiddenException,
 } = require('../utils/httpExceptions');
+const urlJoin = require('url-join');
 
 /**
  *
@@ -16,13 +17,10 @@ const createClass = async (createClassDto, file) => {
   let banner_pict;
 
   if (file) {
-    const { filename } = file;
-    const path =
-      process.env.NODE_ENV === 'production'
-        ? process.env.PRODUCTION_URL
-        : process.env.LOCALHOST_URL;
+    const cloudUrl = process.env.GCS_URL;
+    const bucketName = process.env.BUCKET_NAME;
 
-    banner_pict = `${path}/assets/class_banner/${filename}`;
+    banner_pict = urlJoin(cloudUrl, bucketName, file.filename);
   }
 
   const dataClass = await Class.create({ ...createClassDto, banner_pict });
@@ -73,7 +71,10 @@ const editClass = async (id, editClassDto, file) => {
   let banner_pict;
 
   if (file) {
-    banner_pict = file.filename;
+    const cloudUrl = process.env.GCS_URL;
+    const bucketName = process.env.BUCKET_NAME;
+
+    banner_pict = urlJoin(cloudUrl, bucketName, file.filename);
   }
 
   let classData = await Class.findOne({ where: { id } });
