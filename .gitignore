@@ -21,6 +21,3 @@ package-lock.json
 # trash file
 googleuser.js
 testmigration.js
-
-# config file
-config/
