@@ -1,17 +1,16 @@
 const db = require('../models/index');
 const fs = require('fs');
 const { Op } = require('sequelize');
-// const assessment = require('../models/assessment.js');
 const assessmentService = require('../services/assessmentServices');
 const questionService = require('../services/questionServices');
 require('dotenv').config({ path: '../.env' });
 
-module.exports.getAssessment = async function (req, res) {
+module.exports.getAssessments = async function (req, res) {
   try {
-    const assessment = await db.Assessment.findByPk(req.params.AssessmentId);
+    const assessments = await assessmentService.getAssessments({ classId: req.params.classId });
     res.status(200).json({
       success: true,
-      data: assessment,
+      data: assessments,
     });
   } catch (error) {
     return res.status(500).json({
@@ -23,19 +22,7 @@ module.exports.getAssessment = async function (req, res) {
 
 module.exports.getAssessmentDetail = async function (req, res) {
   try {
-    // const assessment = await db.Assessment.findByPk(req.params.AssessmentId);
-    // const assessment = await db.Assessment.findOne({
-    //   where: { id: req.params.AssessmentId },
-    //   include: [
-    //     {
-    //       model: db.Question,
-    //       as: 'questions',
-    //     },
-    //   ],
-    // });
-
-    const assessment = await assessmentService.getAssessmentDetail(req.params.AssessmentId);
-
+    const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
     res.status(200).json({
       success: true,
       data: assessment,
@@ -87,7 +74,7 @@ module.exports.addAssessment = async function (req, res) {
 module.exports.editAssessment = async function (req, res) {
   const { name } = req.body;
   try {
-    const assessment = await db.Assessment.findByPk(req.params.AssessmentId);
+    const assessment = await db.Assessment.findByPk(req.params.assessmentId);
     // if (req.file) {
     //   fs.unlinkSync(`./assets/class/modules/${assessment.filename}`)
     //   assessment.update({
@@ -111,9 +98,9 @@ module.exports.editAssessment = async function (req, res) {
 
 module.exports.deleteAssessment = async function (req, res) {
   try {
-    const assessment = await db.Assessment.findByPk(req.params.AssessmentId);
+    const assessment = await db.Assessment.findByPk(req.params.assessmentId);
     fs.unlinkSync(`./assets/class/modules/${assessment.filename}`);
-    await db.Assessment.destroy({ where: { id: req.params.AssessmentId } });
+    await db.Assessment.destroy({ where: { id: req.params.assessmentId } });
     return res.status(200).json({
       messages: 'Delete success!',
     });

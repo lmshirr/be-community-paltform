@@ -80,14 +80,13 @@ const test = (req, res, next) => {
 // Assessment routes
 classRouter.get(
   '/:classId/assessments',
-  test,
   classMiddleware.checkMembership,
-  assessmentController.getAssessment
+  assessmentController.getAssessments
 );
 classRouter.get(
-  '/:classId/assessments/:AssessmentId',
+  '/:classId/assessments/:assessmentId',
   classMiddleware.checkMembership,
-  assessmentController.getAssessment
+  assessmentController.getAssessmentDetail
 );
 classRouter.post(
   '/:classId/assessments',
@@ -97,13 +96,13 @@ classRouter.post(
   assessmentController.addAssessment
 );
 classRouter.patch(
-  '/:classId/assessments/:AssessmentId',
+  '/:classId/assessments/:assessmentId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   assessmentController.editAssessment
 );
 classRouter.delete(
-  '/:classId/assessments/:AssessmentId',
+  '/:classId/assessments/:assessmentId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   assessmentController.deleteAssessment

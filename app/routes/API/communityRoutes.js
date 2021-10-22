@@ -204,14 +204,23 @@ communityRouter
     classController.deleteClass
   );
 
+const test = (req, res, next) => {
+  console.log("-------------------------------------------------");
+  console.log(req.params.id);
+  console.log(req.params.classId);
+  console.log(req.params.assessmentId);
+  console.log("-------------------------------------------------");
+  next();
+};
+
 // Assessment routes
 communityRouter.get(
   '/:id/classes/:classId/assessments',
   classMiddleware.checkMembership,
-  assessmentController.getAssessment
+  assessmentController.getAssessments
 );
 communityRouter.get(
-  '/:id/classes/:classId/assessments/:AssessmentId',
+  '/:id/classes/:classId/assessments/:assessmentId',
   classMiddleware.checkMembership,
   assessmentController.getAssessmentDetail
 );
@@ -222,13 +231,13 @@ communityRouter.post(
   assessmentController.addAssessment
 );
 communityRouter.patch(
-  '/:id/classes/:classId/assessments/:AssessmentId',
+  '/:id/classes/:classId/assessments/:assessmentId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   assessmentController.editAssessment
 );
 communityRouter.delete(
-  '/:id/classes/:classId/assessments/:AssessmentId',
+  '/:id/classes/:classId/assessments/:assessmentId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   assessmentController.deleteAssessment

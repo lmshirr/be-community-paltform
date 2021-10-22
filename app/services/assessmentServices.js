@@ -1,10 +1,5 @@
 const { Assessment, Question } = require('../models/index');
-const {
-  BadRequestException,
-  NotFoundException,
-} = require('../utils/httpExceptions');
-const { createQuestion, getQuestions } = require('./questionServices');
-const questionServices = require('./questionServices');
+const { NotFoundException } = require('../utils/httpExceptions');
 
 /**
  *
@@ -15,7 +10,7 @@ const getAssessments = async (getAssessmentDto) => {
 
   const assessments = await Assessment.findAll({
     where: { class_id: classId },
-    include: { model: Question, required: true },
+    include: { model: Question, required: true, as: 'questions' },
   });
 
   return assessments;
@@ -28,19 +23,6 @@ const getAssessments = async (getAssessmentDto) => {
  */
 const createAssessment = async (createAssessmentDto) => {
   const assessment = await Assessment.create(createAssessmentDto);
-  // console.log(assessment);
-
-  // let createQuestion = [];
-  // questions.forEach((element) => {
-  //   // const question = createQuestion(element, assessment.id);
-  //   console.log(element);
-  //   const question = questionServices.createQuestion(element, assessment.id);
-  //   createQuestion.push(question);
-  // });
-
-  // const { id: assessment_id } = assessment;
-  // assessment.questions = createQuestion;
-
   return assessment;
 };
 

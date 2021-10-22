@@ -65,7 +65,6 @@ const checkAdmin_video_module = (req, res, next) => {
         message: error,
       });
     }
-    // const classDetails = await Class.findByPk(req.params.classId);
     const classDetails = await Class.findOne({
       where: {
         id: req.params.classId,
@@ -106,11 +105,11 @@ const checkMembership = (req, res, next) => {
     } else if (req.url.includes('video')) {
       const video = await Video.findByPk(req.params.VideoId);
       classDetails = await Class.findByPk(video.ClassId);
-    } else if (req.url.includes('assessments')) {
-      const assessment = await assessmentService.getAssessmentDetail(req.params.AssessmentId);
+    } else if (req.url.includes('assessments') && req.params.assessmentId) {
+      const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
       classDetails = await classService.getClassDetail(assessment.class_id);
     } else {
-      classDetails = await Class.findByPk(req.params.id);
+      classDetails = await classService.getClassDetail(req.params.classId);
     }
     console.log(decodedToken);
 
