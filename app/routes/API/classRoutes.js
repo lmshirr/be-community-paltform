@@ -7,8 +7,9 @@ const assessmentController = require('../../controllers/assessmentController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const classMiddleware = require('../../middleware/classMiddleware');
 const {
-  uploadClassModuleOrVideo,
-} = require('../../utils/multer/uploadImage.service');
+  uploadDocMiddleware,
+  uploadVideoMiddleware,
+} = require('../../utils/uploadFile');
 
 const classRouter = Router();
 
@@ -60,14 +61,14 @@ classRouter.post(
   '/:ClassId/module',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  uploadClassModuleOrVideo.single('module'),
+  uploadDocMiddleware.single('module'),
   moduleController.addModule
 );
 classRouter.patch(
   '/:ClassId/module/:ModuleId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  uploadClassModuleOrVideo.single('module'),
+  uploadDocMiddleware.single('module'),
   moduleController.editModule
 );
 classRouter.delete(
@@ -87,14 +88,14 @@ classRouter.post(
   '/:ClassId/video',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  uploadClassModuleOrVideo.single('video'),
+  uploadVideoMiddleware.single('video'),
   videoController.addVideo
 );
 classRouter.patch(
   '/:ClassId/video/:VideoId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  uploadClassModuleOrVideo.single('video'),
+  uploadVideoMiddleware.single('video'),
   videoController.editVideo
 );
 classRouter.delete(
