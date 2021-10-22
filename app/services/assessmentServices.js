@@ -10,7 +10,7 @@ const getAssessments = async (getAssessmentDto) => {
 
   const assessments = await Assessment.findAll({
     where: { class_id: classId },
-    include: { model: Question, required: true, as: 'questions' },
+    // include: { model: Question, required: true, as: 'questions' },
   });
 
   return assessments;

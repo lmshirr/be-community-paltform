@@ -1,3 +1,5 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-await-in-loop */
 const db = require('../models/index');
 const fs = require('fs');
 const { Op } = require('sequelize');
@@ -5,7 +7,7 @@ const assessmentService = require('../services/assessmentServices');
 const questionService = require('../services/questionServices');
 require('dotenv').config({ path: '../.env' });
 
-module.exports.getAssessments = async function (req, res) {
+module.exports.getAssessments = async (req, res) => {
   try {
     const assessments = await assessmentService.getAssessments({ classId: req.params.classId });
     res.status(200).json({
@@ -20,7 +22,7 @@ module.exports.getAssessments = async function (req, res) {
   }
 };
 
-module.exports.getAssessmentDetail = async function (req, res) {
+module.exports.getAssessmentDetail = async (req, res) => {
   try {
     const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
     res.status(200).json({
@@ -35,7 +37,7 @@ module.exports.getAssessmentDetail = async function (req, res) {
   }
 };
 
-module.exports.addAssessment = async function (req, res) {
+module.exports.addAssessment = async (req, res) => {
   const { title, description, duration, questions } = req.body;
   const { classId } = req.params;
   try {
@@ -47,21 +49,20 @@ module.exports.addAssessment = async function (req, res) {
       question_count: questions.length,
     });
 
-    console.log(assessment);
+    // insert question to db
+    for (let i = 0; i < questions.length; i++) {
+      const question = await questionService.createQuestion(
+        questions[i],
+        assessment.id
+      );
+    }
 
-    let createdQuestions = [];
-    questions.forEach((element) => {
-      const question = questionService.createQuestion(element, assessment.id);
-      createdQuestions.push(question);
-    });
-
+    // get inserted assessment data
     const assessmentQuestions = await assessmentService.getAssessmentDetail(assessment.id);
-    console.log(createdQuestions);
-    console.log(assessmentQuestions);
 
     res.status(200).json({
       message: 'Assessment Created',
-      data: { ...assessment, questions: createdQuestions },
+      data: assessmentQuestions,
     });
   } catch (error) {
     return res.status(500).json({
@@ -71,7 +72,7 @@ module.exports.addAssessment = async function (req, res) {
   }
 };
 
-module.exports.editAssessment = async function (req, res) {
+module.exports.editAssessment = async (req, res) => {
   const { name } = req.body;
   try {
     const assessment = await db.Assessment.findByPk(req.params.assessmentId);
@@ -96,7 +97,7 @@ module.exports.editAssessment = async function (req, res) {
   }
 };
 
-module.exports.deleteAssessment = async function (req, res) {
+module.exports.deleteAssessment = async (req, res) => {
   try {
     const assessment = await db.Assessment.findByPk(req.params.assessmentId);
     fs.unlinkSync(`./assets/class/modules/${assessment.filename}`);

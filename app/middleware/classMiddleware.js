@@ -111,7 +111,6 @@ const checkMembership = (req, res, next) => {
     } else {
       classDetails = await classService.getClassDetail(req.params.classId);
     }
-    console.log(decodedToken);
 
     const checkMember = await Community_Member.findOne({
       where: {
