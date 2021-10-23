@@ -29,16 +29,32 @@ const createAssessment = async (createAssessmentDto) => {
 /**
  *
  * @param {string} assessmentId
+ * @param {{title: string, description: string, duration: string}} createAssessmentDto
  * @returns assessment
  */
-const deleteAssessment = async (assessmentId) => {
-  let assessment = await Assessment.findOne({ where: { id: assessmentId } });
+const updateAssessment = async (assessmentId, updateAssessmentDto) => {
+  const assessment = await Assessment.findOne({
+    where: { id: assessmentId },
+  });
 
   if (!assessment) {
     throw new NotFoundException('Assessment not found');
   }
 
-  assessment = await assessment.destroy();
+  await assessment.update(updateAssessmentDto);
+  return assessment;
+};
+
+/**
+ *
+ * @param {string} assessmentId
+ * @returns assessment
+ */
+const deleteAssessment = async (assessmentId) => {
+  const assessment = await Assessment.destroy({
+    where: { id: assessmentId },
+  });
+
   return assessment;
 };
 
@@ -50,7 +66,7 @@ const deleteAssessment = async (assessmentId) => {
 const getAssessmentDetail = async (assessmentId) => {
   const assessment = await Assessment.findOne({
     where: { id: assessmentId },
-    include: { model: Question, required: true, as: 'questions' },
+    include: { model: Question, as: 'questions' },
   });
 
   return assessment;
@@ -59,6 +75,7 @@ const getAssessmentDetail = async (assessmentId) => {
 module.exports = {
   getAssessments,
   createAssessment,
+  updateAssessment,
   deleteAssessment,
   getAssessmentDetail,
 };

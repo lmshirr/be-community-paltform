@@ -73,21 +73,18 @@ module.exports.addAssessment = async (req, res) => {
 };
 
 module.exports.editAssessment = async (req, res) => {
-  const { name } = req.body;
+  const { title, description, duration, questions_id } = req.body;
   try {
-    const assessment = await db.Assessment.findByPk(req.params.assessmentId);
-    // if (req.file) {
-    //   fs.unlinkSync(`./assets/class/modules/${assessment.filename}`)
-    //   assessment.update({
-    //     filename: req.file.filename,
-    //   });
-    // }
-    module.update({
-      name,
-    });
+    const assessment = await assessmentService.updateAssessment(
+      req.params.assessmentId,
+      { title, description, duration }
+    );
+
+    // update question
+
     return res.status(200).json({
-      messages: 'Module updated!',
-      data: module,
+      messages: 'Assessment updated!',
+      data: assessment,
     });
   } catch (error) {
     return res.status(200).json({
@@ -97,13 +94,15 @@ module.exports.editAssessment = async (req, res) => {
   }
 };
 
-module.exports.deleteAssessment = async (req, res) => {
+module.exports.deleteAssessment = async (req, res, next) => {
+  const { assessmentId: id } = req.params;
+  let assessment;
   try {
-    const assessment = await db.Assessment.findByPk(req.params.assessmentId);
-    fs.unlinkSync(`./assets/class/modules/${assessment.filename}`);
-    await db.Assessment.destroy({ where: { id: req.params.assessmentId } });
+    assessment = await assessmentService.deleteAssessment(id);
+
     return res.status(200).json({
       messages: 'Delete success!',
+      data: assessment,
     });
   } catch (error) {
     return res.status(500).json({
