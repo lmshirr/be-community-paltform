@@ -1,6 +1,7 @@
-const { Community, Community_Member, User } = require('../models/index');
+const { Community, Community_Member, User } = require('../models');
 const { Op } = require('sequelize');
 const { NotFoundException } = require('../utils/httpExceptions');
+const urlJoin = require('url-join');
 
 /**
  *
@@ -50,8 +51,10 @@ const createCommunity = async (createCommunityDto, userId, file) => {
   let community_pict;
 
   if (file) {
-    const { filename } = file;
-    community_pict = `/assets/community/${filename}`;
+    const cloudUrl = process.env.GCS_URL;
+    const bucketName = process.env.BUCKET_NAME;
+
+    community_pict = urlJoin(cloudUrl, bucketName, file.filename);
   }
 
   const community = await Community.create({
@@ -82,12 +85,15 @@ const editCommunity = async (editCommunityDto, id, files) => {
   let community_pict;
 
   if (files) {
+    const cloudUrl = process.env.GCS_URL;
+    const bucketName = process.env.BUCKET_NAME;
+
     if (files.community_banner) {
       const { community_banner: communityBannerFile } = files;
 
       const { filename } = communityBannerFile[0];
 
-      community_banner = `/assets/community/${filename}`;
+      community_banner = urlJoin(cloudUrl, bucketName, filename);
     }
 
     if (files.community_pict) {
@@ -95,7 +101,7 @@ const editCommunity = async (editCommunityDto, id, files) => {
 
       const { filename } = communityPictFile[0];
 
-      community_pict = `/assets/community/${filename}`;
+      community_pict = urlJoin(cloudUrl, bucketName, filename);
     }
   }
 

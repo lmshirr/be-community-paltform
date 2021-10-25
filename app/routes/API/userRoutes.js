@@ -2,10 +2,8 @@ const express = require('express');
 const userController = require('../../controllers/userController');
 const googleAuthController = require('../../controllers/googleAuthController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
-const {
-  uploadProfileImage,
-} = require('../../utils/multer/uploadImage.service');
 const invitationController = require('../../controllers/invitationController');
+const { uploadImageMiddleware } = require('../../utils/uploadFile');
 
 const userRouter = express.Router();
 
@@ -16,7 +14,7 @@ userRouter
   .get(userController.getUserDetail)
   .patch(
     authorizationMiddleware.checkLogin,
-    uploadProfileImage.single('profile_pict'),
+    uploadImageMiddleware.single('profile_pict'),
     userController.editUser
   );
 userRouter.post('/register', userController.register);

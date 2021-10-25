@@ -1,13 +1,7 @@
 /**
  * @swagger
- * /communities/{communityId}/classes/{classId}/enroll:
+ * /classes/{classId}/enroll:
  *   parameters:
- *     - name: communityId
- *       in: path
- *       description: community id
- *       required: true
- *       schema:
- *         type: string
  *     - name: classId
  *       in: path
  *       description: class id

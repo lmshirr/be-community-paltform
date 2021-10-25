@@ -1,5 +1,5 @@
-const { Community_Member, Community, sequelize } = require('../models/index');
-const { Op, QueryTypes } = require('sequelize');
+const { sequelize } = require('../models/index');
+const { QueryTypes } = require('sequelize');
 
 /**
  *

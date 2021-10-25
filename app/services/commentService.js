@@ -3,6 +3,7 @@ const {
   BadRequestException,
   NotFoundException,
 } = require('../utils/httpExceptions');
+const urlJoin = require('url-join');
 
 /**
  *
@@ -25,19 +26,18 @@ const postComment = async (postCommentDto, file) => {
   }
 
   // make link path
-  let imageUrl;
+  let comment_pict;
   if (file) {
-    const path =
-      process.env.NODE_ENV === 'production'
-        ? process.env.PRODUCTION_URL
-        : process.env.LOCALHOST_URL;
-    imageUrl = `${path}/assets/comment_pict/${file.filename}`;
+    const cloudUrl = process.env.GCS_URL;
+    const bucketName = process.env.BUCKET_NAME;
+
+    comment_pict = urlJoin(cloudUrl, bucketName, file.filename);
   }
 
   const comment = await Comment.create(
     {
       ...postCommentDto,
-      comment_pict: imageUrl,
+      comment_pict,
     },
     {
       include: { model: Community_Member },

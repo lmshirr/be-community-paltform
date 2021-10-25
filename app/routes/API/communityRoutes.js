@@ -1,22 +1,14 @@
 const express = require('express');
-const {
-  uploadCommunityImage,
-  uploadClassImage,
-} = require('../../utils/multer/uploadImage.service');
 const memberController = require('../../controllers/communityMemberController');
 const communityController = require('../../controllers/communityController');
 const requestController = require('../../controllers/requestMembershipController');
 const invitationController = require('../../controllers/invitationController');
 const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
 const communityPostController = require('../../controllers/communityPostController');
-const {
-  uploadPostImage,
-  uploadCommentImage,
-} = require('../../utils/multer/uploadImage.service');
 const classController = require('../../controllers/classController');
-const classEnrollmentController = require('../../controllers/classEnrollmentController');
 const commentController = require('../../controllers/commentController');
 const communityMiddleware = require('../../middleware/communityMiddleware');
+const { uploadImageMiddleware } = require('../../utils/uploadFile');
 
 const communityRouter = express.Router();
 
@@ -26,7 +18,7 @@ communityRouter
   .get(authorizationMiddleware.checkLogin, communityController.getAllCommunity)
   .post(
     authorizationMiddleware.checkLogin,
-    uploadCommunityImage.single('community_pict'),
+    uploadImageMiddleware.single('community_pict'),
     communityController.createCommunity
   );
 communityRouter
@@ -38,7 +30,7 @@ communityRouter
   .patch(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
-    uploadCommunityImage.fields([
+    uploadImageMiddleware.fields([
       { name: 'community_pict' },
       { name: 'community_banner' },
     ]),
@@ -124,7 +116,7 @@ communityRouter
   .post(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkMember,
-    uploadPostImage.array('attachments'),
+    uploadImageMiddleware.array('attachments'),
     communityPostController.createPost
   );
 
@@ -137,7 +129,7 @@ communityRouter
   .patch(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkPostOwner,
-    uploadPostImage.array('attachments'),
+    uploadImageMiddleware.array('attachments'),
     communityPostController.editPost
   )
   .delete(
@@ -157,7 +149,7 @@ communityRouter
   .post(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkMember,
-    uploadCommentImage.single('comment_pict'),
+    uploadImageMiddleware.single('comment_pict'),
     commentController.postComment
   );
 communityRouter
@@ -174,7 +166,7 @@ communityRouter
   .post(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
-    uploadClassImage.single('class_banner'),
+    uploadImageMiddleware.single('class_banner'),
     classController.createClass
   )
   .get(
@@ -189,32 +181,6 @@ communityRouter
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkMember,
     classController.findClass
-  );
-
-communityRouter
-  .route('/:id/classes/:classId')
-  .get(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkMember,
-    classController.getClassDetail
-  )
-  .patch(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkAdmin,
-    classController.editClass
-  )
-  .delete(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkAdmin,
-    classController.deleteClass
-  );
-
-communityRouter
-  .route('/:id/classes/:classId/enroll')
-  .post(
-    authorizationMiddleware.checkLogin,
-    communityMiddleware.checkMember,
-    classEnrollmentController.enrollUser
   );
 
 module.exports = communityRouter;

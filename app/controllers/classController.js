@@ -2,7 +2,7 @@
 const classService = require('../services/classService');
 const communityPostService = require('../services/communityPostService');
 
-module.exports.findClass = async (req, res, next) => {
+const findClass = async (req, res, next) => {
   const { key } = req.query;
   const { id: communityId } = req.params;
 
@@ -19,23 +19,26 @@ module.exports.findClass = async (req, res, next) => {
   });
 };
 
-module.exports.getClassDetail = async (req, res, next) => {
-  const { classId: id } = req.params;
+const getClassDetail = async (req, res, next) => {
+  const { classId } = req.params;
+  const { user_id, meta } = req.query;
+  const { id: memberId } = req.member;
 
-  let classDetail;
+  let data;
 
   try {
-    classDetail = await classService.getClassDetail(id);
+    data = await classService.getClassDetail(classId, memberId, {
+      user_id,
+      meta,
+    });
   } catch (error) {
     return next(error);
   }
 
-  return res.json({
-    data: classDetail,
-  });
+  return res.json(data);
 };
 
-module.exports.createClass = async (req, res, next) => {
+const createClass = async (req, res, next) => {
   const { name, description, summary, about } = req.body;
   const { id: member_id } = req.member;
   const { id: community_id } = req.params;
@@ -75,7 +78,7 @@ module.exports.createClass = async (req, res, next) => {
   });
 };
 
-module.exports.editClass = async (req, res, next) => {
+const editClass = async (req, res, next) => {
   const { classId } = req.params;
   const { name, description, summary, about } = req.body;
   const { file } = req;
@@ -97,7 +100,7 @@ module.exports.editClass = async (req, res, next) => {
   });
 };
 
-module.exports.deleteClass = async (req, res, next) => {
+const deleteClass = async (req, res, next) => {
   const { classId } = req.params;
 
   try {
@@ -111,7 +114,7 @@ module.exports.deleteClass = async (req, res, next) => {
   });
 };
 
-module.exports.getClassInCommunity = async (req, res, next) => {
+const getClassInCommunity = async (req, res, next) => {
   const { id: communityId } = req.params;
   const { sort } = req.query;
 
@@ -124,4 +127,50 @@ module.exports.getClassInCommunity = async (req, res, next) => {
   }
 
   return res.json({ data: classes });
+};
+
+const getClasses = async (req, res, next) => {
+  const { sort } = req.query;
+
+  let classes;
+
+  try {
+    classes = await classService.getClasses(sort);
+  } catch (error) {
+    return next(error);
+  }
+
+  return res.json({ data: classes });
+};
+
+const enrollUser = async (req, res, next) => {
+  const { id: member_id } = req.member;
+  const { id: community_id, classId: class_id } = req.params;
+
+  let classEnrollment;
+  try {
+    classEnrollment = await classService.createEnrollment({
+      community_id,
+      member_id,
+      class_id,
+    });
+  } catch (error) {
+    return next(error);
+  }
+
+  return res.status(201).json({
+    message: 'Enroll class success',
+    data: classEnrollment,
+  });
+};
+
+module.exports = {
+  getClassInCommunity,
+  deleteClass,
+  editClass,
+  createClass,
+  findClass,
+  getClassDetail,
+  getClasses,
+  enrollUser,
 };
