@@ -1,13 +1,7 @@
 /**
  * @swagger
- * /communities/{communityId}/classes/{classId}:
+ * /classes/{classId}:
  *   parameters:
- *     - name: communityId
- *       in: path
- *       description: community id
- *       required: true
- *       schema:
- *         type: string
  *     - name: classId
  *       in: path
  *       description: class id
@@ -19,11 +13,11 @@
  *       - Class
  *     security:
  *       - jwtToken: []
- *     description: Get class in community
+ *     description: Edit class
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:

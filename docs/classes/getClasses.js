@@ -1,13 +1,6 @@
 /**
  * @swagger
- * /communities/{communityId}/classes:
- *   parameters:
- *     - name: communityId
- *       in: path
- *       description: community id
- *       required: true
- *       schema:
- *         type: string
+ * /classes:
  *   get:
  *     tags:
  *       - Class

@@ -4,6 +4,7 @@ const { UnauthorizedException } = require('../utils/httpExceptions');
 
 const checkLogin = (req, res, next) => {
   const token = req.cookies.jwt;
+
   if (!token) {
     return next(new UnauthorizedException("You aren't logged in"));
   }
@@ -12,8 +13,10 @@ const checkLogin = (req, res, next) => {
     if (err) {
       return next(new UnauthorizedException("You aren't logged in"));
     }
+
     req.user = decoded;
   });
+
   next();
 };
 

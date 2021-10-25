@@ -5,6 +5,7 @@ const {
   Community_Post_Attachment,
 } = require('../models/index');
 const { NotFoundException } = require('../utils/httpExceptions');
+const urlJoin = require('url-join');
 
 /**
  *
@@ -21,14 +22,10 @@ const createPost = async (createPostDto, files) => {
 
   if (files) {
     files.forEach(async (file) => {
-      const { filename } = file;
+      const cloudUrl = process.env.GCS_URL;
+      const bucketName = process.env.BUCKET_NAME;
 
-      const path =
-        process.env.NODE_ENV === 'production'
-          ? process.env.PRODUCTION_URL
-          : process.env.LOCALHOST_URL;
-
-      const file_url = `${path}/assets/post_pict/${filename}`;
+      const file_url = urlJoin(cloudUrl, bucketName, file.filename);
 
       await Community_Post_Attachment.create({
         community_post_id: postId,
@@ -113,14 +110,10 @@ const editPost = async (editPostDto, post_id, files) => {
 
   if (files) {
     files.forEach(async (file) => {
-      const { filename } = file;
+      const cloudUrl = process.env.GCS_URL;
+      const bucketName = process.env.BUCKET_NAME;
 
-      const path =
-        process.env.NODE_ENV === 'production'
-          ? process.env.PRODUCTION_URL
-          : process.env.LOCALHOST_URL;
-
-      const file_url = `${path}/assets/post_pict/${filename}`;
+      const file_url = urlJoin(cloudUrl, bucketName, file.filename);
 
       await Community_Post_Attachment.create({
         community_post_id: post_id,

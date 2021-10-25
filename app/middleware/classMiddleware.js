@@ -1,7 +1,10 @@
 const { Community_Member, Class, Module, Video } = require('../models/index');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
-const { ForbiddenException } = require('../utils/httpExceptions');
+const {
+  ForbiddenException,
+  NotFoundException,
+} = require('../utils/httpExceptions');
 
 const checkAdmin_community = async (req, res, next) => {
   const { id: user_id } = req.user;
@@ -120,9 +123,75 @@ const checkMembership = (req, res, next) => {
   });
 };
 
+const checkMember = async (req, res, next) => {
+  const { classId } = req.params;
+  const { id: user_id } = req.user;
+
+  try {
+    const classData = await Class.findOne({ where: { id: classId } });
+
+    if (!classData) {
+      throw new NotFoundException('Class not found');
+    }
+
+    const { community_id } = classData.dataValues;
+
+    const member = await Community_Member.findOne({
+      where: { [Op.and]: [{ community_id, user_id }] },
+    });
+
+    if (!member) {
+      throw new ForbiddenException('You are not member on this community');
+    }
+
+    req.member = member.dataValues;
+  } catch (error) {
+    return next(error);
+  }
+
+  return next();
+};
+
+const checkAdminCommunity = async (req, res, next) => {
+  const { classId } = req.params;
+  const { id: user_id } = req.user;
+
+  try {
+    const classData = await Class.findOne({ where: { id: classId } });
+
+    if (!classData) {
+      throw new NotFoundException('Class not found');
+    }
+
+    const { community_id } = classData.dataValues;
+
+    const admin = await Community_Member.findOne({
+      where: {
+        [Op.and]: [
+          { community_id },
+          { user_id },
+          { [Op.or]: [{ role: 'owner' }, { role: 'administrator' }] },
+        ],
+      },
+    });
+
+    if (!admin) {
+      throw new ForbiddenException('You are not member on this community');
+    }
+
+    req.member = admin.dataValues;
+  } catch (error) {
+    return next(error);
+  }
+
+  return next();
+};
+
 module.exports = {
   checkAdmin_community,
   checkAdmin_delete_patch,
   checkAdmin_video_module,
   checkMembership,
+  checkMember,
+  checkAdminCommunity,
 };
