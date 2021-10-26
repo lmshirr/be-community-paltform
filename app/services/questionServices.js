@@ -77,13 +77,9 @@ const updateQuestion = async (questionId, updateQuestionDto, assessmentId) => {
  * @returns assessment
  */
 const deleteQuestion = async (questionId) => {
-  let question = await Question.findOne({ where: { id: questionId } });
-
-  if (!question) {
-    throw new NotFoundException('Question not found');
-  }
-
-  question = await question.destroy();
+  const question = await Question.destroy({
+    where: { id: questionId },
+  });
 
   return question;
 };
