@@ -230,7 +230,7 @@ communityRouter.post(
   classMiddleware.checkAdmin_video_module,
   assessmentController.addAssessment
 );
-communityRouter.patch(
+communityRouter.put(
   '/:id/classes/:classId/assessments/:assessmentId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,

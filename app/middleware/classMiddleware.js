@@ -107,7 +107,6 @@ const checkMembership = (req, res, next) => {
       classDetails = await Class.findByPk(video.ClassId);
     } else if (req.url.includes('assessments') && req.params.assessmentId) {
       const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
-      console.log(req.params.assessmentId);
       if (!assessment) {
         return res.status(200).json({
           success: false,

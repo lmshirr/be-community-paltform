@@ -1,8 +1,5 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-await-in-loop */
-const db = require('../models/index');
-const fs = require('fs');
-const { Op } = require('sequelize');
 const assessmentService = require('../services/assessmentServices');
 const questionService = require('../services/questionServices');
 require('dotenv').config({ path: '../.env' });
@@ -73,7 +70,7 @@ module.exports.addAssessment = async (req, res) => {
 };
 
 module.exports.editAssessment = async (req, res) => {
-  const { title, description, duration, questions_id } = req.body;
+  const { title, description, duration, questions } = req.body;
   try {
     const assessment = await assessmentService.updateAssessment(
       req.params.assessmentId,
@@ -81,10 +78,23 @@ module.exports.editAssessment = async (req, res) => {
     );
 
     // update question
+    for (let i = 0; i < questions.length; i++) {
+      let question = await questionService.updateQuestion(
+        questions[i].id,
+        questions[i],
+        assessment.id
+      );
+      if (!question) {
+        question = await questionService.createQuestion(questions[i], assessment.id);
+      }
+    }
+
+    // get updated assessment data
+    const assessmentQuestions = await assessmentService.getAssessmentDetail(assessment.id);
 
     return res.status(200).json({
       messages: 'Assessment updated!',
-      data: assessment,
+      data: assessmentQuestions,
     });
   } catch (error) {
     return res.status(200).json({
@@ -94,7 +104,7 @@ module.exports.editAssessment = async (req, res) => {
   }
 };
 
-module.exports.deleteAssessment = async (req, res, next) => {
+module.exports.deleteAssessment = async (req, res) => {
   const { assessmentId: id } = req.params;
   let assessment;
   try {
