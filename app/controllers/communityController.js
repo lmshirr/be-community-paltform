@@ -97,9 +97,11 @@ module.exports.deleteCommunity = async function (req, res, next) {
 };
 
 module.exports.getAllCommunity = async function (req, res, next) {
+  const { meta } = req.query;
+
   let communities;
   try {
-    communities = await communityService.getAllCommunity();
+    communities = await communityService.getAllCommunity(meta);
   } catch (error) {
     return next(error);
   }

@@ -32,12 +32,12 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      community_pict: {
+      community_pict_uri: {
         type: Sequelize.STRING,
         defaultValue: '/assets/community/com_pict.jpg',
         allowNull: false,
       },
-      community_banner: {
+      community_banner_uri: {
         type: Sequelize.STRING,
         defaultValue: '/assets/community/com_banner.jpg',
         allowNull: false,

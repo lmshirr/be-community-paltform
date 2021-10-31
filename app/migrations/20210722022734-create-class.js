@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      banner_pict: {
+      banner_uri: {
         type: Sequelize.STRING,
         allowNull: true,
         defaultValue: 'banner.jpg',
@@ -53,10 +53,10 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
       },
-      video_intro: {
+      video_intro_uri: {
         type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: '/assets/videos/video_intro.mp4',
+        defaultValue: 'video_intro.mp4',
       },
       created_at: {
         type: Sequelize.DATE,

@@ -1,9 +1,10 @@
-const { Comment, Community_Member, User } = require('../models');
+const { Comment, Community_Member, User, sequelize } = require('../models');
 const {
   BadRequestException,
   NotFoundException,
 } = require('../utils/httpExceptions');
 const urlJoin = require('url-join');
+const config = require('config');
 
 /**
  *
@@ -13,6 +14,8 @@ const urlJoin = require('url-join');
  */
 const postComment = async (postCommentDto, file) => {
   const { post_id, member_id, body } = postCommentDto;
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   // validation
   if (!post_id && !member_id) {
     throw new BadRequestException('Post id or user id must not empty');
@@ -26,21 +29,27 @@ const postComment = async (postCommentDto, file) => {
   }
 
   // make link path
-  let comment_pict;
+  let comment_uri;
   if (file) {
-    const cloudUrl = process.env.GCS_URL;
-    const bucketName = process.env.BUCKET_NAME;
-
-    comment_pict = urlJoin(cloudUrl, bucketName, file.filename);
+    comment_uri = file.filename;
   }
 
   const comment = await Comment.create(
     {
       ...postCommentDto,
-      comment_pict,
+      comment_uri,
     },
     {
       include: { model: Community_Member },
+      attributes: {
+        include: [
+          [
+            sequelize.fn('CONCAT', bucketUrl, sequelize.col('comment_uri')),
+            'comment_pict',
+          ],
+        ],
+        exlude: ['comment_uri'],
+      },
     }
   );
 
@@ -53,6 +62,7 @@ const postComment = async (postCommentDto, file) => {
  */
 const getComments = async (getCommentDto) => {
   const { post_id } = getCommentDto;
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
 
   const comments = await Comment.findAll({
     where: {
@@ -62,6 +72,15 @@ const getComments = async (getCommentDto) => {
       model: Community_Member,
       required: true,
       include: User,
+    },
+    attributes: {
+      include: [
+        [
+          sequelize.fn('CONCAT', bucketUrl, sequelize.col('comment_uri')),
+          'comment_pict',
+        ],
+      ],
+      exlude: ['comment_uri'],
     },
   });
 
@@ -91,9 +110,20 @@ const deleteComment = async (commentId) => {
  * @returns comment
  */
 const getCommentDetail = async (id) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   const comment = await Comment.findOne({
     where: { id },
     include: { model: Community_Member, include: User },
+    attributes: {
+      include: [
+        [
+          sequelize.fn('CONCAT', bucketUrl, sequelize.col('comment_uri')),
+          'comment_pict',
+        ],
+      ],
+      exlude: ['comment_uri'],
+    },
   });
 
   return comment;

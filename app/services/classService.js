@@ -1,10 +1,8 @@
 /* eslint-disable no-underscore-dangle */
-const { Class, Class_Enrollment, Community } = require('../models');
+const { Class, Community, sequelize } = require('../models');
 const { Op } = require('sequelize');
-const {
-  NotFoundException,
-  ForbiddenException,
-} = require('../utils/httpExceptions');
+const { NotFoundException } = require('../utils/httpExceptions');
+const config = require('config');
 const urlJoin = require('url-join');
 
 /**
@@ -14,50 +12,47 @@ const urlJoin = require('url-join');
  * @returns dataClass
  */
 const createClass = async (createClassDto, file) => {
-  let banner_pict;
+  let banner_uri;
+  const bucketUrl = config.get('GCS.bucketUrl');
 
   if (file) {
-    const cloudUrl = process.env.GCS_URL;
-    const bucketName = process.env.BUCKET_NAME;
-
-    banner_pict = urlJoin(cloudUrl, bucketName, file.filename);
+    banner_uri = file.filename;
   }
 
-  const dataClass = await Class.create({ ...createClassDto, banner_pict });
+  const { dataValues } = await Class.create({ ...createClassDto, banner_uri });
 
-  return dataClass;
+  return {
+    ...dataValues,
+    banner_pict: urlJoin(bucketUrl, banner_uri),
+  };
 };
 
 /**
  *
- * @param {string} id class id
- * @param {{user_id: string, meta: string}} options meta=check_enrollment
- * @returns {classDetail: Object, student: boolean}
+ * @param {string} classId class id
+ * @returns {Object} classDetail
  */
-const getClassDetail = async (classId, memberId, options) => {
-  const { user_id, meta } = options;
+const getClassDetail = async (classId) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
 
-  const classDetail = await Class.findOne({ where: { id: classId } });
+  const classDetail = await Class.findOne({
+    where: { id: classId },
+    attributes: {
+      include: [
+        [
+          sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+          'banner_pict',
+        ],
+      ],
+      exclude: ['banner_uri'],
+    },
+  });
 
   if (!classDetail) {
     throw new NotFoundException('Class not found');
   }
 
-  let student;
-
-  if (user_id && meta === 'check_enrollment') {
-    student = await Class_Enrollment.findOne({
-      where: { [Op.and]: [{ class_id: classId }, { member_id: memberId }] },
-    });
-
-    if (student) {
-      student = true;
-    } else {
-      student = false;
-    }
-  }
-
-  return { class: classDetail, student };
+  return classDetail;
 };
 
 /**
@@ -68,22 +63,32 @@ const getClassDetail = async (classId, memberId, options) => {
  * @returns classData
  */
 const editClass = async (id, editClassDto, file) => {
-  let banner_pict;
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
+  let banner_uri;
 
   if (file) {
-    const cloudUrl = process.env.GCS_URL;
-    const bucketName = process.env.BUCKET_NAME;
-
-    banner_pict = urlJoin(cloudUrl, bucketName, file.filename);
+    banner_uri = file.filename;
   }
 
-  let classData = await Class.findOne({ where: { id } });
+  let classData = await Class.findOne({
+    where: { id },
+    attributes: {
+      include: [
+        [
+          sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+          'banner_pict',
+        ],
+      ],
+      exclude: ['banner_uri'],
+    },
+  });
 
-  if (classData) {
+  if (!classData) {
     throw new NotFoundException('Class not found');
   }
 
-  classData = await classData.update({ ...editClassDto, banner_pict });
+  classData = await classData.update({ ...editClassDto, banner_uri });
 
   return classData;
 };
@@ -107,9 +112,20 @@ const deleteClass = async (id) => {
  * @returns classData
  */
 const findClass = async (community_id, key) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   const classData = await Class.findAll({
     where: {
       [Op.and]: [{ community_id }, { name: { [Op.iLike]: `%${key}%` } }],
+    },
+    attributes: {
+      include: [
+        [
+          sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+          'banner_pict',
+        ],
+      ],
+      exclude: ['banner_uri'],
     },
   });
 
@@ -127,6 +143,8 @@ const findClass = async (community_id, key) => {
  * @returns {Array} classes
  */
 const getClassInCommunity = async (communityId, sort) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   let classes;
 
   switch (sort) {
@@ -134,22 +152,60 @@ const getClassInCommunity = async (communityId, sort) => {
       classes = await Class.findAll({
         where: { community_id: communityId },
         order: [['students', 'DESC']],
+        attributes: {
+          include: [
+            [
+              sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+              'banner_pict',
+            ],
+          ],
+          exclude: ['banner_uri'],
+        },
       });
       break;
     case 'newest':
       classes = await Class.findAll({
         where: { community_id: communityId },
         order: [['created_at', 'DESC']],
+        attributes: {
+          include: [
+            [
+              sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+              'banner_pict',
+            ],
+          ],
+          exclude: ['banner_uri'],
+        },
       });
       break;
     case 'latest':
       classes = await Class.findAll({
         where: { community_id: communityId },
         order: [['created_at', 'ASC']],
+        attributes: {
+          include: [
+            [
+              sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+              'banner_pict',
+            ],
+          ],
+          exclude: ['banner_uri'],
+        },
       });
       break;
     default:
-      classes = await Class.findAll({ where: { community_id: communityId } });
+      classes = await Class.findAll({
+        where: { community_id: communityId },
+        attributes: {
+          include: [
+            [
+              sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+              'banner_pict',
+            ],
+          ],
+          exclude: ['banner_uri'],
+        },
+      });
       break;
   }
 
@@ -192,36 +248,7 @@ const getClasses = async (sort) => {
   return classes;
 };
 
-/**
- *
- * @param {{member_id: string, class_id: string}} createEnrollmentDto
- * @returns {Object} classEnrollment
- */
-const createEnrollment = async (createEnrollmentDto) => {
-  const { member_id, class_id } = createEnrollmentDto;
-
-  // find is already enroll class ?
-  const isAlreadyEnroll = await Class_Enrollment.findOne({
-    where: { [Op.and]: [{ member_id }, { class_id }] },
-  });
-
-  if (isAlreadyEnroll) {
-    throw new ForbiddenException('You already enroll this class');
-  }
-
-  const classEnrollment = await Class_Enrollment.create(createEnrollmentDto);
-
-  if (classEnrollment) {
-    // increment student in class
-    const dataClass = await Class.findOne({ where: { id: class_id } });
-    await dataClass.increment('students', { by: 1 });
-  }
-
-  return classEnrollment;
-};
-
 module.exports = {
-  createEnrollment,
   createClass,
   getClassDetail,
   editClass,

@@ -1,7 +1,9 @@
-const { Community, Community_Member, User } = require('../models');
+const { Community, Community_Member, User, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const { NotFoundException } = require('../utils/httpExceptions');
+const { deleteFile } = require('../utils/uploadFile/deleteFile');
 const urlJoin = require('url-join');
+const config = require('config');
 
 /**
  *
@@ -9,11 +11,38 @@ const urlJoin = require('url-join');
  * @returns {Object} community
  */
 const getCommunityDetail = async (id) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   const community = await Community.findOne({
     where: { id },
     include: {
       model: User,
-      attributes: ['pk', 'id', 'name', 'email', 'profile_pict'],
+      attributes: {
+        include: [
+          [
+            sequelize.fn(
+              'CONCAT',
+              bucketUrl,
+              sequelize.col('community_pict_uri')
+            ),
+            'community_pict',
+          ],
+          [
+            sequelize.fn(
+              'CONCAT',
+              bucketUrl,
+              sequelize.col('community_banner_uri')
+            ),
+            'community_banner',
+          ],
+          'pk',
+          'id',
+          'name',
+          'email',
+          'profile_pict',
+        ],
+        exclude: ['community_pict_uri', 'community_banner_uri'],
+      },
       through: {
         attributes: ['created_at'],
         as: 'join_time',
@@ -48,29 +77,33 @@ const getCommunityTotalMember = async (id) => {
  * @returns {Object} community
  */
 const createCommunity = async (createCommunityDto, userId, file) => {
-  let community_pict;
+  let community_pict_uri;
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'));
 
   if (file) {
-    const cloudUrl = process.env.GCS_URL;
-    const bucketName = process.env.BUCKET_NAME;
-
-    community_pict = urlJoin(cloudUrl, bucketName, file.filename);
+    community_pict_uri = file.filename;
   }
 
-  const community = await Community.create({
+  let community = await Community.create({
     ...createCommunityDto,
-    community_pict,
+    community_pict_uri,
   });
 
-  const { id: community_id } = community;
+  community = community.dataValues;
 
   await Community_Member.create({
-    community_id,
+    community_id: community.id,
     role: 'owner',
     user_id: userId,
   });
 
-  return community;
+  delete community.community_pict_uri;
+  delete community.community_banner_uri;
+
+  return {
+    ...community,
+    community_pict: urlJoin(bucketUrl, community_pict_uri),
+  };
 };
 
 /**
@@ -81,29 +114,9 @@ const createCommunity = async (createCommunityDto, userId, file) => {
  * @returns {object} community
  */
 const editCommunity = async (editCommunityDto, id, files) => {
-  let community_banner;
-  let community_pict;
-
-  if (files) {
-    const cloudUrl = process.env.GCS_URL;
-    const bucketName = process.env.BUCKET_NAME;
-
-    if (files.community_banner) {
-      const { community_banner: communityBannerFile } = files;
-
-      const { filename } = communityBannerFile[0];
-
-      community_banner = urlJoin(cloudUrl, bucketName, filename);
-    }
-
-    if (files.community_pict) {
-      const { community_pict: communityPictFile } = files;
-
-      const { filename } = communityPictFile[0];
-
-      community_pict = urlJoin(cloudUrl, bucketName, filename);
-    }
-  }
+  let community_banner_uri;
+  let community_pict_uri;
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'));
 
   let community = await Community.findOne({ where: { id } });
 
@@ -111,13 +124,48 @@ const editCommunity = async (editCommunityDto, id, files) => {
     throw new NotFoundException('Community not found');
   }
 
-  community = await community.update({
-    ...editCommunityDto,
-    community_banner,
-    community_pict,
-  });
+  if (files) {
+    if (files.community_banner) {
+      const { community_banner: communityBannerFile } = files;
 
-  return community;
+      // delete old file
+      // await deleteFile(communityData.community_banner_uri);
+
+      const { filename } = communityBannerFile[0];
+
+      community_banner_uri = filename;
+    }
+
+    if (files.community_pict) {
+      const { community_pict: communityPictFile } = files;
+
+      // delete old file
+      // await deleteFile(communityData.community_pict_uri);
+
+      const { filename } = communityPictFile[0];
+
+      community_pict_uri = filename;
+    }
+  }
+
+  community = (
+    await community.update({
+      ...editCommunityDto,
+      community_banner_uri,
+      community_pict_uri,
+    })
+  ).get({ raw: true });
+
+  const communityData = { ...community };
+
+  delete community.community_banner_uri;
+  delete community.community_pict_uri;
+
+  return {
+    ...community,
+    community_banner: urlJoin(bucketUrl, communityData.community_banner_uri),
+    community_pict: urlJoin(bucketUrl, communityData.community_pict_uri),
+  };
 };
 
 /**
@@ -136,12 +184,62 @@ const deleteCommunity = async (id) => {
 };
 
 /**
+ * @param {string} meta
  * @returns {Array} communities
  */
-const getAllCommunity = async () => {
-  const communities = await Community.findAll({
-    order: [['created_at', 'DESC']],
-  });
+const getAllCommunity = async (meta) => {
+  let communities;
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
+  switch (meta) {
+    case 'PUBLIC':
+      communities = await Community.findAll({
+        where: { privacy: 'public' },
+        order: [['created_at', 'DESC']],
+        attributes: {
+          include: [
+            [
+              sequelize.fn(
+                'CONCAT',
+                bucketUrl,
+                sequelize.col('community_pict_uri')
+              ),
+              'community_pict',
+            ],
+          ],
+          exclude: ['community_pict_uri'],
+        },
+      });
+      break;
+
+    default:
+      communities = await Community.findAll({
+        where: { privacy: 'public' },
+        order: [['created_at', 'DESC']],
+        attributes: {
+          include: [
+            [
+              sequelize.fn(
+                'CONCAT',
+                bucketUrl,
+                sequelize.col('community_pict_uri')
+              ),
+              'community_pict',
+            ],
+            [
+              sequelize.fn(
+                'CONCAT',
+                bucketUrl,
+                sequelize.col('community_banner_uri')
+              ),
+              'community_banner',
+            ],
+          ],
+          exclude: ['community_pict_uri', 'community_banner_uri'],
+        },
+      });
+      break;
+  }
 
   return communities;
 };
@@ -152,6 +250,8 @@ const getAllCommunity = async () => {
  * @returns {object} community
  */
 const findCommunity = async (key) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   const community = await Community.findAll({
     where: {
       name: {
@@ -164,6 +264,19 @@ const findCommunity = async (key) => {
         attributes: ['id', 'name', 'profile_pict'],
       },
     ],
+    attributes: {
+      include: [
+        [
+          sequelize.fn(
+            'CONCAT',
+            bucketUrl,
+            sequelize.col('community_pict_uri')
+          ),
+          'community_pict',
+        ],
+      ],
+      exclude: ['community_pict_uri'],
+    },
   });
 
   return community;

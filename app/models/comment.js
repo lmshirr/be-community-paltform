@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      comment_pict: {
+      comment_uri: {
         type: DataTypes.STRING,
         allowNull: true,
       },

@@ -73,12 +73,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      community_pict: {
+      community_pict_uri: {
         type: DataTypes.STRING,
         defaultValue: '/assets/community/com_pict.jpg',
         allowNull: false,
       },
-      community_banner: {
+      community_banner_uri: {
         type: DataTypes.STRING,
         defaultValue: '/assets/community/com_banner.jpg',
         allowNull: false,

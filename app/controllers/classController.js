@@ -21,16 +21,11 @@ const findClass = async (req, res, next) => {
 
 const getClassDetail = async (req, res, next) => {
   const { classId } = req.params;
-  const { user_id, meta } = req.query;
-  const { id: memberId } = req.member;
 
   let data;
 
   try {
-    data = await classService.getClassDetail(classId, memberId, {
-      user_id,
-      meta,
-    });
+    data = await classService.getClassDetail(classId);
   } catch (error) {
     return next(error);
   }
@@ -74,7 +69,7 @@ const createClass = async (req, res, next) => {
 
   res.status(201).json({
     message: 'Class Created',
-    data: { dataClass, post },
+    data: { class: dataClass, post },
   });
 };
 
@@ -143,27 +138,6 @@ const getClasses = async (req, res, next) => {
   return res.json({ data: classes });
 };
 
-const enrollUser = async (req, res, next) => {
-  const { id: member_id } = req.member;
-  const { id: community_id, classId: class_id } = req.params;
-
-  let classEnrollment;
-  try {
-    classEnrollment = await classService.createEnrollment({
-      community_id,
-      member_id,
-      class_id,
-    });
-  } catch (error) {
-    return next(error);
-  }
-
-  return res.status(201).json({
-    message: 'Enroll class success',
-    data: classEnrollment,
-  });
-};
-
 module.exports = {
   getClassInCommunity,
   deleteClass,
@@ -172,5 +146,4 @@ module.exports = {
   findClass,
   getClassDetail,
   getClasses,
-  enrollUser,
 };

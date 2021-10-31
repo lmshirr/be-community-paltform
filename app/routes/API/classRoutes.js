@@ -38,14 +38,6 @@ classRouter
     classController.deleteClass
   );
 
-classRouter
-  .route('/:classId/enroll')
-  .post(
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkMember,
-    classController.enrollUser
-  );
-
 // tes webianr router
 classRouter.get('/:class_id/webinar/', webinarController.showWebinar);
 classRouter.get('/:class_id/webinar/:id', webinarController.getWebinar);

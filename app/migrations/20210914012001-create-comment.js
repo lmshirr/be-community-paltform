@@ -24,7 +24,7 @@ module.exports = {
         allowNull: false,
         references: { model: 'community_post', key: 'id' },
       },
-      comment_pict: {
+      comment_uri: {
         type: Sequelize.STRING,
         allowNull: true,
         unique: false,

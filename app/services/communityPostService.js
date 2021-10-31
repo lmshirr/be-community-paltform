@@ -3,9 +3,11 @@ const {
   User,
   Community_Member,
   Community_Post_Attachment,
+  sequelize,
 } = require('../models/index');
 const { NotFoundException } = require('../utils/httpExceptions');
 const urlJoin = require('url-join');
+const config = require('config');
 
 /**
  *
@@ -22,10 +24,7 @@ const createPost = async (createPostDto, files) => {
 
   if (files) {
     files.forEach(async (file) => {
-      const cloudUrl = process.env.GCS_URL;
-      const bucketName = process.env.BUCKET_NAME;
-
-      const file_url = urlJoin(cloudUrl, bucketName, file.filename);
+      const file_url = file.filename;
 
       await Community_Post_Attachment.create({
         community_post_id: postId,
@@ -49,6 +48,8 @@ const createPost = async (createPostDto, files) => {
  * @returns post
  */
 const getPostDetail = async (id) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   const post = await Community_Post.findOne({
     where: { id },
     include: [
@@ -58,6 +59,15 @@ const getPostDetail = async (id) => {
       },
       {
         model: Community_Post_Attachment,
+        properties: {
+          include: [
+            [
+              sequelize.fn('CONCAT', bucketUrl, sequelize.fn('filename')),
+              'post_pict',
+            ],
+          ],
+          exclude: ['filename'],
+        },
         required: true,
       },
     ],
@@ -76,12 +86,25 @@ const getPostDetail = async (id) => {
  * @returns post
  */
 const getPostInCommunity = async (community_id) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
+
   const post = await Community_Post.findAll({
     where: {
       community_id,
     },
     include: [
-      { model: Community_Post_Attachment },
+      {
+        model: Community_Post_Attachment,
+        properties: {
+          include: [
+            [
+              sequelize.fn('CONCAT', bucketUrl, sequelize.col('filename')),
+              'post_pict',
+            ],
+          ],
+          exclude: ['filename'],
+        },
+      },
       { model: Community_Member, include: User },
     ],
     order: [['created_at', 'DESC']],
@@ -110,10 +133,7 @@ const editPost = async (editPostDto, post_id, files) => {
 
   if (files) {
     files.forEach(async (file) => {
-      const cloudUrl = process.env.GCS_URL;
-      const bucketName = process.env.BUCKET_NAME;
-
-      const file_url = urlJoin(cloudUrl, bucketName, file.filename);
+      const file_url = file.filename;
 
       await Community_Post_Attachment.create({
         community_post_id: post_id,
