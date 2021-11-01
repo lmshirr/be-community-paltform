@@ -3,7 +3,7 @@ const communityController = require('./communityController');
 const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
 const classController = require('../class/classController');
 const communityMiddleware = require('./communityMiddleware');
-const { uploadImageMiddleware } = require('../shared/utils/uploadFile');
+const { uploadImageMiddleware } = require('../shared/utils/cloudStorage');
 
 const communityRouter = express.Router();
 

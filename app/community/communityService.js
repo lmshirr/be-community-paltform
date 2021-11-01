@@ -6,7 +6,7 @@ const {
 } = require('../db/models');
 const { Op } = require('sequelize');
 const { NotFoundException } = require('../shared/utils/httpExceptions');
-const { deleteFile } = require('../shared/utils/uploadFile/deleteFile');
+const { deleteFile } = require('../shared/utils/cloudStorage');
 const urlJoin = require('url-join');
 const config = require('config');
 const { TYPE } = require('./constant');
