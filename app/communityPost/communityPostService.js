@@ -4,8 +4,8 @@ const {
   Community_Member,
   Community_Post_Attachment,
   sequelize,
-} = require('../models/index');
-const { NotFoundException } = require('../utils/httpExceptions');
+} = require('../db/models');
+const { NotFoundException } = require('../shared/utils/httpExceptions');
 const urlJoin = require('url-join');
 const config = require('config');
 

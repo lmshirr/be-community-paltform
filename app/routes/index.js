@@ -8,7 +8,7 @@ const { commentRoute } = require('../comment');
 const apiRouter = express.Router();
 
 apiRouter.use('/users', userRoute);
-apiRouter.use('/communities', communityRoute, commentRoute);
+apiRouter.use('/communities', communityRoute, commentRoute, communityPostRoute);
 apiRouter.use('/posts', communityPostRoute);
 apiRouter.use('/classes', classRoute);
 

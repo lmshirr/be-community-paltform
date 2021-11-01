@@ -1,9 +1,9 @@
 const { Op } = require('sequelize');
-const { Community_Member, Community_Post } = require('../models');
+const { Community_Member, Community_Post } = require('../db/models');
 const {
   ForbiddenException,
   NotFoundException,
-} = require('../utils/httpExceptions');
+} = require('../shared/utils/httpExceptions');
 
 const checkAdmin = async (req, res, next) => {
   const { id: user_id } = req.user;

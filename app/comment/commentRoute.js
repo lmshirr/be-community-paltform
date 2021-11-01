@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
 const communityMiddleware = require('../community/communityMiddleware');
-const { uploadImageMiddleware } = require('../utils/uploadFile');
+const { uploadImageMiddleware } = require('../shared/utils/uploadFile');
 const commentController = require('./commentController');
 
 const commentRouter = Router({ mergeParams: true });

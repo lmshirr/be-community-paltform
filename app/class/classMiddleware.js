@@ -1,10 +1,10 @@
-const { Community_Member, Class, Module, Video } = require('../models/index');
+const { Community_Member, Class, Module, Video } = require('../db/models');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const {
   ForbiddenException,
   NotFoundException,
-} = require('../utils/httpExceptions');
+} = require('../shared/utils/httpExceptions');
 
 const checkAdmin_community = async (req, res, next) => {
   const { id: user_id } = req.user;

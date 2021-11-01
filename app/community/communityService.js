@@ -1,7 +1,12 @@
-const { Community, Community_Member, User, sequelize } = require('../models');
+const {
+  Community,
+  Community_Member,
+  User,
+  sequelize,
+} = require('../db/models');
 const { Op } = require('sequelize');
-const { NotFoundException } = require('../utils/httpExceptions');
-const { deleteFile } = require('../utils/uploadFile/deleteFile');
+const { NotFoundException } = require('../shared/utils/httpExceptions');
+const { deleteFile } = require('../shared/utils/uploadFile/deleteFile');
 const urlJoin = require('url-join');
 const config = require('config');
 

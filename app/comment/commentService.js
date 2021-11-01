@@ -1,8 +1,8 @@
-const { Comment, Community_Member, User, sequelize } = require('../models');
+const { Comment, Community_Member, User, sequelize } = require('../db/models');
 const {
   BadRequestException,
   NotFoundException,
-} = require('../utils/httpExceptions');
+} = require('../shared/utils/httpExceptions');
 const urlJoin = require('url-join');
 const config = require('config');
 

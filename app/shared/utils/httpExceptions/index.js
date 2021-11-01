@@ -4,6 +4,7 @@ const ConflictException = require('./conflictException');
 const ForbiddenException = require('./forbiddenException');
 const NotFoundException = require('./notFoundException');
 const UnauthorizedException = require('./unauthorizedException');
+const HttpException = require('./httpException');
 
 module.exports = {
   BadRequestException,
@@ -12,4 +13,5 @@ module.exports = {
   ForbiddenException,
   NotFoundException,
   UnauthorizedException,
+  HttpException,
 };

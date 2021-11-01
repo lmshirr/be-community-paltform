@@ -9,7 +9,7 @@ const classMiddleware = require('./classMiddleware');
 const {
   uploadDocMiddleware,
   uploadVideoMiddleware,
-} = require('../utils/uploadFile');
+} = require('../shared/utils/uploadFile');
 
 const classRouter = Router();
 

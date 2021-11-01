@@ -4,14 +4,14 @@ const {
   Request_Membership,
   User,
   Invitation,
-} = require('../models/index');
+} = require('../db/models');
 const { Op } = require('sequelize');
 const {
   NotFoundException,
   ConflictException,
   ForbiddenException,
   BadRequestException,
-} = require('../utils/httpExceptions');
+} = require('../shared/utils/httpExceptions');
 
 /**
  *

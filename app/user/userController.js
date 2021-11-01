@@ -3,8 +3,7 @@ const {
   Activation,
   Invitation,
   Request_Membership,
-  Community_Member,
-} = require('../models/index');
+} = require('../db/models');
 require('dotenv').config({ path: './.env' });
 const uuid = require('uuid');
 const { Op } = require('sequelize');
@@ -16,10 +15,10 @@ const {
   NotFoundException,
   UnauthorizedException,
   ForbiddenException,
-} = require('../utils/httpExceptions/index');
-const mailService = require('../utils/email/mail.service');
+} = require('../shared/utils/httpExceptions/index');
+const mailService = require('../shared/utils/email/mail.service');
 const userService = require('./userService');
-const { getGoogleAuthURL, getTokens } = require('../helpers/googleAuth');
+const { getGoogleAuthURL, getTokens } = require('../shared/helpers/googleAuth');
 const axios = require('axios');
 
 const tokenAge = 60 * 60;

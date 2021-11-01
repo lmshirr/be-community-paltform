@@ -1,19 +1,28 @@
-const db = require('../models/index.js');
+const db = require('../db/models');
 const fs = require('fs');
 const { Op } = require('sequelize');
 require('dotenv').config({ path: '../.env' });
 
 module.exports.addWebinar = function (req, res) {
-  const { title, timezone, start, end, link, speaker, description, filename_thumbnail, filename_dp } =
-    req.body;
-  const {class_id} = req.params;
+  const {
+    title,
+    timezone,
+    start,
+    end,
+    link,
+    speaker,
+    description,
+    filename_thumbnail,
+    filename_dp,
+  } = req.body;
+  const { class_id } = req.params;
   const { file } = req;
   console.log(req.body);
   console.log(class_id);
   const path =
-  process.env.NODE_ENV === 'production'
-    ? process.env.PRODUCTION_URL
-    : process.env.LOCALHOST_URL;
+    process.env.NODE_ENV === 'production'
+      ? process.env.PRODUCTION_URL
+      : process.env.LOCALHOST_URL;
   const file_url_thumbnail = `${path}/assets/werbinar_thumbnail_pict/${filename_thumbnail}`;
   const file_url_dp = `${path}/assets/werbinar_dp_pict/${filename_dp}`;
   db.Webinar.create({
@@ -26,7 +35,7 @@ module.exports.addWebinar = function (req, res) {
     link,
     speaker,
     filename_thumbnail: file_url_thumbnail,
-    filename_dp : file_url_dp
+    filename_dp: file_url_dp,
   })
     .then(() => {
       res.status(200).json({
@@ -58,7 +67,6 @@ module.exports.getWebinar = async function (req, res) {
   }
 };
 
-
 module.exports.showWebinar = async function (req, res) {
   const { class_id } = req.params;
   const { page } = req.query;
@@ -67,7 +75,7 @@ module.exports.showWebinar = async function (req, res) {
       where: {
         class_id,
       },
-      offset: (page-1)*5,
+      offset: (page - 1) * 5,
       limit: 5,
       order: [['start']],
     });
@@ -75,7 +83,7 @@ module.exports.showWebinar = async function (req, res) {
     res.status(200).json({
       success: true,
       list: webinar,
-      total : total
+      total: total,
     });
   } catch (error) {
     res.status(500).json({

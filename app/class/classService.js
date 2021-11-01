@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
-const { Class, Community, sequelize } = require('../models');
+const { Class, Community, sequelize } = require('../db/models');
 const { Op } = require('sequelize');
-const { NotFoundException } = require('../utils/httpExceptions');
+const { NotFoundException } = require('../shared/utils/httpExceptions');
 const config = require('config');
 const urlJoin = require('url-join');
 

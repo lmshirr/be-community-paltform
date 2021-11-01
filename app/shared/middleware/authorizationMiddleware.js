@@ -1,6 +1,6 @@
 require('dotenv').config({ path: '../.env' });
 const jwt = require('jsonwebtoken');
-const { UnauthorizedException } = require('../../utils/httpExceptions');
+const { UnauthorizedException } = require('../utils/httpExceptions');
 
 const checkLogin = (req, res, next) => {
   const token = req.cookies.jwt;

@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Webinars', {
@@ -6,7 +7,7 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       id: {
         type: Sequelize.UUID,
@@ -16,27 +17,27 @@ module.exports = {
       },
       title: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       timezone: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       start: {
         type: Sequelize.DATE,
-        allowNull: false
+        allowNull: false,
       },
       end: {
         type: Sequelize.DATE,
-        allowNull: false
+        allowNull: false,
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       speaker: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       visibility: {
         type: Sequelize.ENUM('open', 'closed'),
@@ -45,13 +46,13 @@ module.exports = {
       },
       class_id: {
         type: Sequelize.UUID,
-        references: {model: 'class', key:'id'},
+        references: { model: 'class', key: 'id' },
         onDelete: 'CASCADE',
-        allowNull:false
+        allowNull: false,
       },
       link: {
         type: Sequelize.STRING,
-        allowNull:false
+        allowNull: false,
       },
       filename_thumbnail: {
         type: Sequelize.STRING,
@@ -63,15 +64,15 @@ module.exports = {
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Webinars');
-  }
+  },
 };
