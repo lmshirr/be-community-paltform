@@ -1,4 +1,4 @@
-const communityService = require('../services/communityService');
+const communityService = require('./communityService');
 
 module.exports.findCommunity = async function (req, res, next) {
   const { key } = req.params;

@@ -1,14 +1,15 @@
 const express = require('express');
-const userRoutes = require('./API/userRoutes');
-const communityRoutes = require('./API/communityRoutes');
-const communityPostRoutes = require('./API/communityPostRoutes');
-const classRoutes = require('./API/classRoutes');
+const { userRoute } = require('../user');
+const { communityRoute } = require('../community');
+const { communityPostRoute } = require('../communityPost');
+const { classRoute } = require('../class');
+const { commentRoute } = require('../comment');
 
 const apiRouter = express.Router();
 
-apiRouter.use('/users', userRoutes);
-apiRouter.use('/communities', communityRoutes);
-apiRouter.use('/posts', communityPostRoutes);
-apiRouter.use('/classes', classRoutes);
+apiRouter.use('/users', userRoute);
+apiRouter.use('/communities', communityRoute, commentRoute);
+apiRouter.use('/posts', communityPostRoute);
+apiRouter.use('/classes', classRoute);
 
 module.exports = apiRouter;

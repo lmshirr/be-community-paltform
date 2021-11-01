@@ -1,9 +1,8 @@
 const express = require('express');
-const userController = require('../../controllers/userController');
-const googleAuthController = require('../../controllers/googleAuthController');
-const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
-const invitationController = require('../../controllers/invitationController');
-const { uploadImageMiddleware } = require('../../utils/uploadFile');
+const userController = require('./userController');
+const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
+const { communityMemberController } = require('../communityMembership');
+const { uploadImageMiddleware } = require('../utils/uploadFile');
 
 const userRouter = express.Router();
 
@@ -31,7 +30,7 @@ userRouter
   .route('/invitations/:invitationId')
   .patch(
     authorizationMiddleware.checkLogin,
-    invitationController.respondInvite
+    communityMemberController.respondInvite
   );
 
 // request
@@ -54,8 +53,8 @@ userRouter.get(
 );
 
 // Google OAuth
-userRouter.get('/auth/google', googleAuthController.googleLogin);
-userRouter.get('/auth/google/url', googleAuthController.getGoogleAuthURL);
-userRouter.get('/auth/google/user', googleAuthController.getCurrentUser);
+userRouter.get('/auth/google', userController.googleLogin);
+userRouter.get('/auth/google/url', userController.getGoogleAuthURL);
+userRouter.get('/auth/google/user', userController.getCurrentUser);
 
 module.exports = userRouter;

@@ -1,4 +1,4 @@
-const communityPostService = require('../services/communityPostService');
+const communityPostService = require('./communityPostService');
 
 module.exports.getCommunityPosts = async function (req, res, next) {
   const { id } = req.params;

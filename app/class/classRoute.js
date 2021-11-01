@@ -1,15 +1,15 @@
 const { Router } = require('express');
-const classController = require('../../controllers/classController');
-const moduleController = require('../../controllers/moduleController');
-const videoController = require('../../controllers/videoController');
-const webinarController = require('../../controllers/webinarController');
-const assessmentController = require('../../controllers/assessmentController');
-const authorizationMiddleware = require('../../middleware/authorizationMiddleware');
-const classMiddleware = require('../../middleware/classMiddleware');
+const classController = require('./classController');
+const moduleController = require('../module/moduleController');
+// const videoController = require('../controllers/videoController');
+const webinarController = require('../webminar/webinarController');
+const assessmentController = require('../assessment/assessmentController');
+const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
+const classMiddleware = require('./classMiddleware');
 const {
   uploadDocMiddleware,
   uploadVideoMiddleware,
-} = require('../../utils/uploadFile');
+} = require('../utils/uploadFile');
 
 const classRouter = Router();
 
@@ -71,31 +71,31 @@ classRouter.delete(
 );
 
 // Video routes
-classRouter.get(
-  '/video/:VideoId',
-  classMiddleware.checkMembership,
-  videoController.getVideo
-);
-classRouter.post(
-  '/:ClassId/video',
-  authorizationMiddleware.checkLogin,
-  classMiddleware.checkAdmin_video_module,
-  uploadVideoMiddleware.single('video'),
-  videoController.addVideo
-);
-classRouter.patch(
-  '/:ClassId/video/:VideoId',
-  authorizationMiddleware.checkLogin,
-  classMiddleware.checkAdmin_video_module,
-  uploadVideoMiddleware.single('video'),
-  videoController.editVideo
-);
-classRouter.delete(
-  '/:ClassId/video/:VideoId',
-  authorizationMiddleware.checkLogin,
-  classMiddleware.checkAdmin_video_module,
-  videoController.deleteVideo
-);
+// classRouter.get(
+//   '/video/:VideoId',
+//   classMiddleware.checkMembership,
+//   videoController.getVideo
+// );
+// classRouter.post(
+//   '/:ClassId/video',
+//   authorizationMiddleware.checkLogin,
+//   classMiddleware.checkAdmin_video_module,
+//   uploadVideoMiddleware.single('video'),
+//   videoController.addVideo
+// );
+// classRouter.patch(
+//   '/:ClassId/video/:VideoId',
+//   authorizationMiddleware.checkLogin,
+//   classMiddleware.checkAdmin_video_module,
+//   uploadVideoMiddleware.single('video'),
+//   videoController.editVideo
+// );
+// classRouter.delete(
+//   '/:ClassId/video/:VideoId',
+//   authorizationMiddleware.checkLogin,
+//   classMiddleware.checkAdmin_video_module,
+//   videoController.deleteVideo
+// );
 
 // Assessment routes
 classRouter.get(

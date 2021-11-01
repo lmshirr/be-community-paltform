@@ -1,4 +1,4 @@
-const db = require('../models/index');
+const db = require('../models');
 const fs = require('fs');
 
 module.exports.getModule = async function (req, res) {
