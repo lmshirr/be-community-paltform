@@ -13,6 +13,7 @@ const { uploadPostImage } = require('../../utils/multer/uploadImage.service');
 const classController = require('../../controllers/classController');
 const commentController = require('../../controllers/commentController');
 const assessmentController = require('../../controllers/assessmentController');
+const attemptController = require('../../controllers/attemptController');
 const {
   uploadCommentImage,
 } = require('../../utils/multer/uploadImage.service');
@@ -241,6 +242,42 @@ communityRouter.delete(
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   assessmentController.deleteAssessment
+);
+
+// Assessment Attempt
+communityRouter.get(
+  '/:id/classes/:classId/assessments/:assessmentId/attempts',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  attemptController.getAttempts
+);
+communityRouter.get(
+  '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  attemptController.getAttempts
+);
+communityRouter.get(
+  '/:id/classes/:classId/assessments/:assessmentId/attempts/my',
+  classMiddleware.checkMembership,
+  attemptController.getAttemptDetail
+);
+communityRouter.post(
+  '/:id/classes/:classId/assessments/:assessmentId/attempts',
+  classMiddleware.checkMembership,
+  attemptController.addAttempt
+);
+// communityRouter.put(
+//   '/:id/classes/:classId/assessments/:assessmentId',
+//   authorizationMiddleware.checkLogin,
+//   classMiddleware.checkAdmin_video_module,
+//   attemptController.editAttempt
+// );
+communityRouter.delete(
+  '/:id/classes/:classId/assessments/:assessmentId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  attemptController.deleteAttempt
 );
 
 module.exports = communityRouter;

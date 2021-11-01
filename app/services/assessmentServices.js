@@ -17,8 +17,7 @@ const getAssessments = async (getAssessmentDto) => {
 };
 
 /**
- * @param {{title: string, description: string, duration: string}} createAssessmentDto
- * @param {Question[]} questions
+ * @param {{class_id: string, title: string, description: string, duration: string}} createAssessmentDto
  * @returns {object} assessment
  */
 const createAssessment = async (createAssessmentDto) => {
@@ -29,7 +28,7 @@ const createAssessment = async (createAssessmentDto) => {
 /**
  *
  * @param {string} assessmentId
- * @param {{title: string, description: string, duration: string}} createAssessmentDto
+ * @param {{title: string, description: string, duration: string}} updateAssessmentDto
  * @returns assessment
  */
 const updateAssessment = async (assessmentId, updateAssessmentDto) => {

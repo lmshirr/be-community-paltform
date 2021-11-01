@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('community_member_assessment', {
+    await queryInterface.createTable('attempt', {
       pk: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -21,10 +21,10 @@ module.exports = {
         references: { model: 'assessment', key: 'id' },
         onDelete: 'CASCADE',
       },
-      community_member_id: {
+      user_id: {
         type: Sequelize.UUID,
         allowNull: false,
-        references: { model: 'community_member', key: 'id' },
+        references: { model: 'person', key: 'id' },
         onDelete: 'CASCADE',
       },
       total_score: {
@@ -56,6 +56,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('community_member_assessment');
+    await queryInterface.dropTable('attempt');
   },
 };

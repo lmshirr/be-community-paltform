@@ -3,36 +3,32 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Community_Member_Assessment extends Model {
+  class Attempt extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({
-      Community_Member,
-      Assessment,
-      Community_Member_Assessment_Question,
-    }) {
-      Community_Member_Assessment.belongsTo(Community_Member, {
-        foreignKey: 'community_member_id',
+    static associate({ User, Assessment, Attempt_Question }) {
+      Attempt.belongsTo(User, {
+        foreignKey: 'user_id',
         targetKey: 'id',
-        as: 'community_member',
+        as: 'user',
       });
-      Community_Member_Assessment.belongsTo(Assessment, {
+      Attempt.belongsTo(Assessment, {
         foreignKey: 'assessment_id',
         targetKey: 'id',
         as: 'assessment',
       });
-      // Community_Member_Assessment.hasMany(Community_Member_Assessment_Question, {
+      // Attempt.hasMany(Attempt_Question, {
       //   onDelete: 'cascade',
-      //   foreignKey: 'Community_Member_assessment_id',
+      //   foreignKey: 'Attempt_id',
       //   sourceKey: 'id',
       //   as: 'questions',
       // });
     }
   }
-  Community_Member_Assessment.init(
+  Attempt.init(
     {
       pk: {
         allowNull: false,
@@ -46,10 +42,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
-      community_member_id: {
+      user_id: {
         type: DataTypes.UUID,
         allowNull: false,
-        references: { model: 'Community_Member', key: 'id' },
+        references: { model: 'User', key: 'id' },
       },
       assessment_id: {
         type: DataTypes.UUID,
@@ -68,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      over_time: {
+      deadline: {
         type: DataTypes.DATE,
         allowNull: false,
       },
@@ -85,11 +81,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Community_Member_Assessment',
-      tableName: 'community_member_assessment',
+      modelName: 'Attempt',
+      tableName: 'attempt',
       freezeTableName: true,
       timestamps: false,
     }
   );
-  return Community_Member_Assessment;
+  return Attempt;
 };

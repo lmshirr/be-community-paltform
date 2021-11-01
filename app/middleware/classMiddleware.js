@@ -132,6 +132,10 @@ const checkMembership = (req, res, next) => {
         messages: 'You must be a member to view this content!',
       });
     }
+    console.log("--------------------------------------------");
+    console.log(decodedToken.id);
+    console.log("--------------------------------------------");
+    res.locals.userId = decodedToken.id;
     next();
   });
 };

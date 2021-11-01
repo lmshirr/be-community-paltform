@@ -106,9 +106,8 @@ module.exports.editAssessment = async (req, res) => {
 
 module.exports.deleteAssessment = async (req, res) => {
   const { assessmentId: id } = req.params;
-  let assessment;
   try {
-    assessment = await assessmentService.deleteAssessment(id);
+    const assessment = await assessmentService.deleteAssessment(id);
 
     return res.status(200).json({
       messages: 'Delete success!',

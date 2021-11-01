@@ -25,7 +25,7 @@
  *    - Assessment
  *    security:
  *    - jwtToken: []
- *    description: Create a new class assessment
+ *    description: Update assessment
  *    requestBody:
  *       required: true
  *       content:
