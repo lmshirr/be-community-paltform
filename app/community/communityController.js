@@ -1,6 +1,6 @@
 const communityService = require('./communityService');
 
-module.exports.findCommunity = async function (req, res, next) {
+async function findCommunity(req, res, next) {
   const { key } = req.params;
 
   let community;
@@ -12,9 +12,9 @@ module.exports.findCommunity = async function (req, res, next) {
   }
 
   return res.json({ community });
-};
+}
 
-module.exports.getCommunityDetails = async function (req, res, next) {
+async function getCommunityDetails(req, res, next) {
   const { id } = req.params;
 
   let community;
@@ -33,9 +33,9 @@ module.exports.getCommunityDetails = async function (req, res, next) {
       total_member,
     },
   });
-};
+}
 
-module.exports.createCommunity = async function (req, res, next) {
+async function createCommunity(req, res, next) {
   const { name, type, description, privacy } = req.body;
   const { id: userId } = req.user;
   const { file } = req;
@@ -56,9 +56,9 @@ module.exports.createCommunity = async function (req, res, next) {
     messages: 'Community created',
     data: community,
   });
-};
+}
 
-module.exports.editCommunity = async function (req, res, next) {
+async function editCommunity(req, res, next) {
   const { id } = req.params;
   const { privacy, name, type, description } = req.body;
   const { files } = req;
@@ -79,9 +79,9 @@ module.exports.editCommunity = async function (req, res, next) {
     message: 'Update Community Success',
     data: community,
   });
-};
+}
 
-module.exports.deleteCommunity = async function (req, res, next) {
+async function deleteCommunity(req, res, next) {
   const { id } = req.params;
 
   let community;
@@ -94,17 +94,40 @@ module.exports.deleteCommunity = async function (req, res, next) {
     messages: 'Delete success!',
     data: community,
   });
-};
+}
 
-module.exports.getAllCommunity = async function (req, res, next) {
-  const { meta } = req.query;
+async function getCommunities(req, res, next) {
+  const { filter, value } = req.query;
 
   let communities;
   try {
-    communities = await communityService.getAllCommunity(meta);
+    communities = await communityService.getCommunities(filter, value);
   } catch (error) {
     return next(error);
   }
 
   return res.json({ data: communities });
+}
+
+async function checkMember(req, res, next) {
+  const { communityId, userId } = req.params;
+
+  let member;
+  try {
+    member = await communityService.checkMember(communityId, userId);
+  } catch (error) {
+    return next(error);
+  }
+
+  return res.json({ data: member });
+}
+
+module.exports = {
+  getCommunities,
+  getCommunityDetails,
+  deleteCommunity,
+  editCommunity,
+  createCommunity,
+  findCommunity,
+  checkMember,
 };

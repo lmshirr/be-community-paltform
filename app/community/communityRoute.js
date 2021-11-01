@@ -10,7 +10,7 @@ const communityRouter = express.Router();
 communityRouter.get('/search/:key', communityController.findCommunity);
 communityRouter
   .route('/')
-  .get(authorizationMiddleware.checkLogin, communityController.getAllCommunity)
+  .get(authorizationMiddleware.checkLogin, communityController.getCommunities)
   .post(
     authorizationMiddleware.checkLogin,
     uploadImageMiddleware.single('community_pict'),
@@ -59,5 +59,11 @@ communityRouter
     communityMiddleware.checkMember,
     classController.findClass
   );
+
+communityRouter.get(
+  '/:communityId/checkmember/:userId',
+  authorizationMiddleware.checkLogin,
+  communityController.checkMember
+);
 
 module.exports = communityRouter;

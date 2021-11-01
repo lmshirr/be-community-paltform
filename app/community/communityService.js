@@ -9,13 +9,14 @@ const { NotFoundException } = require('../shared/utils/httpExceptions');
 const { deleteFile } = require('../shared/utils/uploadFile/deleteFile');
 const urlJoin = require('url-join');
 const config = require('config');
+const { TYPE } = require('./constant');
 
 /**
  *
  * @param {string} id community id
  * @returns {Object} community
  */
-const getCommunityDetail = async (id) => {
+async function getCommunityDetail(id) {
   const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
 
   const community = await Community.findOne({
@@ -60,19 +61,19 @@ const getCommunityDetail = async (id) => {
   }
 
   return community;
-};
+}
 
 /**
  *
  * @param {string} id community id
  */
-const getCommunityTotalMember = async (id) => {
+async function getCommunityTotalMember(id) {
   const total_member = await Community_Member.count({
     where: { community_id: id },
   });
 
   return total_member;
-};
+}
 
 /**
  *
@@ -81,7 +82,7 @@ const getCommunityTotalMember = async (id) => {
  * @param {Object} file
  * @returns {Object} community
  */
-const createCommunity = async (createCommunityDto, userId, file) => {
+async function createCommunity(createCommunityDto, userId, file) {
   let community_pict_uri;
   const bucketUrl = urlJoin(config.get('GCS.bucket_url'));
 
@@ -94,7 +95,12 @@ const createCommunity = async (createCommunityDto, userId, file) => {
     community_pict_uri,
   });
 
-  community = community.dataValues;
+  if (community_pict_uri) {
+    community = {
+      ...community.get({ raw: true }),
+      community_pict: urlJoin(bucketUrl, community_pict_uri),
+    };
+  }
 
   await Community_Member.create({
     community_id: community.id,
@@ -105,11 +111,8 @@ const createCommunity = async (createCommunityDto, userId, file) => {
   delete community.community_pict_uri;
   delete community.community_banner_uri;
 
-  return {
-    ...community,
-    community_pict: urlJoin(bucketUrl, community_pict_uri),
-  };
-};
+  return community;
+}
 
 /**
  *
@@ -118,7 +121,7 @@ const createCommunity = async (createCommunityDto, userId, file) => {
  * @param {Array} files
  * @returns {object} community
  */
-const editCommunity = async (editCommunityDto, id, files) => {
+async function editCommunity(editCommunityDto, id, files) {
   let community_banner_uri;
   let community_pict_uri;
   const bucketUrl = urlJoin(config.get('GCS.bucket_url'));
@@ -171,14 +174,14 @@ const editCommunity = async (editCommunityDto, id, files) => {
     community_banner: urlJoin(bucketUrl, communityData.community_banner_uri),
     community_pict: urlJoin(bucketUrl, communityData.community_pict_uri),
   };
-};
+}
 
 /**
  *
  * @param {string} id community id
  * @returns {object} community
  */
-const deleteCommunity = async (id) => {
+async function deleteCommunity(id) {
   const community = await Community.destroy({ where: { id } });
 
   if (!community) {
@@ -186,20 +189,21 @@ const deleteCommunity = async (id) => {
   }
 
   return community;
-};
+}
 
 /**
- * @param {string} meta
+ * @param {string} filter
+ * @params {string} value
  * @returns {Array} communities
  */
-const getAllCommunity = async (meta) => {
+async function getCommunities(filter, value) {
   let communities;
   const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
 
-  switch (meta) {
-    case 'PUBLIC':
+  switch (filter) {
+    case TYPE:
       communities = await Community.findAll({
-        where: { privacy: 'public' },
+        where: { type: value },
         order: [['created_at', 'DESC']],
         attributes: {
           include: [
@@ -247,14 +251,14 @@ const getAllCommunity = async (meta) => {
   }
 
   return communities;
-};
+}
 
 /**
  *
  * @param {string} key
  * @returns {object} community
  */
-const findCommunity = async (key) => {
+async function findCommunity(key) {
   const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
 
   const community = await Community.findAll({
@@ -285,7 +289,26 @@ const findCommunity = async (key) => {
   });
 
   return community;
-};
+}
+
+/**
+ *
+ * @param {string} userId
+ */
+async function checkMember(communityId, userId) {
+  const member = await Community_Member.findOne({
+    where: {
+      [Op.and]: [{ user_id: userId }, { community_id: communityId }],
+    },
+    include: [User],
+  });
+
+  if (!member) {
+    throw new NotFoundException('User is not a member in this community');
+  }
+
+  return member;
+}
 
 module.exports = {
   getCommunityDetail,
@@ -293,6 +316,7 @@ module.exports = {
   createCommunity,
   editCommunity,
   deleteCommunity,
-  getAllCommunity,
+  getCommunities,
   findCommunity,
+  checkMember,
 };
