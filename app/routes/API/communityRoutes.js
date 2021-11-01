@@ -268,13 +268,13 @@ communityRouter.post(
   attemptController.addAttempt
 );
 // communityRouter.put(
-//   '/:id/classes/:classId/assessments/:assessmentId',
+//   '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
 //   authorizationMiddleware.checkLogin,
 //   classMiddleware.checkAdmin_video_module,
 //   attemptController.editAttempt
 // );
 communityRouter.delete(
-  '/:id/classes/:classId/assessments/:assessmentId',
+  '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
   attemptController.deleteAttempt
