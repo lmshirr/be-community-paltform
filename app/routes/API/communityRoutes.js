@@ -205,15 +205,6 @@ communityRouter
     classController.deleteClass
   );
 
-const test = (req, res, next) => {
-  console.log("-------------------------------------------------");
-  console.log(req.params.id);
-  console.log(req.params.classId);
-  console.log(req.params.assessmentId);
-  console.log("-------------------------------------------------");
-  next();
-};
-
 // Assessment routes
 communityRouter.get(
   '/:id/classes/:classId/assessments',
@@ -255,24 +246,23 @@ communityRouter.get(
   '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
   authorizationMiddleware.checkLogin,
   classMiddleware.checkAdmin_video_module,
-  attemptController.getAttempts
-);
-communityRouter.get(
-  '/:id/classes/:classId/assessments/:assessmentId/attempts/my',
-  classMiddleware.checkMembership,
   attemptController.getAttemptDetail
 );
+// communityRouter.get(
+//   '/:id/classes/:classId/assessments/:assessmentId/attempts/my',
+//   classMiddleware.checkMembership,
+//   attemptController.getMyAttempt
+// );
 communityRouter.post(
   '/:id/classes/:classId/assessments/:assessmentId/attempts',
   classMiddleware.checkMembership,
   attemptController.addAttempt
 );
-// communityRouter.put(
-//   '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
-//   authorizationMiddleware.checkLogin,
-//   classMiddleware.checkAdmin_video_module,
-//   attemptController.editAttempt
-// );
+communityRouter.put(
+  '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
+  classMiddleware.checkMembership,
+  attemptController.completeAttempt
+);
 communityRouter.delete(
   '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
   authorizationMiddleware.checkLogin,

@@ -44,11 +44,10 @@ module.exports.addAttempt = async (req, res) => {
     // check if user has already attempt this assessment
     const userAttempt = await attemptService.checkAttempt(assessmentId, userId);
     if (userAttempt) throw new Error('Attempt already exists');
-    console.log(start_time);
 
     // calculate deadline data based on assessment duration
     const assessment = await assessmentService.getAssessmentDetail(assessmentId);
-    const deadline = new Date(Date.now() + assessment.duration * 60 * 1000);
+    const deadline = new Date(start_time + assessment.duration * 60 * 1000);
 
     const attempt = await attemptService.createAttempt({
       assessment_id: assessmentId,
@@ -59,18 +58,8 @@ module.exports.addAttempt = async (req, res) => {
       deadline,
     });
 
-    // // insert question to db
-    // for (let i = 0; i < questions.length; i++) {
-    //   const question = await questionService.createQuestion(
-    //     questions[i],
-    //     attempt.id
-    //   );
-    // }
-
     // get inserted attempt data
     const attemptQuestions = await attemptService.getAttemptDetail(attempt.id);
-    console.log(attemptQuestions);
-    console.log("----------------------------------");
 
     res.status(200).json({
       message: 'Attempt attempted',
@@ -84,6 +73,45 @@ module.exports.addAttempt = async (req, res) => {
       });
 
     return res.status(500).json({
+      success: false,
+      errors: error,
+    });
+  }
+};
+
+module.exports.completeAttempt = async (req, res) => {
+  const { attemptId } = req.params;
+  const { finish_time, questions } = req.body;
+  try {
+    const attempt = await attemptService.getAttemptDetail(attemptId);
+
+    // const attempt = await attemptService.updateAttempt(req.params.attemptId, {
+    //   title,
+    //   description,
+    //   duration,
+    // });
+
+    // // update question
+    // for (let i = 0; i < questions.length; i++) {
+    //   let question = await questionService.updateQuestion(
+    //     questions[i].id,
+    //     questions[i],
+    //     attempt.id
+    //   );
+    //   if (!question) {
+    //     question = await questionService.createQuestion(questions[i], attempt.id);
+    //   }
+    // }
+
+    // // get updated attempt data
+    // const attemptQuestions = await attemptService.getAttemptDetail(attempt.id);
+
+    // return res.status(200).json({
+    //   messages: 'Attempt updated!',
+    //   data: attemptQuestions,
+    // });
+  } catch (error) {
+    return res.status(200).json({
       success: false,
       errors: error,
     });

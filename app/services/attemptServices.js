@@ -33,19 +33,16 @@ const checkAttempt = async (assessmentId, userId) => {
 };
 
 /**
+ * Get assessment attempt details
  *
  * @param {string} attemptId
  * @returns attempt
  */
 const getAttemptDetail = async (attemptId) => {
-  console.log("---------------------------------------------");
   const attempt = await Attempt.findOne({
     where: { id: attemptId },
     // include: { model: AttemptQuestion, as: 'attemptQuestions' },
   });
-  console.log("---------------------------------------------");
-  console.log(attempt);
-  console.log("---------------------------------------------");
 
   return attempt;
 };
