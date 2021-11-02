@@ -37,25 +37,24 @@ module.exports.getAttemptDetail = async (req, res) => {
 };
 
 module.exports.addAttempt = async (req, res) => {
-  const { start_time } = req.body;
+  const { startTime } = req.body;
   const { assessmentId } = req.params;
   const { userId } = res.locals;
 
   try {
     // check if user has already attempt this assessment
-    const userAttempt = await attemptService.checkAttempt(assessmentId, userId);
-    if (userAttempt) throw new Error('Attempt already exists');
+    await attemptService.checkAttempt(assessmentId, userId);
 
     // calculate deadline data based on assessment duration
     const assessment = await assessmentService.getAssessmentDetail(assessmentId);
-    const deadline = new Date(start_time + assessment.duration * 60 * 1000);
+    const deadline = new Date(startTime + assessment.duration * 60 * 1000);
 
     const attempt = await attemptService.createAttempt({
       assessment_id: assessmentId,
       user_id: userId,
       total_score: 0,
-      start_time,
-      finish_time: start_time,
+      start_time: startTime,
+      finish_time: startTime,
       deadline,
     });
 
@@ -73,11 +72,6 @@ module.exports.addAttempt = async (req, res) => {
         errors: error.message,
       });
     }
-    // if (error.message === 'Attempt already exists')
-    //   return res.status(400).json({
-    //     success: false,
-    //     errors: 'You have already attempt this assessment',
-    //   });
 
     return res.status(500).json({
       success: false,
@@ -88,11 +82,10 @@ module.exports.addAttempt = async (req, res) => {
 
 module.exports.completeAttempt = async (req, res) => {
   const { attemptId } = req.params;
-  const { finish_time, questions } = req.body;
+  const { finishTime, questions } = req.body;
   try {
-    // const attempt = await attemptService.getAttemptDetail(attemptId);
-
     // add attempt question
+    let totalScore = 0;
     for (let i = 0; i < questions.length; i++) {
       // check if choosed answer is correct
       const question = await questionService.getQuestionDetail(questions[i].id);
@@ -108,33 +101,21 @@ module.exports.completeAttempt = async (req, res) => {
         choosed_answer: questions[i].choosedAnswer,
         question_score: questions[i].score,
       });
+
+      totalScore += questions[i].score;
     }
 
-    // const attempt = await attemptService.updateAttempt(req.params.attemptId, {
-    //   title,
-    //   description,
-    //   duration,
-    // });
+    await attemptService.updateAttempt(attemptId, {
+      total_score: totalScore,
+      finish_time: finishTime,
+    });
 
-    // // update question
-    // for (let i = 0; i < questions.length; i++) {
-    //   let question = await questionService.updateQuestion(
-    //     questions[i].id,
-    //     questions[i],
-    //     attempt.id
-    //   );
-    //   if (!question) {
-    //     question = await questionService.createQuestion(questions[i], attempt.id);
-    //   }
-    // }
+    const attempt = await attemptService.getAttemptDetail(attemptId);
 
-    // // get updated attempt data
-    // const attemptQuestions = await attemptService.getAttemptDetail(attempt.id);
-
-    // return res.status(200).json({
-    //   messages: 'Attempt updated!',
-    //   data: attemptQuestions,
-    // });
+    return res.status(200).json({
+      messages: 'Attempt completed!',
+      data: attempt,
+    });
   } catch (error) {
     return res.status(200).json({
       success: false,
