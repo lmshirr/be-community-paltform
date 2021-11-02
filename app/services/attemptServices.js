@@ -1,5 +1,5 @@
-const { Attempt, Question } = require('../models/index');
-const { NotFoundException } = require('../utils/httpExceptions');
+const { Attempt, Attempt_Question } = require('../models/index');
+const { NotFoundException, BadRequestException } = require('../utils/httpExceptions');
 
 /**
  * Get all attempts
@@ -29,6 +29,10 @@ const checkAttempt = async (assessmentId, userId) => {
     where: { assessment_id: assessmentId, user_id: userId },
   });
 
+  if (attempt) {
+    throw new BadRequestException('You have already attempted this assessment');
+  }
+
   return attempt;
 };
 
@@ -41,7 +45,7 @@ const checkAttempt = async (assessmentId, userId) => {
 const getAttemptDetail = async (attemptId) => {
   const attempt = await Attempt.findOne({
     where: { id: attemptId },
-    // include: { model: AttemptQuestion, as: 'attemptQuestions' },
+    include: { model: Attempt_Question, as: 'questions' },
   });
 
   return attempt;
@@ -51,7 +55,6 @@ const getAttemptDetail = async (attemptId) => {
  * Create a new assessment attempt
  * 
  * @param {{assessment_id: string, user_id: string, total_score: bigint, start_time: Date, finish_time: Date, deadline: Date }} createAttemptDto
- * @param {Question[]} questions
  * @returns {object} assessment
  */
 const createAttempt = async (createAttemptDto) => {
@@ -62,7 +65,7 @@ const createAttempt = async (createAttemptDto) => {
 /**
  *
  * @param {string} attemptId
- * @param {{title: string, description: string, duration: string}} updateAttemptDto
+ * @param {{ total_score: bigint, finish_time: Date }} updateAttemptDto
  * @returns attempt
  */
 const updateAttempt = async (attemptId, updateAttemptDto) => {

@@ -3,6 +3,7 @@
 const attemptService = require('../services/attemptServices');
 const assessmentService = require('../services/assessmentServices');
 const questionService = require('../services/questionServices');
+const attemptQuestionService = require('../services/attemptQuestionServices');
 require('dotenv').config({ path: '../.env' });
 
 module.exports.getAttempts = async (req, res) => {
@@ -66,11 +67,17 @@ module.exports.addAttempt = async (req, res) => {
       data: attemptQuestions,
     });
   } catch (error) {
-    if (error.message === 'Attempt already exists')
+    if (error.statusCode === 400) {
       return res.status(400).json({
         success: false,
-        errors: 'You have already attempt this assessment',
+        errors: error.message,
       });
+    }
+    // if (error.message === 'Attempt already exists')
+    //   return res.status(400).json({
+    //     success: false,
+    //     errors: 'You have already attempt this assessment',
+    //   });
 
     return res.status(500).json({
       success: false,
@@ -83,7 +90,25 @@ module.exports.completeAttempt = async (req, res) => {
   const { attemptId } = req.params;
   const { finish_time, questions } = req.body;
   try {
-    const attempt = await attemptService.getAttemptDetail(attemptId);
+    // const attempt = await attemptService.getAttemptDetail(attemptId);
+
+    // add attempt question
+    for (let i = 0; i < questions.length; i++) {
+      // check if choosed answer is correct
+      const question = await questionService.getQuestionDetail(questions[i].id);
+      if (question.correct_answer === questions[i].choosedAnswer) {
+        questions[i].score = 10;
+      } else {
+        questions[i].score = 0;
+      }
+
+      await attemptQuestionService.createAttemptQuestion({
+        attempt_id: attemptId,
+        question_id: questions[i].id,
+        choosed_answer: questions[i].choosedAnswer,
+        question_score: questions[i].score,
+      });
+    }
 
     // const attempt = await attemptService.updateAttempt(req.params.attemptId, {
     //   title,

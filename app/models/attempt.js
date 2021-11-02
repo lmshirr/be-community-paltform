@@ -20,12 +20,12 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: 'id',
         as: 'assessment',
       });
-      // Attempt.hasMany(Attempt_Question, {
-      //   onDelete: 'cascade',
-      //   foreignKey: 'Attempt_id',
-      //   sourceKey: 'id',
-      //   as: 'questions',
-      // });
+      Attempt.hasMany(Attempt_Question, {
+        onDelete: 'cascade',
+        foreignKey: 'attempt_id',
+        sourceKey: 'id',
+        as: 'questions',
+      });
     }
   }
   Attempt.init(
