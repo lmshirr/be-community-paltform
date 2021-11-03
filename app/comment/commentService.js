@@ -1,4 +1,9 @@
-const { Comment, Community_Member, User, sequelize } = require('../db/models');
+const {
+  Comment,
+  Community_Member,
+  User,
+  sequelize,
+} = require('../shared/db/models');
 const {
   BadRequestException,
   NotFoundException,

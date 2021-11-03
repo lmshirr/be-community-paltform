@@ -1,4 +1,4 @@
-const db = require('../db/models');
+const db = require('../shared/db/models');
 const fs = require('fs');
 const { Op } = require('sequelize');
 require('dotenv').config({ path: '../.env' });

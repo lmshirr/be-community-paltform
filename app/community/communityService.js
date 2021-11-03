@@ -3,7 +3,7 @@ const {
   Community_Member,
   User,
   sequelize,
-} = require('../db/models');
+} = require('../shared/db/models');
 const { Op } = require('sequelize');
 const { NotFoundException } = require('../shared/utils/httpExceptions');
 const { deleteFile } = require('../shared/utils/cloudStorage');

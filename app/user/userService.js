@@ -1,4 +1,4 @@
-const { sequelize } = require('../db/models');
+const { sequelize } = require('../shared/db/models');
 const { QueryTypes } = require('sequelize');
 
 /**

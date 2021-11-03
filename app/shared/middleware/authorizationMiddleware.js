@@ -1,4 +1,3 @@
-require('dotenv').config({ path: '../.env' });
 const jwt = require('jsonwebtoken');
 const { UnauthorizedException } = require('../utils/httpExceptions');
 

@@ -3,7 +3,7 @@ const {
   Activation,
   Invitation,
   Request_Membership,
-} = require('../db/models');
+} = require('../shared/db/models');
 require('dotenv').config({ path: './.env' });
 const uuid = require('uuid');
 const { Op } = require('sequelize');

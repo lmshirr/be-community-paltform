@@ -1,4 +1,4 @@
-const db = require('../db/models');
+const db = require('../shared/db/models');
 const fs = require('fs');
 
 module.exports.getModule = async function (req, res) {

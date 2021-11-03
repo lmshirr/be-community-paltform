@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const { Class, Community, sequelize } = require('../db/models');
+const { Class, Community, sequelize } = require('../shared/db/models');
 const { Op } = require('sequelize');
 const { NotFoundException } = require('../shared/utils/httpExceptions');
 const config = require('config');

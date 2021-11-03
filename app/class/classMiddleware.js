@@ -1,4 +1,9 @@
-const { Community_Member, Class, Module, Video } = require('../db/models');
+const {
+  Community_Member,
+  Class,
+  Module,
+  Video,
+} = require('../shared/db/models');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const {

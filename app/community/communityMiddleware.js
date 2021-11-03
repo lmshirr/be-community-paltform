@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Community_Member, Community_Post } = require('../db/models');
+const { Community_Member, Community_Post } = require('../shared/db/models');
 const {
   ForbiddenException,
   NotFoundException,

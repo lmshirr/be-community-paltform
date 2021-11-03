@@ -4,7 +4,7 @@ const {
   Request_Membership,
   User,
   Invitation,
-} = require('../db/models');
+} = require('../shared/db/models');
 const { Op } = require('sequelize');
 const {
   NotFoundException,

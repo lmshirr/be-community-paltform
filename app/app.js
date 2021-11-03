@@ -13,7 +13,7 @@ const basicInfo = require('../docs/info');
 // development only
 const morgan = require('morgan');
 
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 
 // app
 const app = express();
