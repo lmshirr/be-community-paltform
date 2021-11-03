@@ -10,8 +10,14 @@ const {
   uploadDocMiddleware,
   uploadVideoMiddleware,
 } = require('../shared/utils/cloudStorage');
+const { usePipes } = require('../shared/middleware/pipesMiddleware');
+const { classParamSchemas } = require('./classValidation');
 
 const classRouter = Router();
+
+/**
+ * Base route /classes
+ */
 
 // class
 classRouter.get(
@@ -23,6 +29,7 @@ classRouter.get(
 classRouter
   .route('/:classId')
   .get(
+    usePipes(classParamSchemas.classId, 'params'),
     authorizationMiddleware.checkLogin,
     classMiddleware.checkMember,
     classController.getClassDetail
