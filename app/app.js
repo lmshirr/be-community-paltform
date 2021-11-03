@@ -3,15 +3,17 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const apiRoutes = require('./routes/index');
-const { NotFoundException } = require('./utils/httpExceptions');
+const {
+  NotFoundException,
+  HttpException,
+} = require('./shared/utils/httpExceptions');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const basicInfo = require('../docs/info');
-const HttpException = require('./utils/httpExceptions/httpException');
 // development only
 const morgan = require('morgan');
 
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 
 // app
 const app = express();
