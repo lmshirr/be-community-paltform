@@ -4,14 +4,14 @@ const { NotFoundException, BadRequestException } = require('../utils/httpExcepti
 /**
  * Get all attempts
  *
- * @param {{classId: string}} getAttemptDto
+ * @param {{assessmentId: string}} getAttemptDto
  */
 const getAttempts = async (getAttemptDto) => {
-  const { classId } = getAttemptDto;
+  const { assessmentId } = getAttemptDto;
 
   const attempts = await Attempt.findAll({
-    where: { class_id: classId },
-    // include: { model: Question, required: true, as: 'questions' },
+    where: { assessment_id: assessmentId },
+    include: { model: Attempt_Question, as: 'questions' },
   });
 
   return attempts;

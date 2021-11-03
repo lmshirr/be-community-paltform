@@ -52,17 +52,6 @@ module.exports.googleLogin = async (req, res, next) => {
         locale: googleUser.locale,
         hd: googleUser.hd,
       });
-      // const newUser = await User.create({
-      //   google_id: googleUser.id,
-      //   email: googleUser.email,
-      //   verified_email: googleUser.verified_email,
-      //   name: googleUser.name,
-      //   given_name: googleUser.given_name,
-      //   family_name: googleUser.family_name,
-      //   profile_pict: googleUser.picture,
-      //   locale: googleUser.locale,
-      //   hd: googleUser.hd,
-      // });
 
       user = await User.findOne({
         where: { google_id: newUser.google_id },
@@ -88,10 +77,6 @@ module.exports.googleLogin = async (req, res, next) => {
     });
     res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
     res.redirect(`${process.env.CLIENT_ROOT_URL}`);
-    // res.status(201).json({
-    //     success: true,
-    //     message: "Login Success"
-    // });
   } catch (error) {
     return next(new InternalServerException(error));
   }

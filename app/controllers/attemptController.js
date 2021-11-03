@@ -8,7 +8,7 @@ require('dotenv').config({ path: '../.env' });
 
 module.exports.getAttempts = async (req, res) => {
   try {
-    const attempts = await attemptService.getAttempts({ classId: req.params.classId });
+    const attempts = await attemptService.getAttempts({ assessmentId: req.params.assessmentId });
     res.status(200).json({
       success: true,
       data: attempts,
@@ -84,6 +84,20 @@ module.exports.completeAttempt = async (req, res) => {
   const { attemptId } = req.params;
   const { finishTime, questions } = req.body;
   try {
+    // check if finish time equal to start time or exceed deadline
+    let attempt = await attemptService.getAttemptDetail(attemptId);
+    if (attempt.deadline < new Date(finishTime)) {
+      return res.status(400).json({
+        success: false,
+        errors: 'Finish time exceed deadline',
+      });
+    }
+    if (attempt.start_time !== attempt.finish_time) {
+      return res.status(400).json({
+        success: false,
+        errors: 'You have already completed this attempt',
+      });
+    }
     // add attempt question
     let totalScore = 0;
     for (let i = 0; i < questions.length; i++) {
@@ -110,7 +124,7 @@ module.exports.completeAttempt = async (req, res) => {
       finish_time: finishTime,
     });
 
-    const attempt = await attemptService.getAttemptDetail(attemptId);
+    attempt = await attemptService.getAttemptDetail(attemptId);
 
     return res.status(200).json({
       messages: 'Attempt completed!',
