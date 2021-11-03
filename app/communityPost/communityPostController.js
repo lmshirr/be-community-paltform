@@ -1,25 +1,25 @@
 const communityPostService = require('./communityPostService');
 
-module.exports.getCommunityPosts = async function (req, res, next) {
-  const { id } = req.params;
+async function getCommunityPosts(req, res, next) {
+  const { communityId } = req.params;
 
   let post;
   try {
-    post = await communityPostService.getPostInCommunity(id);
+    post = await communityPostService.getPostInCommunity(communityId);
   } catch (error) {
     return next(error);
   }
 
   return res.json({ data: post });
-};
+}
 
-module.exports.getPostDetails = async function (req, res, next) {
-  const { postId: id } = req.params;
+async function getPostDetails(req, res, next) {
+  const { postId } = req.params;
 
   let post;
 
   try {
-    post = await communityPostService.getPostDetail(id);
+    post = await communityPostService.getPostDetail(postId);
   } catch (error) {
     return next(error);
   }
@@ -27,10 +27,10 @@ module.exports.getPostDetails = async function (req, res, next) {
   return res.json({
     data: post,
   });
-};
+}
 
-module.exports.createPost = async function (req, res, next) {
-  const { id: community_id } = req.params;
+async function createPost(req, res, next) {
+  const { communityId: community_id } = req.params;
   const { content } = req.body;
   const { id: member_id } = req.member;
   const { files } = req;
@@ -50,9 +50,9 @@ module.exports.createPost = async function (req, res, next) {
     messages: 'Post created',
     data: post,
   });
-};
+}
 
-module.exports.editPost = async function (req, res, next) {
+async function editPost(req, res, next) {
   const { postId } = req.params;
   const { content } = req.body;
   const { files } = req;
@@ -69,9 +69,9 @@ module.exports.editPost = async function (req, res, next) {
     messages: 'Post updated!',
     data: post,
   });
-};
+}
 
-module.exports.deletePost = async function (req, res, next) {
+async function deletePost(req, res, next) {
   const { postId } = req.params;
 
   let post;
@@ -85,15 +85,17 @@ module.exports.deletePost = async function (req, res, next) {
     messages: 'Delete success!',
     post,
   });
-};
+}
 
-module.exports.deleteAttachment = async function (req, res, next) {
-  const { id } = req.params;
+async function deleteAttachment(req, res, next) {
+  const { communityId } = req.params;
 
   let community_post_attachment;
 
   try {
-    community_post_attachment = await communityPostService.deleteAttachment(id);
+    community_post_attachment = await communityPostService.deleteAttachment(
+      communityId
+    );
   } catch (error) {
     return next(error);
   }
@@ -103,4 +105,13 @@ module.exports.deleteAttachment = async function (req, res, next) {
     messages: 'Delete success!',
     community_post_attachment,
   });
+}
+
+module.exports = {
+  getCommunityPosts,
+  editPost,
+  deletePost,
+  deleteAttachment,
+  createPost,
+  getPostDetails,
 };

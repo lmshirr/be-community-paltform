@@ -4,7 +4,7 @@ const communityPostService = require('../communityPost/communityPostService');
 
 const findClass = async (req, res, next) => {
   const { key } = req.query;
-  const { id: communityId } = req.params;
+  const { communityId } = req.params;
 
   let _class;
 
@@ -36,7 +36,7 @@ const getClassDetail = async (req, res, next) => {
 const createClass = async (req, res, next) => {
   const { name, description, summary, about } = req.body;
   const { id: member_id } = req.member;
-  const { id: community_id } = req.params;
+  const { communityId: community_id } = req.params;
   const { file } = req;
 
   let dataClass;

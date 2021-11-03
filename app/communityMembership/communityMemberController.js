@@ -1,6 +1,6 @@
 const communityMemberService = require('./communityMemberService');
 
-module.exports.joinCommunity = async function (req, res, next) {
+async function joinCommunity(req, res, next) {
   const { id: userId } = req.user;
   const { id: communityId } = req.params;
 
@@ -12,9 +12,9 @@ module.exports.joinCommunity = async function (req, res, next) {
   }
 
   return res.json(data);
-};
+}
 
-module.exports.updateRole = async function (req, res, next) {
+async function updateRole(req, res, next) {
   const { id: communityId, userId } = req.params;
   const { role } = req.body;
   const { id: ownerUserId } = req.user;
@@ -35,9 +35,9 @@ module.exports.updateRole = async function (req, res, next) {
     messages: 'Role updated!',
     data: newMemberRole,
   });
-};
+}
 
-module.exports.leaveCommunity = async function (req, res, next) {
+async function leaveCommunity(req, res, next) {
   const { id: community_id } = req.params;
   const { id: userId } = req.user;
   const { role } = req.member;
@@ -58,23 +58,23 @@ module.exports.leaveCommunity = async function (req, res, next) {
     messages: 'You leave the community',
     data: member,
   });
-};
+}
 
-module.exports.getCommunityMember = async (req, res, next) => {
+async function getCommunityMember(req, res, next) {
   const { id: community_id } = req.params;
 
   let members;
   try {
-    members = await communityMemberService.getCommunityMembers(community_id);
+    members = communityMemberService.getCommunityMembers(community_id);
   } catch (error) {
     return next(error);
   }
 
   return res.json({ data: members });
-};
+}
 
 // invitation
-module.exports.getInvitationCommunity = async function (req, res, next) {
+async function getInvitationCommunity(req, res, next) {
   const { id: community_id } = req.params;
 
   let invitation;
@@ -90,9 +90,9 @@ module.exports.getInvitationCommunity = async function (req, res, next) {
   return res.json({
     data: invitation,
   });
-};
+}
 
-module.exports.createInvitation = async function (req, res, next) {
+async function createInvitation(req, res, next) {
   const { id: community_id } = req.params;
   const { user_id } = req.query;
   const { id: inviterId } = req.user;
@@ -113,9 +113,9 @@ module.exports.createInvitation = async function (req, res, next) {
     messages: 'User invited',
     data: invite,
   });
-};
+}
 
-module.exports.respondInvite = async function (req, res, next) {
+async function respondInvite(req, res, next) {
   const { respond } = req.body;
   const { invitationId: id } = req.params;
   const { id: userId } = req.user;
@@ -128,9 +128,9 @@ module.exports.respondInvite = async function (req, res, next) {
   }
 
   return res.json(data);
-};
+}
 
-module.exports.deleteInvite = async function (req, res, next) {
+async function deleteInvite(req, res, next) {
   const { invitationId } = req.params;
 
   let invitation;
@@ -144,10 +144,10 @@ module.exports.deleteInvite = async function (req, res, next) {
     message: 'Success delete invitation',
     data: invitation,
   });
-};
+}
 
 // request membership
-module.exports.getRequestCommunity = async function (req, res, next) {
+async function getRequestCommunity(req, res, next) {
   const { id: communityId } = req.params;
 
   let request;
@@ -160,9 +160,9 @@ module.exports.getRequestCommunity = async function (req, res, next) {
   return res.json({
     data: request,
   });
-};
+}
 
-module.exports.respondRequest = async function (req, res, next) {
+async function respondRequest(req, res, next) {
   const { requestId, id: community_id } = req.params;
   const { respond } = req.body;
 
@@ -179,4 +179,17 @@ module.exports.respondRequest = async function (req, res, next) {
   }
 
   return res.json(data);
+}
+
+module.exports = {
+  joinCommunity,
+  respondRequest,
+  getRequestCommunity,
+  respondInvite,
+  deleteInvite,
+  createInvitation,
+  getInvitationCommunity,
+  getCommunityMember,
+  leaveCommunity,
+  updateRole,
 };

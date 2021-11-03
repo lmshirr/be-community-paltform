@@ -1,6 +1,6 @@
 const commentService = require('./commentService');
 
-module.exports.postComment = async (req, res, next) => {
+async function postComment(req, res, next) {
   const { postId: post_id } = req.params;
   const { body } = req.body;
   const { id: member_id } = req.member;
@@ -21,9 +21,9 @@ module.exports.postComment = async (req, res, next) => {
   }
 
   return res.status(201).json({ message: 'Comment created', data: comment });
-};
+}
 
-module.exports.getComments = async (req, res, next) => {
+async function getComments(req, res, next) {
   const { postId: post_id } = req.params;
 
   let comments;
@@ -35,9 +35,9 @@ module.exports.getComments = async (req, res, next) => {
   }
 
   return res.json({ data: comments });
-};
+}
 
-module.exports.deleteComment = async (req, res, next) => {
+async function deleteComment(req, res, next) {
   const { commentId } = req.params;
 
   let comment;
@@ -48,4 +48,6 @@ module.exports.deleteComment = async (req, res, next) => {
   }
 
   return res.json({ message: 'Comment deleted', data: comment });
-};
+}
+
+module.exports = { getComments, deleteComment, postComment };

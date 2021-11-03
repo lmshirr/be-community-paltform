@@ -4,34 +4,53 @@ const authorizationMiddleware = require('../shared/middleware/authorizationMiddl
 const classController = require('../class/classController');
 const communityMiddleware = require('./communityMiddleware');
 const { uploadImageMiddleware } = require('../shared/utils/cloudStorage');
+const { usePipes } = require('../shared/middleware/pipesMiddleware');
+const {
+  communityParamSchemas,
+  communityBodySchemas,
+  communityQuerySchemas,
+} = require('./communityValidation');
 
 const communityRouter = express.Router();
+
+/**
+ * Base route /communities
+ */
 
 communityRouter.get('/search/:key', communityController.findCommunity);
 communityRouter
   .route('/')
-  .get(authorizationMiddleware.checkLogin, communityController.getCommunities)
+  .get(
+    usePipes(communityQuerySchemas.getCommunities, 'query'),
+    authorizationMiddleware.checkLogin,
+    communityController.getCommunities
+  )
   .post(
     authorizationMiddleware.checkLogin,
     uploadImageMiddleware.single('community_pict'),
+    usePipes(communityBodySchemas.createCommunity, 'body'),
     communityController.createCommunity
   );
 communityRouter
-  .route('/:id')
+  .route('/:communityId')
   .get(
+    usePipes(communityParamSchemas.communityId, 'params'),
     authorizationMiddleware.checkLogin,
     communityController.getCommunityDetails
   )
   .patch(
+    usePipes(communityParamSchemas.communityId, 'params'),
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
     uploadImageMiddleware.fields([
       { name: 'community_pict' },
       { name: 'community_banner' },
     ]),
+    usePipes(communityBodySchemas.createCommunity, 'body'),
     communityController.editCommunity
   )
   .delete(
+    usePipes(communityParamSchemas.communityId, 'params'),
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkOwner,
     communityController.deleteCommunity
@@ -39,8 +58,9 @@ communityRouter
 
 // classes
 communityRouter
-  .route('/:id/classes')
+  .route('/:communityId/classes')
   .post(
+    usePipes(communityParamSchemas.communityId, 'params'),
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
     uploadImageMiddleware.single('class_banner'),
@@ -53,8 +73,9 @@ communityRouter
   );
 
 communityRouter
-  .route('/:id/classes/search')
+  .route('/:communityId/classes/search')
   .get(
+    usePipes(communityParamSchemas.communityId, 'params'),
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkMember,
     classController.findClass
@@ -62,6 +83,7 @@ communityRouter
 
 communityRouter.get(
   '/:communityId/checkmember/:userId',
+  usePipes(communityParamSchemas.communityIdUserId, 'params'),
   authorizationMiddleware.checkLogin,
   communityController.checkMember
 );

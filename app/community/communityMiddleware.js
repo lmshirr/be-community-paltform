@@ -7,7 +7,7 @@ const {
 
 const checkAdmin = async (req, res, next) => {
   const { id: user_id } = req.user;
-  const { id: community_id } = req.params;
+  const { communityId: community_id } = req.params;
 
   try {
     const admin = await Community_Member.findOne({
@@ -34,7 +34,7 @@ const checkAdmin = async (req, res, next) => {
 
 const checkOwner = async (req, res, next) => {
   const { id: user_id } = req.user;
-  const { id: community_id } = req.params;
+  const { communityId: community_id } = req.params;
 
   try {
     const owner = await Community_Member.findOne({
@@ -57,7 +57,7 @@ const checkOwner = async (req, res, next) => {
 
 const checkMember = async (req, res, next) => {
   const { id: user_id } = req.user;
-  const { id: community_id } = req.params;
+  const { communityId: community_id } = req.params;
 
   try {
     const member = await Community_Member.findOne({

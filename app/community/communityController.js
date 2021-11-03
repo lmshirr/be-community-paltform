@@ -15,14 +15,14 @@ async function findCommunity(req, res, next) {
 }
 
 async function getCommunityDetails(req, res, next) {
-  const { id } = req.params;
+  const { communityId } = req.params;
 
   let community;
   let total_member;
 
   try {
-    community = await communityService.getCommunityDetail(id);
-    total_member = await communityService.getCommunityTotalMember(id);
+    community = await communityService.getCommunityDetail(communityId);
+    total_member = await communityService.getCommunityTotalMember(communityId);
   } catch (error) {
     return next(error);
   }
@@ -59,7 +59,7 @@ async function createCommunity(req, res, next) {
 }
 
 async function editCommunity(req, res, next) {
-  const { id } = req.params;
+  const { communityId } = req.params;
   const { privacy, name, type, description } = req.body;
   const { files } = req;
 
@@ -68,7 +68,7 @@ async function editCommunity(req, res, next) {
   try {
     community = await communityService.editCommunity(
       { name, privacy, type, description },
-      id,
+      communityId,
       files
     );
   } catch (error) {
