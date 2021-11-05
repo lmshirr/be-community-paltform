@@ -1,34 +1,40 @@
 /**
  * @swagger
- * /communities/{communityId}/classes/{classId}/assessments/{assessmentId}:
+ * /communities/{communityId}/classes/{classId}/assessments/{assessmentId}/attempts/{attemptId}:
  *   parameters:
  *    - name: communityId
  *      in: path
- *      description: community id
+ *      description: The id of the community
  *      required: true
  *      schema:
  *        type: string
  *    - name: classId
  *      in: path
- *      description: class id
+ *      description: The id of the class
  *      required: true
  *      schema:
  *        type: string
  *    - name: assessmentId
  *      in: path
- *      description: assessment id
+ *      description: The id of the assessment
+ *      required: true
+ *      schema:
+ *        type: string
+ *    - name: attemptId
+ *      in: path
+ *      description: The id of the attempt
  *      required: true
  *      schema:
  *        type: string
  *   delete:
  *     tags:
- *       - Assessment
+ *       - Assessment Attempt
  *     security:
  *       - jwtToken: []
- *     description: Delete assessment from class
+ *     description: Delete assessment attempt
  *     responses:
  *       200:
- *         description: Success delete assessment
+ *         description: Success delete attempt
  *       404:
  *         description: Not found
  *       500:
