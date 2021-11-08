@@ -9,7 +9,7 @@ const findClass = async (req, res, next) => {
   let _class;
 
   try {
-    _class = await classService.findClass(communityId, key);
+    _class = classService.findClass(communityId, key);
   } catch (error) {
     return next(error);
   }
@@ -25,7 +25,7 @@ const getClassDetail = async (req, res, next) => {
   let data;
 
   try {
-    data = await classService.getClassDetail(classId);
+    data = classService.getClassDetail(classId);
   } catch (error) {
     return next(error);
   }
@@ -43,7 +43,7 @@ const createClass = async (req, res, next) => {
   let post;
 
   try {
-    dataClass = await classService.createClass(
+    dataClass = classService.createClass(
       {
         community_id,
         member_id,
@@ -80,7 +80,7 @@ const editClass = async (req, res, next) => {
 
   let _class;
   try {
-    _class = await classService.editClass(
+    _class = classService.editClass(
       classId,
       { about, description, summary, name },
       file
@@ -99,7 +99,7 @@ const deleteClass = async (req, res, next) => {
   const { classId } = req.params;
 
   try {
-    await classService.deleteClass(classId);
+    classService.deleteClass(classId);
   } catch (error) {
     return next(error);
   }
@@ -116,7 +116,7 @@ const getClassInCommunity = async (req, res, next) => {
   let classes;
 
   try {
-    classes = await classService.getClassInCommunity(communityId, sort);
+    classes = classService.getClassInCommunity(communityId, sort);
   } catch (error) {
     return next(error);
   }
@@ -130,7 +130,7 @@ const getClasses = async (req, res, next) => {
   let classes;
 
   try {
-    classes = await classService.getClasses(sort);
+    classes = classService.getClasses(sort);
   } catch (error) {
     return next(error);
   }

@@ -13,7 +13,7 @@ const urlJoin = require('url-join');
  */
 const createClass = async (createClassDto, file) => {
   let banner_uri;
-  const bucketUrl = config.get('GCS.bucketUrl');
+  const bucketUrl = config.get('GCS.bucket_url');
 
   if (file) {
     banner_uri = file.filename;
