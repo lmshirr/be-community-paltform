@@ -23,7 +23,7 @@ const getCommunityUserJoinOrNot = async (user_id, status) => {
     );
   } else if (status === 'notJoin') {
     communities = await sequelize.query(
-      'SELECT *, CONCAT(?, community_pirc_uri) AS community_pict FROM community c INNER JOIN community_member cm ON c.id = cm.community_id WHERE cm.user_id != ?',
+      'SELECT *, CONCAT(?, community_pict_uri) AS community_pict FROM community c INNER JOIN community_member cm ON c.id = cm.community_id WHERE cm.user_id != ?',
       {
         replacements: [bucketUrl, user_id],
         type: QueryTypes.SELECT,
