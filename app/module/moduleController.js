@@ -1,12 +1,13 @@
-const db = require('../shared/db/models');
+const { Module } = require('../shared/db/models');
 const fs = require('fs');
+const { NotFoundException } = require('../shared/utils/httpExceptions');
 
 module.exports.getModule = async function (req, res) {
   try {
-    const module = await db.Module.findByPk(req.params.ModuleId);
+    const module = await Module.findAll();
     res.status(200).json({
       success: true,
-      Module: module,
+      data: module,
     });
   } catch (error) {
     return res.status(200).json({
@@ -16,21 +17,47 @@ module.exports.getModule = async function (req, res) {
   }
 };
 
-module.exports.addModule = async function (req, res) {
-  if (!req.file) {
-    res.status(200).json({
-      success: false,
-      message: 'Please select a file',
-    });
-  }
-  const { filename } = req.file;
-  const { name } = req.body;
-  const { ClassId } = req.params;
+module.exports.getModuleById = async function (req, res, next) {
   try {
-    const module = await db.Module.create({
-      ClassId,
-      filename,
-      name,
+    const module = await Module.findOne({
+      where : {id : req.params.moduleId}
+  });
+
+    console.log("tes ======> ", module)
+
+    if(!module){
+      throw new NotFoundException('Module not found');
+    }
+
+    res.status(200).json({
+      success: true,
+      data: module,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports.getModuleByClass = async function (req, res) {
+
+};
+
+module.exports.addModule = async function (req, res) {
+  // if (!req.file) {
+  //   res.status(200).json({
+  //     success: false,
+  //     message: 'Please select a file',
+  //   });
+  // }
+  // const { filename } = req.file;
+  const { class_id, filename, name } = req.body;
+  // const { ClassId } = req.params;
+  
+  try {
+    const module = await Module.create({
+      class_id : class_id,
+      filename: filename,
+      name : name,
     });
     res.status(200).json({
       message: 'Module Uploaded',

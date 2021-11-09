@@ -25,7 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'member_id',
         targetKey: 'id',
       });
-      Class.hasMany(Module, { onDelete: 'cascade' });
+      Class.hasMany(Module, { 
+        onDelete: 'cascade', 
+        foreignKey: 'class_id' 
+      });
       Class.hasMany(Video, { onDelete: 'cascade' });
       Class.hasMany(Assessment, { onDelete: 'cascade' });
       Class.hasMany(Webinar, {
