@@ -110,13 +110,13 @@ const deleteClass = async (req, res, next) => {
 };
 
 const getClassInCommunity = async (req, res, next) => {
-  const { id: communityId } = req.params;
+  const { communityId } = req.params;
   const { sort } = req.query;
 
   let classes;
 
   try {
-    classes = classService.getClassInCommunity(communityId, sort);
+    classes = await classService.getClassInCommunity(communityId, sort);
   } catch (error) {
     return next(error);
   }
@@ -125,12 +125,12 @@ const getClassInCommunity = async (req, res, next) => {
 };
 
 const getClasses = async (req, res, next) => {
-  const { sort } = req.query;
+  const { sort, value } = req.query;
 
   let classes;
 
   try {
-    classes = classService.getClasses(sort);
+    classes = await classService.getClasses(sort, value);
   } catch (error) {
     return next(error);
   }

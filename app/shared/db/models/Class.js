@@ -79,11 +79,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      students: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
       video_intro_uri: {
         type: DataTypes.STRING,
         allowNull: false,

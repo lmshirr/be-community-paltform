@@ -48,11 +48,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      students: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
       video_intro_uri: {
         type: Sequelize.STRING,
         allowNull: false,

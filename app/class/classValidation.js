@@ -16,7 +16,12 @@ const classParamSchemas = {
   }),
 };
 
-const classQuerySchemas = {};
+const classQuerySchemas = {
+  sortAndDate: Joi.object().keys({
+    sort: Joi.string().valid('category', 'upload_date').required(),
+    value: Joi.string().required(),
+  }),
+};
 
 module.exports = {
   classBodySchemas,
