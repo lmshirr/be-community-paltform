@@ -21,33 +21,31 @@ async function getCommunityDetail(id) {
 
   const community = await Community.findOne({
     where: { id },
+    attributes: {
+      include: [
+        [
+          sequelize.fn(
+            'CONCAT',
+            bucketUrl,
+            sequelize.col('community_pict_uri')
+          ),
+          'community_pict',
+        ],
+        [
+          sequelize.fn(
+            'CONCAT',
+            bucketUrl,
+            sequelize.col('community_banner_uri')
+          ),
+          'community_banner',
+        ],
+      ],
+      exclude: ['community_pict_uri', 'community_banner_uri'],
+    },
     include: {
       model: User,
       attributes: {
-        include: [
-          [
-            sequelize.fn(
-              'CONCAT',
-              bucketUrl,
-              sequelize.col('community_pict_uri')
-            ),
-            'community_pict',
-          ],
-          [
-            sequelize.fn(
-              'CONCAT',
-              bucketUrl,
-              sequelize.col('community_banner_uri')
-            ),
-            'community_banner',
-          ],
-          'pk',
-          'id',
-          'name',
-          'email',
-          'profile_pict',
-        ],
-        exclude: ['community_pict_uri', 'community_banner_uri'],
+        include: ['pk', 'id', 'name', 'email', 'profile_pict'],
       },
       through: {
         attributes: ['created_at'],
