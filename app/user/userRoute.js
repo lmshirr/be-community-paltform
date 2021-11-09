@@ -8,14 +8,12 @@ const userRouter = express.Router();
 
 userRouter.get('/search/:key', userController.findUser);
 userRouter.get('/verify', userController.verification);
-userRouter
-  .route('/:id')
-  .get(userController.getUserDetail)
-  .patch(
-    authorizationMiddleware.checkLogin,
-    uploadImageMiddleware.single('profile_pict'),
-    userController.editUser
-  );
+userRouter.route('/:id').get(userController.getUserDetail);
+// .patch(
+//   authorizationMiddleware.checkLogin,
+//   uploadImageMiddleware.single('profile_pict'),
+//   userController.editUser
+// );
 userRouter.post('/register', userController.register);
 userRouter.post('/login', userController.login);
 userRouter.post('/logout', userController.logout);

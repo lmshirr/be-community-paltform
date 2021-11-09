@@ -18,7 +18,7 @@ const {
 } = require('../shared/utils/httpExceptions/index');
 const mailService = require('../shared/utils/email/mail.service');
 const userService = require('./userService');
-const { getGoogleAuthURL, getTokens } = require('../shared/helpers/googleAuth');
+const { getGoogleAuthURL, getTokens } = require('../shared/utils/googleAuth/googleAuth');
 const axios = require('axios');
 
 const tokenAge = 60 * 60;
@@ -172,52 +172,12 @@ module.exports.getUserDetail = async function (req, res, next) {
 
   let user;
   try {
-    user = await User.findOne({
-      where: { id },
-    });
+    user = await userService.getUserDetail(id);
   } catch (error) {
     return next(new InternalServerException('Internal server error', error));
   }
 
   return res.json({ data: user });
-};
-
-module.exports.editUser = async function (req, res, next) {
-  const { id } = req.params;
-
-  const { name, phone_number, birthday } = req.body;
-
-  const user = await User.findOne({ where: { id } });
-
-  if (!user) {
-    return next(new NotFoundException('User not found'));
-  }
-
-  let profile_pict;
-
-  if (req.file) {
-    profile_pict = req.file.filename;
-  }
-
-  let userUpdated;
-  try {
-    userUpdated = await user.update(
-      {
-        name,
-        phone_number,
-        birthday,
-        profile_pict,
-        updated_at: new Date(),
-      },
-      { returning: true }
-    );
-  } catch (error) {
-    return next(new InternalServerException('Internal server error', error));
-  }
-  return res.json({
-    messages: 'Profile updated!',
-    data: userUpdated,
-  });
 };
 
 module.exports.logout = (req, res) => {
@@ -376,10 +336,6 @@ module.exports.googleLogin = async (req, res, next) => {
     });
     res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
     res.redirect(`${process.env.CLIENT_ROOT_URL}`);
-    // res.status(201).json({
-    //     success: true,
-    //     message: "Login Success"
-    // });
   } catch (error) {
     return next(new InternalServerException(error));
   }

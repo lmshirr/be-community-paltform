@@ -15,7 +15,7 @@ module.exports = {
         description: 'Localhost server',
       },
       {
-        url: 'http://139.162.3.23:5000/api',
+        url: 'https://api.community-platform.nikici.com/api',
         description: 'Production server',
       },
     ],
