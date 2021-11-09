@@ -259,7 +259,6 @@ module.exports.getAllUserCommunityJoinOrNot = async (req, res, next) => {
   try {
     communities = await userService.getCommunityUserJoinOrNot(id, status);
   } catch (error) {
-    console.log(error);
     return next(error);
   }
 

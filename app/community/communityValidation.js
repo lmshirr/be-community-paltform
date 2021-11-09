@@ -6,7 +6,7 @@ const communityBodySchemas = {
     type: Joi.string().required(),
     description: Joi.string().required(),
     privacy: Joi.string().valid('public', 'private').required(),
-    file: Joi.object(),
+    community_pict: Joi.optional(),
   }),
   editCommunity: Joi.object().keys({
     name: Joi.string().required(),

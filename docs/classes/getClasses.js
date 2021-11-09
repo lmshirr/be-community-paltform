@@ -6,11 +6,17 @@
  *       - Class
  *     security:
  *       - jwtToken: []
- *     description: Get class in community
+ *     description: Get class by sort
  *     parameters:
  *       - name: sort
  *         in: query
- *         description: class sort by recommended|newest|latest
+ *         description: class sort by upload_date | category
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: value
+ *         in: query
+ *         description: class sort by newest | latest | <categoryType>
  *         required: true
  *         schema:
  *           type: string

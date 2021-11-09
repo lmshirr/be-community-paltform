@@ -13,13 +13,20 @@ const urlJoin = require('url-join');
  */
 const createClass = async (createClassDto, file) => {
   let banner_uri;
-  const bucketUrl = config.get('GCS.bucketUrl');
+  const bucketUrl = config.get('GCS.bucket_url');
 
   if (file) {
     banner_uri = file.filename;
   }
 
   const { dataValues } = await Class.create({ ...createClassDto, banner_uri });
+
+  if (!banner_uri) {
+    return {
+      ...dataValues,
+      banner_pict: urlJoin(bucketUrl, dataValues.banner_uri),
+    };
+  }
 
   return {
     ...dataValues,
@@ -148,21 +155,6 @@ const getClassInCommunity = async (communityId, sort) => {
   let classes;
 
   switch (sort) {
-    case 'recommended':
-      classes = await Class.findAll({
-        where: { community_id: communityId },
-        order: [['students', 'DESC']],
-        attributes: {
-          include: [
-            [
-              sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
-              'banner_pict',
-            ],
-          ],
-          exclude: ['banner_uri'],
-        },
-      });
-      break;
     case 'newest':
       classes = await Class.findAll({
         where: { community_id: communityId },
@@ -217,27 +209,33 @@ const getClassInCommunity = async (communityId, sort) => {
  * @param {string} sort getClassSortBy recommended, newest, latest
  * @returns {Array} classes
  */
-const getClasses = async (sort) => {
+const getClasses = async (sort, value) => {
   let classes;
 
   switch (sort) {
-    case 'recommended':
+    case 'upload_date':
+      // eslint-disable-next-line no-case-declarations
+      let meta;
+
+      if (value === 'newest') {
+        meta = 'DESC';
+      }
+      if (value === 'latest') {
+        meta = 'ASC';
+      }
       classes = await Class.findAll({
-        order: [
-          ['students', 'DESC'],
-          ['created_at', 'DESC'],
+        order: [['created_at', meta]],
+      });
+      break;
+    case 'category':
+      classes = await Class.findAll({
+        include: [
+          {
+            model: Community,
+            where: { type: value },
+          },
         ],
-        include: { model: Community, required: true, attributes: ['name'] },
-      });
-      break;
-    case 'newest':
-      classes = await Class.findAll({
         order: [['created_at', 'DESC']],
-      });
-      break;
-    case 'latest':
-      classes = await Class.findAll({
-        order: [['created_at', 'ASC']],
       });
       break;
     default:

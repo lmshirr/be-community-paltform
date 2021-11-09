@@ -12,7 +12,7 @@ const {
   uploadVideoMiddleware,
 } = require('../shared/utils/cloudStorage');
 const { usePipes } = require('../shared/middleware/pipesMiddleware');
-const { classParamSchemas } = require('./classValidation');
+const { classParamSchemas, classQuerySchemas } = require('./classValidation');
 
 const classRouter = Router();
 
@@ -23,6 +23,7 @@ const classRouter = Router();
 // class
 classRouter.get(
   '/',
+  usePipes(classQuerySchemas.sortAndDate, 'query'),
   authorizationMiddleware.checkLogin,
   classController.getClasses
 );

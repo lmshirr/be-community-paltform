@@ -38,7 +38,7 @@ module.exports = {
       banner_uri: {
         type: Sequelize.STRING,
         allowNull: true,
-        defaultValue: 'banner.jpg',
+        defaultValue: 'class_banner.jpg',
       },
       summary: {
         type: Sequelize.TEXT,
@@ -47,11 +47,6 @@ module.exports = {
       about: {
         type: Sequelize.TEXT,
         allowNull: false,
-      },
-      students: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
       },
       video_intro_uri: {
         type: Sequelize.STRING,
