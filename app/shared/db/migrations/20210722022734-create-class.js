@@ -38,7 +38,7 @@ module.exports = {
       banner_uri: {
         type: Sequelize.STRING,
         allowNull: true,
-        defaultValue: 'banner.jpg',
+        defaultValue: 'class_banner.jpg',
       },
       summary: {
         type: Sequelize.TEXT,

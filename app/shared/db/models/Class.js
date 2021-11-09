@@ -69,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
       banner_uri: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: 'banner.jpg',
+        defaultValue: 'class_banner.jpg',
       },
       summary: {
         type: DataTypes.TEXT,

@@ -90,17 +90,18 @@ async function createCommunity(createCommunityDto, userId, file) {
     community_pict_uri = file.filename;
   }
 
-  let community = await Community.create({
+  let { dataValues: community } = await Community.create({
     ...createCommunityDto,
     community_pict_uri,
   });
 
-  if (community_pict_uri) {
-    community = {
-      ...community.get({ raw: true }),
-      community_pict: urlJoin(bucketUrl, community_pict_uri),
-    };
-  }
+  console.log(community);
+
+  community = {
+    ...community,
+    community_pict: urlJoin(bucketUrl, community.community_pict_uri),
+    community_banner: urlJoin(bucketUrl, community.community_banner_uri),
+  };
 
   await Community_Member.create({
     community_id: community.id,

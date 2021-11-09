@@ -22,7 +22,10 @@ const createClass = async (createClassDto, file) => {
   const { dataValues } = await Class.create({ ...createClassDto, banner_uri });
 
   if (!banner_uri) {
-    return dataValues;
+    return {
+      ...dataValues,
+      banner_pict: urlJoin(bucketUrl, dataValues.banner_uri),
+    };
   }
 
   return {

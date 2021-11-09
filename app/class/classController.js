@@ -9,7 +9,7 @@ const findClass = async (req, res, next) => {
   let _class;
 
   try {
-    _class = classService.findClass(communityId, key);
+    _class = await classService.findClass(communityId, key);
   } catch (error) {
     return next(error);
   }
@@ -25,7 +25,7 @@ const getClassDetail = async (req, res, next) => {
   let data;
 
   try {
-    data = classService.getClassDetail(classId);
+    data = await classService.getClassDetail(classId);
   } catch (error) {
     return next(error);
   }
@@ -43,7 +43,7 @@ const createClass = async (req, res, next) => {
   let post;
 
   try {
-    dataClass = classService.createClass(
+    dataClass = await classService.createClass(
       {
         community_id,
         member_id,
@@ -80,7 +80,7 @@ const editClass = async (req, res, next) => {
 
   let _class;
   try {
-    _class = classService.editClass(
+    _class = await classService.editClass(
       classId,
       { about, description, summary, name },
       file
@@ -99,7 +99,7 @@ const deleteClass = async (req, res, next) => {
   const { classId } = req.params;
 
   try {
-    classService.deleteClass(classId);
+    await classService.deleteClass(classId);
   } catch (error) {
     return next(error);
   }

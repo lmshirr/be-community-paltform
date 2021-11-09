@@ -11,25 +11,25 @@ const communityMemberRouter = Router({ mergeParams: true });
 
 // Membership
 communityMemberRouter.post(
-  '/:id/join',
+  '/:communityId/join',
   authorizationMiddleware.checkLogin,
   communityMemberController.joinCommunity
 );
 communityMemberRouter.get(
-  '/:id/memberships',
+  '/:communityId/memberships',
   authorizationMiddleware.checkLogin,
   communityMiddleware.checkMember,
   communityMemberController.getCommunityMember
 );
 communityMemberRouter
-  .route('/:id/memberships/:userId')
+  .route('/:communityId/memberships/:userId')
   .patch(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkOwner,
     communityMemberController.updateRole
   );
 communityMemberRouter
-  .route('/:id/memberships/leave')
+  .route('/:communityId/memberships/leave')
   .delete(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkMember,
@@ -38,13 +38,13 @@ communityMemberRouter
 
 // request join
 communityMemberRouter.get(
-  '/:id/requests',
+  '/:communityId/requests',
   authorizationMiddleware.checkLogin,
   communityMiddleware.checkAdmin,
   communityMemberController.getRequestCommunity
 );
 communityMemberRouter.patch(
-  '/:id/requests/:requestId',
+  '/:communityId/requests/:requestId',
   authorizationMiddleware.checkLogin,
   communityMiddleware.checkAdmin,
   communityMemberController.respondRequest
@@ -52,7 +52,7 @@ communityMemberRouter.patch(
 
 // invitation
 communityMemberRouter
-  .route('/:id/invitations')
+  .route('/:communityId/invitations')
   .get(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
@@ -65,7 +65,7 @@ communityMemberRouter
   );
 
 communityMemberRouter
-  .route('/:id/invitations/:ivitationId')
+  .route('/:communityId/invitations/:ivitationId')
   .delete(
     authorizationMiddleware.checkLogin,
     communityMiddleware.checkAdmin,
