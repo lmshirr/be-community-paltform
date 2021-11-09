@@ -21,33 +21,31 @@ async function getCommunityDetail(id) {
 
   const community = await Community.findOne({
     where: { id },
+    attributes: {
+      include: [
+        [
+          sequelize.fn(
+            'CONCAT',
+            bucketUrl,
+            sequelize.col('community_pict_uri')
+          ),
+          'community_pict',
+        ],
+        [
+          sequelize.fn(
+            'CONCAT',
+            bucketUrl,
+            sequelize.col('community_banner_uri')
+          ),
+          'community_banner',
+        ],
+      ],
+      exclude: ['community_pict_uri', 'community_banner_uri'],
+    },
     include: {
       model: User,
       attributes: {
-        include: [
-          [
-            sequelize.fn(
-              'CONCAT',
-              bucketUrl,
-              sequelize.col('community_pict_uri')
-            ),
-            'community_pict',
-          ],
-          [
-            sequelize.fn(
-              'CONCAT',
-              bucketUrl,
-              sequelize.col('community_banner_uri')
-            ),
-            'community_banner',
-          ],
-          'pk',
-          'id',
-          'name',
-          'email',
-          'profile_pict',
-        ],
-        exclude: ['community_pict_uri', 'community_banner_uri'],
+        include: ['pk', 'id', 'name', 'email', 'profile_pict'],
       },
       through: {
         attributes: ['created_at'],
@@ -90,17 +88,18 @@ async function createCommunity(createCommunityDto, userId, file) {
     community_pict_uri = file.filename;
   }
 
-  let community = await Community.create({
+  let { dataValues: community } = await Community.create({
     ...createCommunityDto,
     community_pict_uri,
   });
 
-  if (community_pict_uri) {
-    community = {
-      ...community.get({ raw: true }),
-      community_pict: urlJoin(bucketUrl, community_pict_uri),
-    };
-  }
+  console.log(community);
+
+  community = {
+    ...community,
+    community_pict: urlJoin(bucketUrl, community.community_pict_uri),
+    community_banner: urlJoin(bucketUrl, community.community_banner_uri),
+  };
 
   await Community_Member.create({
     community_id: community.id,

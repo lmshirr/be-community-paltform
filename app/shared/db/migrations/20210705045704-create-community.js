@@ -34,12 +34,12 @@ module.exports = {
       },
       community_pict_uri: {
         type: Sequelize.STRING,
-        defaultValue: '/assets/community/com_pict.jpg',
+        defaultValue: 'com_pict.jpg',
         allowNull: false,
       },
       community_banner_uri: {
         type: Sequelize.STRING,
-        defaultValue: '/assets/community/com_banner.jpg',
+        defaultValue: 'com_banner.jpg',
         allowNull: false,
       },
       created_at: {
