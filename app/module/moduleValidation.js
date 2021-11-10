@@ -21,6 +21,9 @@ const moduleBodySchemas = {
 const moduleParamSchemas = {
   moduleId: Joi.object().keys({
     moduleId: Joi.string().guid({ version: 'uuidv4' }),
+  }),
+  classId: Joi.object().keys({
+    classId: Joi.string().guid({ version: 'uuidv4' }),
   })
 };
 

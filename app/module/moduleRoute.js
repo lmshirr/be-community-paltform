@@ -37,6 +37,11 @@ moduleRouter.route('/:moduleId')
     moduleController.deleteModule
 );
 
-moduleRouter.get('/class/:classId', authorizationMiddleware.checkLogin, moduleController.getModuleByClass);
+moduleRouter.route('/class/:classId')
+.get(
+    usePipes(moduleParamSchemas.classId, 'params'),
+    authorizationMiddleware.checkLogin, 
+    moduleController.getModuleByClass
+);
 
 module.exports = moduleRouter;
