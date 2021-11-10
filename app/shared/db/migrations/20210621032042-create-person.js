@@ -39,7 +39,6 @@ module.exports = {
       },
       family_name: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       profile_pict: {
         type: Sequelize.STRING,

@@ -23,3 +23,4 @@ package-lock.json
 app/routes/
 app/services/
 app/utils/
+nginx.conf

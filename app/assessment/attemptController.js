@@ -37,17 +37,25 @@ module.exports.getAttemptDetail = async (req, res) => {
 };
 
 module.exports.addAttempt = async (req, res) => {
-  const { startTime } = req.body;
+  let { startTime } = req.body;
   const { assessmentId } = req.params;
   const { userId } = res.locals;
 
   try {
     // check if user has already attempt this assessment
     await attemptService.checkAttempt(assessmentId, userId);
+    console.log('--------------------------------------------------------------------');
 
     // calculate deadline data based on assessment duration
     const assessment = await assessmentService.getAssessmentDetail(assessmentId);
-    const deadline = new Date(startTime + assessment.duration * 60 * 1000);
+    // const deadline = new Date(startTime + assessment.duration * 60 * 1000);
+    const deadline = new Date(new Date(startTime) + assessment.duration * 60 * 1000);
+    console.log('--------------------------------------------------------------------');
+    console.log(startTime);
+    console.log(deadline);
+    // startTime = new Date(startTime).toISOString();
+    // startTime = new Date(startTime).format('yyyy-mm-dd HH:MM:ss');
+    // console.log(startTime);
 
     const attempt = await attemptService.createAttempt({
       assessment_id: assessmentId,
@@ -86,23 +94,34 @@ module.exports.completeAttempt = async (req, res) => {
   try {
     // check if finish time equal to start time or exceed deadline
     let attempt = await attemptService.getAttemptDetail(attemptId);
-    if (attempt.deadline < new Date(finishTime)) {
-      return res.status(400).json({
-        success: false,
-        errors: 'Finish time exceed deadline',
-      });
-    }
-    if (attempt.start_time !== attempt.finish_time) {
-      return res.status(400).json({
-        success: false,
-        errors: 'You have already completed this attempt',
-      });
-    }
+    // console.log('-----------------------------------------------');
+    // console.log(attempt.deadline < finishTime);
+    // console.log('-----------------------------------------------');
+    // if (attempt.deadline < finishTime) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     errors: 'Finish time exceed deadline',
+    //   });
+    // }
+    // console.log('-----------------------------------------------');
+    // if (attempt.start_time !== attempt.finish_time) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     errors: 'You have already completed this attempt',
+    //   });
+    // }
+
     // add attempt question
     let totalScore = 0;
     for (let i = 0; i < questions.length; i++) {
       // check if choosed answer is correct
+      // console.log('-----------------------------------------------');
+      // console.log(questions[i].choosedAnswer);
+      // console.log('-----------------------------------------------');
       const question = await questionService.getQuestionDetail(questions[i].id);
+      console.log('-----------------------------------------------');
+      console.log(question);
+      console.log('-----------------------------------------------');
       if (question.correct_answer === questions[i].choosedAnswer) {
         questions[i].score = 10;
       } else {

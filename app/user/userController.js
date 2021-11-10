@@ -333,7 +333,7 @@ module.exports.googleLogin = async (req, res, next) => {
     const token = await jwt.sign(userPayload, process.env.SECRET_KEY, {
       expiresIn: tokenAge,
     });
-    res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
+    res.cookie('jwt', token, { maxAge: process.env.TOKEN_AGE });
     res.redirect(`${process.env.CLIENT_ROOT_URL}`);
   } catch (error) {
     return next(new InternalServerException(error));

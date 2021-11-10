@@ -79,6 +79,12 @@ const checkAdmin_video_module = (req, res, next) => {
         id: req.params.classId,
       },
     });
+    if (!classDetails) {
+      return res.status(404).json({
+        success: false,
+        messages: 'Class not found!',
+      });
+    }
     const role = await Community_Member.findOne({
       where: {
         [Op.and]: [
@@ -117,7 +123,7 @@ const checkMembership = (req, res, next) => {
     } else if (req.url.includes('assessments') && req.params.assessmentId) {
       const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
       if (!assessment) {
-        return res.status(200).json({
+        return res.status(400).json({
           success: false,
           messages: 'Assessment not found!',
         });
