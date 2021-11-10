@@ -8,7 +8,7 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 const getGoogleAuthURL = () => {
-  const url = oauth2Client.generateAuthUrl({
+  return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
     scope: [
@@ -16,7 +16,6 @@ const getGoogleAuthURL = () => {
       'https://www.googleapis.com/auth/userinfo.email',
     ],
   });
-  return url;
 };
 
 const getTokens = async (code, clientId, clientSecret, redirectURI) => {

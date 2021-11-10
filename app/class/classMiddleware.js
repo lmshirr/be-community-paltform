@@ -11,6 +11,9 @@ const {
   NotFoundException,
 } = require('../shared/utils/httpExceptions');
 
+const classService = require('./classService');
+const assessmentService = require('../assessment/assessmentServices');
+
 const checkAdmin_community = async (req, res, next) => {
   const { id: user_id } = req.user;
   const { community_id } = req.body;
@@ -71,13 +74,23 @@ const checkAdmin_video_module = (req, res, next) => {
         message: error,
       });
     }
-    const classDetails = await Class.findByPk(req.params.ClassId);
+    const classDetails = await Class.findOne({
+      where: {
+        id: req.params.classId,
+      },
+    });
+    if (!classDetails) {
+      return res.status(404).json({
+        success: false,
+        messages: 'Class not found!',
+      });
+    }
     const role = await Community_Member.findOne({
       where: {
         [Op.and]: [
-          { UserId: decodedToken.UserId },
-          { CommunityId: classDetails.CommunityId },
-          { [Op.or]: [{ role: 'Owner' }, { role: 'Administrator' }] },
+          { user_id: decodedToken.id },
+          { community_id: classDetails.community_id },
+          { [Op.or]: [{ role: 'owner' }, { role: 'administrator' }] },
         ],
       },
     });
@@ -107,14 +120,24 @@ const checkMembership = (req, res, next) => {
     } else if (req.url.includes('video')) {
       const video = await Video.findByPk(req.params.VideoId);
       classDetails = await Class.findByPk(video.ClassId);
+    } else if (req.url.includes('assessments') && req.params.assessmentId) {
+      const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
+      if (!assessment) {
+        return res.status(400).json({
+          success: false,
+          messages: 'Assessment not found!',
+        });
+      }
+      classDetails = await classService.getClassDetail(assessment.class_id);
     } else {
-      classDetails = await Class.findByPk(req.params.id);
+      classDetails = await classService.getClassDetail(req.params.classId);
     }
+
     const checkMember = await Community_Member.findOne({
       where: {
         [Op.and]: [
-          { UserId: decodedToken.UserId },
-          { CommunityId: classDetails.CommunityId },
+          { user_id: decodedToken.id },
+          { community_id: classDetails.community_id },
         ],
       },
     });
@@ -124,6 +147,8 @@ const checkMembership = (req, res, next) => {
         messages: 'You must be a member to view this content!',
       });
     }
+
+    res.locals.userId = decodedToken.id;
     next();
   });
 };

@@ -2,55 +2,51 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return queryInterface.createTable('person', {
+    await queryInterface.createTable('question', {
       pk: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
       },
       id: {
         type: Sequelize.UUID,
+        allowNull: false,
         unique: true,
         defaultValue: Sequelize.UUIDV4,
+      },
+      assessment_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'assessment',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+      },
+      description: {
+        type: Sequelize.TEXT,
         allowNull: false,
       },
-      google_id: {
-        type: Sequelize.STRING,
-        unique: true,
+      choice_a: {
+        type: Sequelize.TEXT,
         allowNull: false,
       },
-      email: {
-        type: Sequelize.STRING,
-        unique: true,
+      choice_b: {
+        type: Sequelize.TEXT,
         allowNull: false,
       },
-      verified_email: {
-        type: Sequelize.BOOLEAN,
+      choice_c: {
+        type: Sequelize.TEXT,
         allowNull: false,
       },
-      name: {
-        type: Sequelize.STRING,
+      choice_d: {
+        type: Sequelize.TEXT,
         allowNull: false,
       },
-      given_name: {
+      correct_answer: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      family_name: {
-        type: Sequelize.STRING,
-      },
-      profile_pict: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      locale: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      hd: {
-        type: Sequelize.STRING,
-        allowNull: true,
       },
       created_at: {
         allowNull: false,
@@ -64,7 +60,8 @@ module.exports = {
       },
     });
   },
+
   down: async (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('person');
-  },
+    await queryInterface.dropTable('question');
+  }
 };

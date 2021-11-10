@@ -19,6 +19,8 @@ assets/
 package-lock.json
 ./app/package-lock.json
 
-# trash file
-googleuser.js
-testmigration.js
+# old repo
+app/routes/
+app/services/
+app/utils/
+nginx.conf
