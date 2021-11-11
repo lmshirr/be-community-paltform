@@ -6,31 +6,6 @@ const classMiddleware = require('../class/classMiddleware');
 
 const assessmentRouter = Router();
 
-// // Assessment routes
-// assessmentRouter.get(
-//   '/assessment/:AssessmentId',
-//   classMiddleware.checkMembership,
-//   assessmentController.getAssessments
-// );
-// assessmentRouter.post(
-//   '/:ClassId/assessment',
-//   authorizationMiddleware.checkLogin,
-//   classMiddleware.checkAdmin_video_module,
-//   assessmentController.addAssessment
-// );
-// assessmentRouter.patch(
-//   '/:ClassId/assessment/:AssessmentId',
-//   authorizationMiddleware.checkLogin,
-//   classMiddleware.checkAdmin_video_module,
-//   assessmentController.editAssessment
-// );
-// assessmentRouter.delete(
-//   '/:ClassId/assessment/:AssessmentId',
-//   authorizationMiddleware.checkLogin,
-//   classMiddleware.checkAdmin_video_module,
-//   assessmentController.deleteAssessment
-// );
-
 // Assessment routes
 assessmentRouter.get(
   '/:classId/assessments',

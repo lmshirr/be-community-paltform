@@ -37,25 +37,19 @@ module.exports.getAttemptDetail = async (req, res) => {
 };
 
 module.exports.addAttempt = async (req, res) => {
-  let { startTime } = req.body;
+  const { startTime } = req.body;
   const { assessmentId } = req.params;
   const { userId } = res.locals;
 
   try {
     // check if user has already attempt this assessment
     await attemptService.checkAttempt(assessmentId, userId);
-    console.log('--------------------------------------------------------------------');
 
     // calculate deadline data based on assessment duration
     const assessment = await assessmentService.getAssessmentDetail(assessmentId);
-    // const deadline = new Date(startTime + assessment.duration * 60 * 1000);
-    const deadline = new Date(new Date(startTime) + assessment.duration * 60 * 1000);
-    console.log('--------------------------------------------------------------------');
-    console.log(startTime);
-    console.log(deadline);
-    // startTime = new Date(startTime).toISOString();
-    // startTime = new Date(startTime).format('yyyy-mm-dd HH:MM:ss');
-    // console.log(startTime);
+    const deadline = new Date(
+      new Date(startTime).getTime() + assessment.duration * 60 * 1000
+    );
 
     const attempt = await attemptService.createAttempt({
       assessment_id: assessmentId,

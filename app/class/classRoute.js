@@ -3,8 +3,6 @@ const classController = require('./classController');
 const moduleController = require('../module/moduleController');
 // const videoController = require('../controllers/videoController');
 const webinarController = require('../webminar/webinarController');
-const assessmentController = require('../assessment/assessmentController');
-const attemptController = require('../assessment/attemptController');
 const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
 const classMiddleware = require('./classMiddleware');
 const {
