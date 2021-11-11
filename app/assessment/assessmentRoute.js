@@ -1,64 +1,99 @@
+const { Router } = require('express');
+const assessmentController = require('./assessmentController');
+const attemptController = require('./attemptController');
+const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
+const classMiddleware = require('../class/classMiddleware');
+
+const assessmentRouter = Router();
+
+// // Assessment routes
+// assessmentRouter.get(
+//   '/assessment/:AssessmentId',
+//   classMiddleware.checkMembership,
+//   assessmentController.getAssessments
+// );
+// assessmentRouter.post(
+//   '/:ClassId/assessment',
+//   authorizationMiddleware.checkLogin,
+//   classMiddleware.checkAdmin_video_module,
+//   assessmentController.addAssessment
+// );
+// assessmentRouter.patch(
+//   '/:ClassId/assessment/:AssessmentId',
+//   authorizationMiddleware.checkLogin,
+//   classMiddleware.checkAdmin_video_module,
+//   assessmentController.editAssessment
+// );
+// assessmentRouter.delete(
+//   '/:ClassId/assessment/:AssessmentId',
+//   authorizationMiddleware.checkLogin,
+//   classMiddleware.checkAdmin_video_module,
+//   assessmentController.deleteAssessment
+// );
+
 // Assessment routes
-communityRouter.get(
-    '/:id/classes/:classId/assessments',
-    classMiddleware.checkMembership,
-    assessmentController.getAssessments
+assessmentRouter.get(
+  '/:classId/assessments',
+  classMiddleware.checkMembership,
+  assessmentController.getAssessments
 );
-communityRouter.get(
-    '/:id/classes/:classId/assessments/:assessmentId',
-    classMiddleware.checkMembership,
-    assessmentController.getAssessmentDetail
+assessmentRouter.get(
+  '/:classId/assessments/:assessmentId',
+  classMiddleware.checkMembership,
+  assessmentController.getAssessmentDetail
 );
-communityRouter.post(
-    '/:id/classes/:classId/assessments',
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_video_module,
-    assessmentController.addAssessment
+assessmentRouter.post(
+  '/:classId/assessments',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.addAssessment
 );
-communityRouter.put(
-    '/:id/classes/:classId/assessments/:assessmentId',
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_video_module,
-    assessmentController.editAssessment
+assessmentRouter.put(
+  '/:classId/assessments/:assessmentId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.editAssessment
 );
-communityRouter.delete(
-    '/:id/classes/:classId/assessments/:assessmentId',
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_video_module,
-    assessmentController.deleteAssessment
+assessmentRouter.delete(
+  '/:classId/assessments/:assessmentId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  assessmentController.deleteAssessment
 );
 
-// Assessment Attempt
-communityRouter.get(
-    '/:id/classes/:classId/assessments/:assessmentId/attempts',
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_video_module,
-    attemptController.getAttempts
+// Assessment Attempt routes
+assessmentRouter.get(
+  '/:classId/assessments/:assessmentId/attempts',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  attemptController.getAttempts
 );
-communityRouter.get(
-    '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_video_module,
-    attemptController.getAttemptDetail
+assessmentRouter.get(
+  '/:classId/assessments/:assessmentId/attempts/:attemptId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  attemptController.getAttemptDetail
 );
-// communityRouter.get(
-//   '/:id/classes/:classId/assessments/:assessmentId/attempts/my',
+// assessmentRouter.get(
+//   '/:classId/assessments/:assessmentId/attempts/my',
 //   classMiddleware.checkMembership,
 //   attemptController.getMyAttempt
 // );
-communityRouter.post(
-    '/:id/classes/:classId/assessments/:assessmentId/attempts',
-    classMiddleware.checkMembership,
-    attemptController.addAttempt
+assessmentRouter.post(
+  '/:classId/assessments/:assessmentId/attempts',
+  classMiddleware.checkMembership,
+  attemptController.addAttempt
 );
-communityRouter.put(
-    '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
-    classMiddleware.checkMembership,
-    attemptController.completeAttempt
+assessmentRouter.put(
+  '/:classId/assessments/:assessmentId/attempts/:attemptId',
+  classMiddleware.checkMembership,
+  attemptController.completeAttempt
 );
-communityRouter.delete(
-    '/:id/classes/:classId/assessments/:assessmentId/attempts/:attemptId',
-    authorizationMiddleware.checkLogin,
-    classMiddleware.checkAdmin_video_module,
-    attemptController.deleteAttempt
+assessmentRouter.delete(
+  '/:classId/assessments/:assessmentId/attempts/:attemptId',
+  authorizationMiddleware.checkLogin,
+  classMiddleware.checkAdmin_video_module,
+  attemptController.deleteAttempt
 );
+
+module.exports = assessmentRouter;
