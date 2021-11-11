@@ -1,7 +1,6 @@
 const db = require('../shared/db/models');
 const fs = require('fs');
 const { Op } = require('sequelize');
-require('dotenv').config({ path: '../.env' });
 
 module.exports.addWebinar = function (req, res) {
   const {

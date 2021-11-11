@@ -111,6 +111,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false,
       freezeTableName: true,
       tableName: 'person',
+      logging: false,
     }
   );
   return User;

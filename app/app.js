@@ -10,10 +10,11 @@ const {
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const basicInfo = require('../docs/info');
+const environmentConfig = require('./shared/utils/config/environtmentConfig');
 // development only
 const morgan = require('morgan');
 
-require('dotenv').config();
+environmentConfig('test');
 
 // app
 const app = express();
@@ -43,7 +44,6 @@ app.use('/assets', express.static('assets'));
 
 // swagger documentation
 const swaggerSpec = swaggerJsdoc(basicInfo);
-console.log(swaggerSpec);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // route

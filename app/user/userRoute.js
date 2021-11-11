@@ -57,4 +57,7 @@ userRouter.get('/auth/google', userController.googleLogin);
 userRouter.get('/auth/google/url', userController.getGoogleAuthURL);
 userRouter.get('/auth/google/user', userController.getCurrentUser);
 
+// Test only
+userRouter.post('/auth/signup', userController.testSignup);
+
 module.exports = userRouter;
