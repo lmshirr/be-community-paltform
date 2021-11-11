@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /communities/{communityId}/classes/{classId}/assessments/{assessmentId}/attempts:
+ * /classes/{classId}/assessments/{assessmentId}/attempts:
  *   parameters:
  *    - name: communityId
  *      in: path
@@ -14,7 +14,7 @@
  *      required: true
  *      schema:
  *        type: string
-*    - name: assessmentId
+ *    - name: assessmentId
  *      in: path
  *      description: assessment id
  *      required: true

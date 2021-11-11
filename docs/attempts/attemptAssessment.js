@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /communities/{communityId}/classes/{classId}/assessments/{assessmentId}/attempts:
+ * /classes/{classId}/assessments/{assessmentId}/attempts:
  *   parameters:
  *    - name: communityId
  *      in: path

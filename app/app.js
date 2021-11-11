@@ -27,6 +27,7 @@ app.use(
       'http://localhost:3000',
       'http://139.162.6.97',
       'https://community-platform.nikici.com',
+      'https://community.sagaratechnology.com',
     ],
     credentials: true,
     withCredentials: true,
