@@ -158,6 +158,7 @@ const getClassInCommunity = async (communityId, sort) => {
     case 'newest':
       classes = await Class.findAll({
         where: { community_id: communityId },
+        include: { model: Community },
         order: [['created_at', 'DESC']],
         attributes: {
           include: [
@@ -174,6 +175,7 @@ const getClassInCommunity = async (communityId, sort) => {
       classes = await Class.findAll({
         where: { community_id: communityId },
         order: [['created_at', 'ASC']],
+        include: { model: Community },
         attributes: {
           include: [
             [
@@ -188,6 +190,7 @@ const getClassInCommunity = async (communityId, sort) => {
     default:
       classes = await Class.findAll({
         where: { community_id: communityId },
+        include: { model: Community },
         attributes: {
           include: [
             [
@@ -225,6 +228,7 @@ const getClasses = async (sort, value) => {
       }
       classes = await Class.findAll({
         order: [['created_at', meta]],
+        include: { model: Community },
       });
       break;
     case 'category':
@@ -239,7 +243,10 @@ const getClasses = async (sort, value) => {
       });
       break;
     default:
-      classes = await Class.findAll({ order: [['created_at', 'DESC']] });
+      classes = await Class.findAll({
+        order: [['created_at', 'DESC']],
+        include: { model: Community },
+      });
       break;
   }
 

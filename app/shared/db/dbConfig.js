@@ -1,4 +1,6 @@
-require('dotenv').config();
+const environmentConfig = require('../utils/config/environtmentConfig');
+
+environmentConfig('test');
 
 module.exports = {
   development: {

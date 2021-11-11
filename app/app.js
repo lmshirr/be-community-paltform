@@ -10,10 +10,11 @@ const {
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const basicInfo = require('../docs/info');
+const environmentConfig = require('./shared/utils/config/environtmentConfig');
 // development only
 const morgan = require('morgan');
 
-require('dotenv').config();
+environmentConfig('test');
 
 // app
 const app = express();
@@ -27,6 +28,7 @@ app.use(
       'http://localhost:3000',
       'http://139.162.6.97',
       'https://community-platform.nikici.com',
+      'https://community.sagaratechnology.com',
     ],
     credentials: true,
     withCredentials: true,
@@ -43,7 +45,6 @@ app.use('/assets', express.static('assets'));
 
 // swagger documentation
 const swaggerSpec = swaggerJsdoc(basicInfo);
-console.log(swaggerSpec);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // route

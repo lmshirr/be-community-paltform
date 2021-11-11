@@ -15,7 +15,8 @@
     "db:seed:all": "npx sequelize-cli db:seed:all",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.15.3",
@@ -53,6 +54,7 @@
     "nodemon": "^2.0.12",
     "prettier": "^2.4.0",
     "sequelize-cli": "^6.2.0",
+    "supertest": "^6.1.6",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6",
     "winston": "^3.3.3"
@@ -62,7 +64,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ],
-    "coverageDirectory": "./coverage"
+    "coverageDirectory": "./coverage",
+    "verbouse": false
   },
   "repository": {
     "type": "git",
