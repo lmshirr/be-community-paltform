@@ -21,8 +21,9 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false,
       },
-      filename: {
+      file_uri: {
         type: Sequelize.STRING,
+        defaultValue: 'default.pdf',
         allowNull: false,
       },
       name: {

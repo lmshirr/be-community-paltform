@@ -37,8 +37,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         references: { model: 'Class', key: 'id' },
       },
-      filename: {
+      file_uri: {
         type: DataTypes.STRING,
+        defaultValue: 'default.pdf',
         allowNull: false,
       },
       name: {

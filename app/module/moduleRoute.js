@@ -2,7 +2,7 @@ const express = require('express');
 const moduleController = require('./moduleController');
 const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
 const { communityMiddleware } = require('../community');
-const { uploadImageMiddleware } = require('../shared/utils/cloudStorage');
+const { uploadDocMiddleware } = require('../shared/utils/cloudStorage');
 const { usePipes } = require('../shared/middleware/pipesMiddleware');
 const {
     moduleParamSchemas,
@@ -19,6 +19,8 @@ moduleRouter.route('/')
 )
 .post(
     authorizationMiddleware.checkLogin,
+    uploadDocMiddleware.single('file_uri'),
+    usePipes(moduleBodySchemas.createModule, 'body'),
     moduleController.addModule
 );
 
@@ -29,10 +31,14 @@ moduleRouter.route('/:moduleId')
     moduleController.getModuleById
 )
 .patch(
+    usePipes(moduleParamSchemas.moduleId, 'params'),
     authorizationMiddleware.checkLogin,
+    uploadDocMiddleware.single('file_uri'),
+    usePipes(moduleBodySchemas.editModule, 'body'),
     moduleController.editModule
 )
 .delete(
+    usePipes(moduleParamSchemas.moduleId, 'params'),
     authorizationMiddleware.checkLogin,
     moduleController.deleteModule
 );

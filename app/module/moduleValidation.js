@@ -3,19 +3,13 @@ const Joi = require('joi');
 const moduleBodySchemas = {
   createModule: Joi.object().keys({
     class_id: Joi.string().guid({ version: 'uuidv4' }).required(),
-    filename: Joi.string().required(),
     name: Joi.string().required(),
-    description: Joi.string().required(),
-    privacy: Joi.string().valid('public', 'private').required(),
-    // file: Joi.object(),
+    file_uri: Joi.optional(),
   }),
-  // editModule: Joi.object().keys({
-  //   name: Joi.string().required(),
-  //   type: Joi.string().required(),
-  //   description: Joi.string().required(),
-  //   privacy: Joi.string().valid('public', 'private').required(),
-  //   files: Joi.array(),
-  // }),
+  editModule: Joi.object().keys({
+    name: Joi.string(),
+    file_uri: Joi.optional(),
+  }),
 };
 
 const moduleParamSchemas = {
