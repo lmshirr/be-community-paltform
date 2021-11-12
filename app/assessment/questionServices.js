@@ -89,13 +89,12 @@ const deleteQuestion = async (questionId) => {
  * @param {string} id
  * @returns comment
  */
-const getQuestionDetail = async (id) => {
-  const comment = await Question.findOne({
-    where: { id },
-    // include: { model: Community_Member, include: User },
+const getQuestionDetail = async (questionId) => {
+  const question = await Question.findOne({
+    where: { id: questionId },
   });
 
-  return comment;
+  return question;
 };
 
 module.exports = {

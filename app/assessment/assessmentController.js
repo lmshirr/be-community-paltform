@@ -2,7 +2,6 @@
 /* eslint-disable no-await-in-loop */
 const assessmentService = require('./assessmentServices');
 const questionService = require('./questionServices');
-require('dotenv').config({ path: '../.env' });
 
 module.exports.getAssessments = async (req, res) => {
   try {

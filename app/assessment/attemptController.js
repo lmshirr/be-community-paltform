@@ -4,11 +4,12 @@ const attemptService = require('./attemptServices');
 const assessmentService = require('./assessmentServices');
 const questionService = require('./questionServices');
 const attemptQuestionService = require('./attemptQuestionServices');
-require('dotenv').config({ path: '../.env' });
 
 module.exports.getAttempts = async (req, res) => {
   try {
-    const attempts = await attemptService.getAttempts({ assessmentId: req.params.assessmentId });
+    const attempts = await attemptService.getAttempts({
+      assessmentId: req.params.assessmentId,
+    });
     res.status(200).json({
       success: true,
       data: attempts,
@@ -37,25 +38,19 @@ module.exports.getAttemptDetail = async (req, res) => {
 };
 
 module.exports.addAttempt = async (req, res) => {
-  let { startTime } = req.body;
+  const { startTime } = req.body;
   const { assessmentId } = req.params;
   const { userId } = res.locals;
 
   try {
     // check if user has already attempt this assessment
     await attemptService.checkAttempt(assessmentId, userId);
-    console.log('--------------------------------------------------------------------');
 
     // calculate deadline data based on assessment duration
     const assessment = await assessmentService.getAssessmentDetail(assessmentId);
-    // const deadline = new Date(startTime + assessment.duration * 60 * 1000);
-    const deadline = new Date(new Date(startTime) + assessment.duration * 60 * 1000);
-    console.log('--------------------------------------------------------------------');
-    console.log(startTime);
-    console.log(deadline);
-    // startTime = new Date(startTime).toISOString();
-    // startTime = new Date(startTime).format('yyyy-mm-dd HH:MM:ss');
-    // console.log(startTime);
+    const deadline = new Date(
+      new Date(startTime).getTime() + assessment.duration * 60 * 1000
+    );
 
     const attempt = await attemptService.createAttempt({
       assessment_id: assessmentId,
@@ -90,38 +85,31 @@ module.exports.addAttempt = async (req, res) => {
 
 module.exports.completeAttempt = async (req, res) => {
   const { attemptId } = req.params;
-  const { finishTime, questions } = req.body;
+  let { finishTime, questions } = req.body;
   try {
+    finishTime = new Date(finishTime);
+
     // check if finish time equal to start time or exceed deadline
     let attempt = await attemptService.getAttemptDetail(attemptId);
-    // console.log('-----------------------------------------------');
-    // console.log(attempt.deadline < finishTime);
-    // console.log('-----------------------------------------------');
-    // if (attempt.deadline < finishTime) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     errors: 'Finish time exceed deadline',
-    //   });
-    // }
-    // console.log('-----------------------------------------------');
-    // if (attempt.start_time !== attempt.finish_time) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     errors: 'You have already completed this attempt',
-    //   });
-    // }
+    console.log(attempt);
+    if (attempt.deadline < finishTime) {
+      return res.status(400).json({
+        success: false,
+        errors: 'Finish time exceed deadline',
+      });
+    }
+    if (attempt.start_time.getTime() !== attempt.finish_time.getTime()) {
+      return res.status(400).json({
+        success: false,
+        errors: 'You have already completed this attempt',
+      });
+    }
 
     // add attempt question
     let totalScore = 0;
     for (let i = 0; i < questions.length; i++) {
       // check if choosed answer is correct
-      // console.log('-----------------------------------------------');
-      // console.log(questions[i].choosedAnswer);
-      // console.log('-----------------------------------------------');
       const question = await questionService.getQuestionDetail(questions[i].id);
-      console.log('-----------------------------------------------');
-      console.log(question);
-      console.log('-----------------------------------------------');
       if (question.correct_answer === questions[i].choosedAnswer) {
         questions[i].score = 10;
       } else {
@@ -174,7 +162,10 @@ module.exports.editAttempt = async (req, res) => {
         attempt.id
       );
       if (!question) {
-        question = await questionService.createQuestion(questions[i], attempt.id);
+        question = await questionService.createQuestion(
+          questions[i],
+          attempt.id
+        );
       }
     }
 
