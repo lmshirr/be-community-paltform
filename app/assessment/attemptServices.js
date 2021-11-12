@@ -47,6 +47,7 @@ const getAttemptDetail = async (attemptId) => {
     where: { id: attemptId },
     include: { model: Attempt_Question, as: 'questions' },
   });
+  // console.log(attempt);
 
   return attempt;
 };
