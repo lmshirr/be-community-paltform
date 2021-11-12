@@ -4,7 +4,6 @@ const attemptService = require('./attemptServices');
 const assessmentService = require('./assessmentServices');
 const questionService = require('./questionServices');
 const attemptQuestionService = require('./attemptQuestionServices');
-require('dotenv').config({ path: '../.env' });
 
 module.exports.getAttempts = async (req, res) => {
   try {

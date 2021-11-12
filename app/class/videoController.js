@@ -1,7 +1,6 @@
 const db = require('../models');
 const fs = require('fs');
 const { Op } = require('sequelize');
-require('dotenv').config({ path: '../.env' });
 
 module.exports.getVideo = async function (req, res) {
   try {
