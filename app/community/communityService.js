@@ -93,8 +93,6 @@ async function createCommunity(createCommunityDto, userId, file) {
     community_pict_uri,
   });
 
-  console.log(community);
-
   community = {
     ...community,
     community_pict: urlJoin(bucketUrl, community.community_pict_uri),

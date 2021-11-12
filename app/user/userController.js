@@ -359,3 +359,47 @@ module.exports.getCurrentUser = (req, res) => {
     });
   }
 };
+
+/**
+ * TESTING ONLY
+ */
+module.exports.testSignup = async (req, res, next) => {
+  const {
+    google_id,
+    email,
+    verified_email,
+    name,
+    given_name,
+    family_name,
+    profile_pict,
+    locale,
+    hd,
+  } = req.body;
+
+  try {
+    const newUser = await User.create({
+      google_id,
+      email,
+      verified_email,
+      name,
+      given_name,
+      family_name,
+      profile_pict,
+      locale,
+      hd,
+    });
+
+    const { dataValues: userPayload } = await User.findOne({
+      where: { google_id: newUser.google_id },
+    });
+
+    const token = jwt.sign(userPayload, process.env.SECRET_KEY, {
+      expiresIn: tokenAge,
+    });
+    res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};

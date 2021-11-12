@@ -36,6 +36,14 @@ const pdfAndVideoFileFilter = (req, file, next) => {
   }
 };
 
+// file filter for pdf
+const pdfFileFilter = (req, file, cb) => {
+  if (file.mimetype === 'application/pdf') {
+    return cb(null, true);
+  }
+  return cb(new Error('Please only upload PDF file'), false);
+};
+
 // upload constant
 const uploadImageMiddleware = multer({
   storage: GcsEngine({ bucket: sagaraProjectBucket }),
@@ -49,7 +57,7 @@ const uploadVideoMiddleware = multer({
 
 const uploadDocMiddleware = multer({
   storage: GcsEngine({ bucket: sagaraProjectBucket }),
-  fileFilter: pdfAndVideoFileFilter,
+  fileFilter: pdfFileFilter,
 });
 
 module.exports = {

@@ -5,7 +5,9 @@ const questionService = require('./questionServices');
 
 module.exports.getAssessments = async (req, res) => {
   try {
-    const assessments = await assessmentService.getAssessments({ classId: req.params.classId });
+    const assessments = await assessmentService.getAssessments({
+      classId: req.params.classId,
+    });
     res.status(200).json({
       success: true,
       data: assessments,
@@ -20,7 +22,9 @@ module.exports.getAssessments = async (req, res) => {
 
 module.exports.getAssessmentDetail = async (req, res) => {
   try {
-    const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
+    const assessment = await assessmentService.getAssessmentDetail(
+      req.params.assessmentId
+    );
     res.status(200).json({
       success: true,
       data: assessment,
@@ -54,7 +58,9 @@ module.exports.addAssessment = async (req, res) => {
     }
 
     // get inserted assessment data
-    const assessmentQuestions = await assessmentService.getAssessmentDetail(assessment.id);
+    const assessmentQuestions = await assessmentService.getAssessmentDetail(
+      assessment.id
+    );
 
     res.status(200).json({
       message: 'Assessment Created',
@@ -84,12 +90,17 @@ module.exports.editAssessment = async (req, res) => {
         assessment.id
       );
       if (!question) {
-        question = await questionService.createQuestion(questions[i], assessment.id);
+        question = await questionService.createQuestion(
+          questions[i],
+          assessment.id
+        );
       }
     }
 
     // get updated assessment data
-    const assessmentQuestions = await assessmentService.getAssessmentDetail(assessment.id);
+    const assessmentQuestions = await assessmentService.getAssessmentDetail(
+      assessment.id
+    );
 
     return res.status(200).json({
       messages: 'Assessment updated!',
