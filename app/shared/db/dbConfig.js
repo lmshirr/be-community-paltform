@@ -1,6 +1,6 @@
 const environmentConfig = require('../utils/config/environtmentConfig');
 
-environmentConfig('test');
+environmentConfig('development');
 
 module.exports = {
   development: {

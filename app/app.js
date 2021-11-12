@@ -14,7 +14,7 @@ const environmentConfig = require('./shared/utils/config/environtmentConfig');
 // development only
 const morgan = require('morgan');
 
-environmentConfig('test');
+environmentConfig('development');
 
 // app
 const app = express();

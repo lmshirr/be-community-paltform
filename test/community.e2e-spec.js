@@ -41,7 +41,7 @@ describe('CommunityController (e2e)', () => {
           name: 'Nodejs community',
           type: 'programming',
           description: 'Ini group communitas nodejs',
-          privacy: 'private',
+          privacy: 'public',
         })
         .set('cookie', `jwt=${jwt}`);
 
@@ -51,7 +51,7 @@ describe('CommunityController (e2e)', () => {
         name: 'Nodejs community',
         type: 'programming',
         description: 'Ini group communitas nodejs',
-        privacy: 'private',
+        privacy: 'public',
         community_banner:
           'https://storage.cloud.google.com/sagara-project-staging/com_banner.jpg',
         community_pict:
@@ -64,7 +64,7 @@ describe('CommunityController (e2e)', () => {
         name: 'Nodejs community',
         type: 'programming',
         description: 'Ini group communitas nodejs',
-        privacy: 'private',
+        privacy: 'public',
       });
 
       expect(res.statusCode).toBe(401);
@@ -77,7 +77,7 @@ describe('CommunityController (e2e)', () => {
           names: 'Nodejs community',
           type: 'programming',
           description: 'Ini group communitas nodejs',
-          privacy: 'private',
+          privacy: 'public',
         })
         .set('Cookie', `jwt=${jwt}`);
 
@@ -87,19 +87,59 @@ describe('CommunityController (e2e)', () => {
 
   describe('/communities (GET)', () => {
     it('should return array of communities', async () => {
+      await request(app)
+        .post('/api/communities')
+        .send({
+          name: 'Nodejs community',
+          type: 'programming',
+          description: 'Ini group communitas nodejs',
+          privacy: 'public',
+        })
+        .set('Cookie', `jwt=${jwt}`);
+
       const res = await request(app)
         .get('/api/communities')
         .set('Cookie', `jwt=${jwt}`);
 
       expect(res.statusCode).toBe(200);
 
-      expect(res.body.data).toEqual([]);
+      res.body.data.forEach((data) => {
+        expect(data).toMatchObject({
+          name: 'Nodejs community',
+          type: 'programming',
+          description: 'Ini group communitas nodejs',
+          privacy: 'public',
+        });
+      });
     });
 
     it('should unauthorized when not have jwt token', async () => {
       const res = await request(app).get('/api/communities');
 
       expect(res.statusCode).toBe(401);
+    });
+
+    it('should return return array of community based on type filtering', async () => {
+      await request(app)
+        .post('/api/communities')
+        .send({
+          name: 'Badminton community',
+          type: 'olahraga',
+          description: 'Ini group communitas badminton',
+          privacy: 'public',
+        })
+        .set('Cookie', `jwt=${jwt}`);
+
+      const res = await request(app)
+        .get('/api/communities')
+        .query({ filter: 'type', value: 'olahraga' })
+        .set('Cookie', `jwt=${jwt}`);
+
+      expect(res.statusCode).toBe(200);
+
+      res.body.data.forEach((data) => {
+        expect(data).toMatchObject({ type: 'olahraga' });
+      });
     });
   });
 });
