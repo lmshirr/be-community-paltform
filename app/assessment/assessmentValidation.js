@@ -4,7 +4,7 @@ const assessmentBodySchemas = {
   createAssessment: Joi.object().keys({
     title: Joi.string().required(),
     description: Joi.string().required(),
-    duration: Joi.integer().required(),
+    duration: Joi.number().integer().required(),
     questions: Joi.array()
       .items(
         Joi.object().keys({
@@ -21,7 +21,7 @@ const assessmentBodySchemas = {
   updateAssessment: Joi.object().keys({
     title: Joi.string().required(),
     description: Joi.string().required(),
-    duration: Joi.integer().required(),
+    duration: Joi.number().integer().required(),
     questions: Joi.array()
       .items(
         Joi.object().keys({
