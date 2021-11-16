@@ -212,43 +212,100 @@ const getClassInCommunity = async (communityId, sort) => {
  * @param {string} sort getClassSortBy recommended, newest, latest
  * @returns {Array} classes
  */
-const getClasses = async (sort, value) => {
+// const getClasses = async (sort, value) => {
+//   let classes;
+
+//   switch (sort) {
+//     case 'upload_date':
+//       // eslint-disable-next-line no-case-declarations
+//       let meta;
+
+//       if (value === 'newest') {
+//         meta = 'DESC';
+//       }
+//       if (value === 'latest') {
+//         meta = 'ASC';
+//       }
+//       classes = await Class.findAll({
+//         order: [['created_at', meta]],
+//         include: { model: Community },
+//       });
+//       break;
+//     case 'category':
+//       classes = await Class.findAll({
+//         include: [
+//           {
+//             model: Community,
+//             where: { type: value },
+//           },
+//         ],
+//         order: [['created_at', 'DESC']],
+//       });
+//       break;
+//     default:
+//       classes = await Class.findAll({
+//         order: [['created_at', 'DESC']],
+//         include: { model: Community },
+//       });
+//       break;
+//   }
+
+//   return classes;
+// };
+const getClasses = async (sort, attribute, type, order) => {
   let classes;
+  if (attribute === 'new') {
+    classes = await Class.findAll({
+      order: [
+        ['created_at', order],
+        [sort, order],
+      ],
+      include: { model: Community, where: { type } },
+    });
+  } else if (attribute === 'recommended') {
+    classes = await Class.findAll({
+      order: [[sort, order]],
+      include: [{ model: Community, where: { type } }],
+    });
+  } else
+    classes = await Class.findAll({
+      order: [[sort, order]],
+      include: [{ model: Community, where: { type } }],
+    });
+  // switch (sort) {
+  //   case 'upload_date':
+  //     // eslint-disable-next-line no-case-declarations
+  //     let meta;
 
-  switch (sort) {
-    case 'upload_date':
-      // eslint-disable-next-line no-case-declarations
-      let meta;
-
-      if (value === 'newest') {
-        meta = 'DESC';
-      }
-      if (value === 'latest') {
-        meta = 'ASC';
-      }
-      classes = await Class.findAll({
-        order: [['created_at', meta]],
-        include: { model: Community },
-      });
-      break;
-    case 'category':
-      classes = await Class.findAll({
-        include: [
-          {
-            model: Community,
-            where: { type: value },
-          },
-        ],
-        order: [['created_at', 'DESC']],
-      });
-      break;
-    default:
-      classes = await Class.findAll({
-        order: [['created_at', 'DESC']],
-        include: { model: Community },
-      });
-      break;
-  }
+  //     if (value === 'newest') {
+  //       meta = 'DESC';
+  //     }
+  //     if (value === 'latest') {
+  //       meta = 'ASC';
+  //     }
+  //     classes = await Class.findAll({
+  //       order: [['created_at', meta]],
+  //       include: { model: Community },
+  //     });
+  //     break;
+  //   case 'category':
+  //     classes = await Class.findAll({
+  //       include: [
+  //         {
+  //           model: Community,
+  //           where: { type: value },
+  //         },
+  //       ],
+  //       order: [['created_at', 'DESC']],
+  //     });
+  //     break;
+  //   default:
+  //     classes = await Class.findAll({
+  //       order: [['created_at', 'DESC']],
+  //       include: { model: Community },
+  //     });
+  //     break;
+  // }
 
   return classes;
 };
