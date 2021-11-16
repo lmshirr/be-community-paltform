@@ -5,7 +5,7 @@ const urlJoin = require('url-join');
 const config = require('config');
 
 module.exports = {
-    getModule: async (req, res) => {
+    getModule: async (req, res, next) => {
         try {
           const module = await Module.findAll();
 
