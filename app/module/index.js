@@ -1,5 +1,5 @@
 const moduleController = require('./moduleController');
-const moduleService = require('./moduleService');
 const moduleRoute = require('./moduleRoute');
+const moduleMiddleware = require('./moduleMiddleware');
 
-module.exports = { moduleController, moduleService, moduleRoute };
+module.exports = { moduleController, moduleRoute, moduleMiddleware };
