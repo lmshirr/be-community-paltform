@@ -4,12 +4,12 @@ const {
   User,
   sequelize,
 } = require('../shared/db/models');
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
 const { NotFoundException } = require('../shared/utils/httpExceptions');
 const { deleteFile } = require('../shared/utils/cloudStorage');
 const urlJoin = require('url-join');
 const config = require('config');
-const { TYPE } = require('./constant');
+const { TYPE, NAME, POPULAR } = require('./constant');
 
 /**
  *
@@ -200,7 +200,7 @@ async function getCommunities(filter, value) {
   switch (filter) {
     case TYPE:
       communities = await Community.findAll({
-        where: { type: value },
+        where: { type: value, privacy: 'public' },
         order: [['created_at', 'DESC']],
         attributes: {
           include: [
@@ -212,11 +212,88 @@ async function getCommunities(filter, value) {
               ),
               'community_pict',
             ],
+            [
+              sequelize.fn(
+                'CONCAT',
+                bucketUrl,
+                sequelize.col('community_banner_uri')
+              ),
+              'community_banner',
+            ],
           ],
           exclude: ['community_pict_uri'],
         },
       });
       break;
+
+    case NAME:
+      communities = await Community.findAll({
+        where: { privacy: 'public' },
+        order: [
+          ['name', 'ASC'],
+          ['created_at', 'DESC'],
+        ],
+        attributes: {
+          include: [
+            [
+              sequelize.fn(
+                'CONCAT',
+                bucketUrl,
+                sequelize.col('community_pict_uri')
+              ),
+              'community_pict',
+            ],
+            [
+              sequelize.fn(
+                'CONCAT',
+                bucketUrl,
+                sequelize.col('community_banner_uri')
+              ),
+              'community_banner',
+            ],
+          ],
+          exclude: [
+            'pk',
+            'created_at',
+            'updated_at',
+            'community_pict_uri',
+            'community_banner_uri',
+          ],
+        },
+        include: [
+          {
+            model: Community_Member,
+            attributes: {
+              exclude: [
+                'created_at',
+                'updated_at',
+                'pk',
+                'user_id',
+                'id',
+                'community_id',
+              ],
+            },
+            include: {
+              model: User,
+              attributes: {
+                exclude: [
+                  'id',
+                  'created_at',
+                  'updated_at',
+                  'locale',
+                  'hd',
+                  'google_id',
+                  'verified_email',
+                ],
+              },
+            },
+          },
+        ],
+      });
+      break;
+
+    // case POPULAR:
+    //   break;
 
     default:
       communities = await Community.findAll({
@@ -241,8 +318,43 @@ async function getCommunities(filter, value) {
               'community_banner',
             ],
           ],
-          exclude: ['community_pict_uri', 'community_banner_uri'],
+          exclude: [
+            'pk',
+            'created_at',
+            'updated_at',
+            'community_pict_uri',
+            'community_banner_uri',
+          ],
         },
+        include: [
+          {
+            model: Community_Member,
+            attributes: {
+              exclude: [
+                'created_at',
+                'updated_at',
+                'pk',
+                'user_id',
+                'id',
+                'community_id',
+              ],
+            },
+            include: {
+              model: User,
+              attributes: {
+                exclude: [
+                  'id',
+                  'created_at',
+                  'updated_at',
+                  'locale',
+                  'hd',
+                  'google_id',
+                  'verified_email',
+                ],
+              },
+            },
+          },
+        ],
       });
       break;
   }
