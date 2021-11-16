@@ -13,7 +13,6 @@ const communityBodySchemas = {
     type: Joi.string().required(),
     description: Joi.string().required(),
     privacy: Joi.string().valid('public', 'private').required(),
-    files: Joi.array(),
   }),
 };
 
@@ -29,7 +28,7 @@ const communityParamSchemas = {
 
 const communityQuerySchemas = {
   getCommunities: Joi.object().keys({
-    filter: Joi.string().valid('type'),
+    filter: Joi.string().valid('type', 'name'),
     value: Joi.string(),
   }),
 };
