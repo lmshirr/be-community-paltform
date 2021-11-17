@@ -126,16 +126,15 @@ const getClassInCommunity = async (req, res, next) => {
 
 const getClasses = async (req, res, next) => {
   // const { sort, value } = req.query;
-  const { sort, type, attribute, order } = req.query;
+  const { sort, type } = req.query;
 
   let classes;
 
   try {
-    // convert order
-    const orderBy = order === 'asc' ? 'ASC' : 'DESC';
+    const types = type.split(',');
 
     // classes = await classService.getClasses(sort, value);
-    classes = await classService.getClasses(sort, attribute, type, order);
+    classes = await classService.getClasses(sort, types);
   } catch (error) {
     return next(error);
   }

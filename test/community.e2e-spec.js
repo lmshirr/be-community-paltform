@@ -52,10 +52,8 @@ describe('CommunityController (e2e)', () => {
         type: 'programming',
         description: 'Ini group communitas nodejs',
         privacy: 'public',
-        community_banner:
-          'https://storage.cloud.google.com/sagara-project-staging/com_banner.jpg',
-        community_pict:
-          'https://storage.cloud.google.com/sagara-project-staging/com_pict.jpg',
+        community_banner: expect.any(String),
+        community_pict: expect.any(String),
       });
     });
 
@@ -104,11 +102,14 @@ describe('CommunityController (e2e)', () => {
       expect(res.statusCode).toBe(200);
 
       res.body.data.forEach((data) => {
+        console.log(data.Community_Members, 'communities');
         expect(data).toMatchObject({
           name: 'Nodejs community',
           type: 'programming',
           description: 'Ini group communitas nodejs',
           privacy: 'public',
+          community_pict: expect.any(String),
+          community_banner: expect.any(String),
         });
       });
     });
@@ -119,14 +120,14 @@ describe('CommunityController (e2e)', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    it('should return return array of community based on type filtering', async () => {
+    it('should return return array of community based on type filtering and privacy public', async () => {
       await request(app)
         .post('/api/communities')
         .send({
           name: 'Badminton community',
           type: 'olahraga',
           description: 'Ini group communitas badminton',
-          privacy: 'public',
+          privacy: 'private',
         })
         .set('Cookie', `jwt=${jwt}`);
 
@@ -138,7 +139,44 @@ describe('CommunityController (e2e)', () => {
       expect(res.statusCode).toBe(200);
 
       res.body.data.forEach((data) => {
-        expect(data).toMatchObject({ type: 'olahraga' });
+        expect(data).toMatchObject({
+          type: 'olahraga',
+          privacy: 'public',
+          community_pict: expect.any(String),
+          community_banner: expect.any(String),
+        });
+      });
+    });
+  });
+
+  describe('/communities/{communityId}', () => {
+    it('should return community detail and total member', async () => {
+      // insert data
+      const { body } = await request(app)
+        .post('/api/communities')
+        .send({
+          name: 'Nodejs community',
+          type: 'programming',
+          description: 'Ini group communitas nodejs',
+          privacy: 'private',
+        })
+        .set('cookie', `jwt=${jwt}`);
+
+      const communityId = body.data.id;
+
+      const res = await request(app)
+        .get(`/api/communities/${communityId}`)
+        .set('cookie', `jwt=${jwt}`);
+
+      expect(res.statusCode).toBe(200);
+
+      expect(res.body.data).toMatchObject({
+        community: {
+          privacy: 'private',
+          name: 'Nodejs community',
+          community_pict: expect.any(String),
+        },
+        total_member: expect.any(Number),
       });
     });
   });
