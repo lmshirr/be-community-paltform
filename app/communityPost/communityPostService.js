@@ -16,6 +16,7 @@ const config = require('config');
  * @returns post
  */
 const createPost = async (createPostDto, files) => {
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
   let post;
 
   post = await Community_Post.create(createPostDto);
@@ -23,20 +24,51 @@ const createPost = async (createPostDto, files) => {
   const { id: postId } = post.dataValues;
 
   if (files) {
-    files.forEach(async (file) => {
+    const arrFiles = files.map((file) => {
       const file_url = file.filename;
-
-      await Community_Post_Attachment.create({
-        community_post_id: postId,
-        filename: file_url,
-      });
+      return { filename: file_url, community_post_id: postId };
     });
+    await Community_Post_Attachment.bulkCreate(arrFiles);
   }
 
   // get post
   post = await Community_Post.findOne({
     where: { id: postId },
-    include: [{ model: Community_Member, include: User }],
+    attributes: {
+      exclude: ['pk', 'member_id', 'community_id'],
+    },
+    include: [
+      {
+        model: Community_Member,
+        attributes: {
+          exclude: [
+            'pk',
+            'user_id',
+            'community_id',
+            'created_at',
+            'updated_at',
+          ],
+        },
+        include: {
+          model: User,
+          attributes: {
+            exclude: ['pk', 'verified_email', 'created_at', 'updated_at'],
+          },
+        },
+      },
+      {
+        model: Community_Post_Attachment,
+        attributes: {
+          exclude: ['pk', 'community_post_id', 'filename'],
+          include: [
+            [
+              sequelize.fn('CONCAT', bucketUrl, sequelize.col('filename')),
+              'post_pict',
+            ],
+          ],
+        },
+      },
+    ],
   });
 
   return post;
@@ -52,23 +84,39 @@ const getPostDetail = async (id) => {
 
   const post = await Community_Post.findOne({
     where: { id },
+    attributes: {
+      exclude: ['pk', 'member_id', 'community_id'],
+    },
     include: [
       {
         model: Community_Member,
-        required: true,
+        attributes: {
+          exclude: [
+            'pk',
+            'user_id',
+            'community_id',
+            'created_at',
+            'updated_at',
+          ],
+        },
+        include: {
+          model: User,
+          attributes: {
+            exclude: ['pk', 'verified_email', 'created_at', 'updated_at'],
+          },
+        },
       },
       {
         model: Community_Post_Attachment,
-        properties: {
+        attributes: {
           include: [
             [
               sequelize.fn('CONCAT', bucketUrl, sequelize.fn('filename')),
               'post_pict',
             ],
           ],
-          exclude: ['filename'],
+          exclude: ['filename', 'community_post_id', 'pk'],
         },
-        required: true,
       },
     ],
   });
@@ -92,20 +140,40 @@ const getPostInCommunity = async (community_id) => {
     where: {
       community_id,
     },
+    attributes: {
+      exclude: ['pk', 'member_id', 'community_id'],
+    },
     include: [
       {
         model: Community_Post_Attachment,
-        properties: {
+        attributes: {
           include: [
             [
               sequelize.fn('CONCAT', bucketUrl, sequelize.col('filename')),
               'post_pict',
             ],
           ],
-          exclude: ['filename'],
+          exclude: ['filename', 'community_post_id', 'pk'],
         },
       },
-      { model: Community_Member, include: User },
+      {
+        model: Community_Member,
+        attributes: {
+          exclude: [
+            'pk',
+            'user_id',
+            'community_id',
+            'created_at',
+            'updated_at',
+          ],
+        },
+        include: {
+          model: User,
+          attributes: {
+            exclude: ['pk', 'verified_email', 'created_at', 'updated_at'],
+          },
+        },
+      },
     ],
     order: [['created_at', 'DESC']],
   });
@@ -132,14 +200,12 @@ const editPost = async (editPostDto, post_id, files) => {
   post = await post.update(editPostDto);
 
   if (files) {
-    files.forEach(async (file) => {
+    const arrFiles = files.map((file) => {
       const file_url = file.filename;
-
-      await Community_Post_Attachment.create({
-        community_post_id: post_id,
-        filename: file_url,
-      });
+      return { filename: file_url, community_post_id: post_id };
     });
+
+    await Community_Post_Attachment.bulkCreate(arrFiles);
   }
 
   return post;

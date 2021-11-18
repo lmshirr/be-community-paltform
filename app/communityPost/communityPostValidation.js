@@ -3,11 +3,11 @@ const Joi = require('joi');
 const communityPostBodySchemas = {
   createPost: Joi.object().keys({
     content: Joi.string(),
-    files: Joi.array(),
+    attachments: Joi.any(),
   }),
   editPost: Joi.object().keys({
     content: Joi.string(),
-    files: Joi.array(),
+    attachments: Joi.any(),
   }),
 };
 
