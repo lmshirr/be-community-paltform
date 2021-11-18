@@ -6,11 +6,6 @@ describe('CommunityController (e2e)', () => {
   let jwt;
 
   beforeAll(async () => {
-    // delete all db content
-    await User.destroy({ force: true, where: {} });
-
-    await Community.destroy({ force: true, where: {} });
-
     const res = await request(app).post('/api/users/auth/signup').send({
       google_id: '12nd93osns9uu',
       email: 'test@gmail.com',
@@ -30,6 +25,11 @@ describe('CommunityController (e2e)', () => {
   });
 
   afterAll(async () => {
+    // delete all db content
+    await User.destroy({ force: true, where: {} });
+
+    await Community.destroy({ force: true, where: {} });
+
     await sequelize.close();
   });
 
@@ -149,7 +149,7 @@ describe('CommunityController (e2e)', () => {
     });
   });
 
-  describe('/communities/{communityId}', () => {
+  describe('/communities/{communityId} GET', () => {
     it('should return community detail and total member', async () => {
       // insert data
       const { body } = await request(app)
@@ -177,6 +177,36 @@ describe('CommunityController (e2e)', () => {
           community_pict: expect.any(String),
         },
         total_member: expect.any(Number),
+      });
+    });
+  });
+
+  describe('/communities/{communityId} PATCH', () => {
+    it('should', async () => {
+      const { body } = await request(app)
+        .post('/api/communities')
+        .send({
+          name: 'Nodejs community',
+          type: 'programming',
+          description: 'Ini group communitas nodejs',
+          privacy: 'private',
+        })
+        .set('cookie', `jwt=${jwt}`);
+
+      const res = await request(app)
+        .patch(`/api/communities/${body.id}`)
+        .send({
+          name: 'Golang community',
+        })
+        .set('Cookie', `jwt=${jwt}`);
+
+      expect(res.statusCode).toBe(200);
+
+      expect(res.body.data).toMatchObject({
+        name: 'Golang community',
+        type: 'programming',
+        description: 'Ini group communitas nodejs',
+        privacy: 'private',
       });
     });
   });
