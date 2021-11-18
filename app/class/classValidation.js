@@ -17,9 +17,9 @@ const classParamSchemas = {
 };
 
 const classQuerySchemas = {
-  sortAndDate: Joi.object().keys({
+  sortAndType: Joi.object().keys({
     sort: Joi.string().valid('newest', 'recommended').required(),
-    type: Joi.string().required(),
+    type: Joi.string(),
   }),
 };
 

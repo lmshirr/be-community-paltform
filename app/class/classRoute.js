@@ -21,12 +21,8 @@ const classRouter = Router();
 // class
 classRouter.get(
   '/',
-  // usePipes(classQuerySchemas.sortAndDate, 'query'),
+  usePipes(classQuerySchemas.sortAndType, 'query'),
   authorizationMiddleware.checkLogin,
-  // function (req, res, next) {
-  //   res.json({ data: '---------------' });
-  //   next();
-  // },
   classController.getClasses
 );
 

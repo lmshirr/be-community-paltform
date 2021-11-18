@@ -125,7 +125,6 @@ const getClassInCommunity = async (req, res, next) => {
 };
 
 const getClasses = async (req, res, next) => {
-  // const { sort, value } = req.query;
   const { sort, type } = req.query;
 
   let classes;
@@ -133,8 +132,6 @@ const getClasses = async (req, res, next) => {
 
   try {
     if (type) types = type.split(',');
-
-    // classes = await classService.getClasses(sort, value);
     classes = await classService.getClasses(sort, types);
   } catch (error) {
     return next(error);
