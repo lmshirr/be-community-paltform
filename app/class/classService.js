@@ -209,81 +209,61 @@ const getClassInCommunity = async (communityId, sort) => {
 
 /**
  *
- * @param {string} sort getClassSortBy recommended, newest, latest
+ * @param {string} sort getClassSortBy recommended, newest
  * @returns {Array} classes
  */
-// const getClasses = async (sort, value) => {
-//   let classes;
-//   const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
-
-//   switch (sort) {
-//     case 'upload_date':
-//       // eslint-disable-next-line no-case-declarations
-//       let date;
-
-//       if (value === 'newest') {
-//         date = 'DESC';
-//       }
-//       if (value === 'latest') {
-//         date = 'ASC';
-//       }
-//       classes = await Class.findAll({
-//         order: [['created_at', date]],
-//         include: { model: Community },
-//         attributes: {
-//           include: [
-//             [
-//               sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
-//               'banner_pict',
-//             ],
-//           ],
-//           exclude: ['banner_uri'],
-//         },
-//       });
-//       break;
-//     case 'category':
-//       classes = await Class.findAll({
-//         include: [
-//           {
-//             model: Community,
-//             where: { type: value },
-//           },
-//         ],
-//         order: [['created_at', 'DESC']],
-//         attributes: {
-//           include: [
-//             [
-//               sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
-//               'banner_pict',
-//             ],
-//           ],
-//           exclude: ['banner_uri'],
-//         },
-//       });
-//       break;
-//     default:
-//       classes = await Class.findAll({
-//         order: [['created_at', 'DESC']],
-//         include: { model: Community },
-//         attributes: {
-//           include: [
-//             [
-//               sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
-//               'banner_pict',
-//             ],
-//           ],
-//           exclude: ['banner_uri'],
-//         },
-//       });
-//       break;
-//   }
-
-//   return classes;
-// };
 const getClasses = async (sort, types) => {
   let classes;
   const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
-  if (sort === 'new') {
+
+  if (!types.length) {
+    switch (sort) {
+      case 'newest':
+        return Class.findAll({
+          order: [['created_at', 'DESC']],
+          include: { model: Community },
+          attributes: {
+            include: [
+              [
+                sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+                'banner_pict',
+              ],
+            ],
+            exclude: ['banner_uri'],
+          },
+        });
+      case 'recommended':
+        return Class.findAll({
+          order: [['created_at', 'DESC']],
+          include: { model: Community },
+          attributes: {
+            include: [
+              [
+                sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+                'banner_pict',
+              ],
+            ],
+            exclude: ['banner_uri'],
+          },
+        });
+      default:
+        return Class.findAll({
+          order: [['created_at', 'DESC']],
+          include: { model: Community },
+          attributes: {
+            include: [
+              [
+                sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+                'banner_pict',
+              ],
+            ],
+            exclude: ['banner_uri'],
+          },
+        });
+    }
+  }
+
+  if (sort === 'newest') {
     classes = await Class.findAll({
       order: [['created_at', 'DESC']],
       include: {
@@ -321,61 +301,9 @@ const getClasses = async (sort, types) => {
         exclude: ['banner_uri'],
       },
     });
-  } else
-    classes = await Class.findAll({
-      order: [[sort, 'DESC']],
-      include: {
-        model: Community,
-        where: {
-          type: { $in: types },
-        },
-      },
-      attributes: {
-        include: [
-          [
-            sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
-            'banner_pict',
-          ],
-        ],
-        exclude: ['banner_uri'],
-      },
-    });
+  }
   return classes;
 };
-// switch (sort) {
-//   case 'upload_date':
-//     // eslint-disable-next-line no-case-declarations
-//     let meta;
-
-//     if (value === 'newest') {
-//       meta = 'DESC';
-//     }
-//     if (value === 'latest') {
-//       meta = 'ASC';
-//     }
-//     classes = await Class.findAll({
-//       order: [['created_at', meta]],
-//       include: { model: Community },
-//     });
-//     break;
-//   case 'category':
-//     classes = await Class.findAll({
-//       include: [
-//         {
-//           model: Community,
-//           where: { type: value },
-//         },
-//       ],
-//       order: [['created_at', 'DESC']],
-//     });
-//     break;
-//   default:
-//     classes = await Class.findAll({
-//       order: [['created_at', 'DESC']],
-//       include: { model: Community },
-//     });
-//     break;
-// }
 
 module.exports = {
   createClass,

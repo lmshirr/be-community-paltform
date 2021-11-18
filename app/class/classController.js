@@ -129,9 +129,10 @@ const getClasses = async (req, res, next) => {
   const { sort, type } = req.query;
 
   let classes;
+  let types = [];
 
   try {
-    const types = type.split(',');
+    if (type) types = type.split(',');
 
     // classes = await classService.getClasses(sort, value);
     classes = await classService.getClasses(sort, types);
