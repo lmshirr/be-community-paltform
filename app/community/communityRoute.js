@@ -46,7 +46,7 @@ communityRouter
       { name: 'community_pict' },
       { name: 'community_banner' },
     ]),
-    usePipes(communityBodySchemas.createCommunity, 'body'),
+    usePipes(communityBodySchemas.editCommunity, 'body'),
     communityController.editCommunity
   )
   .delete(
