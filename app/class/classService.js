@@ -212,7 +212,7 @@ const getClassInCommunity = async (communityId, sort) => {
  * @param {string} sort getClassSortBy recommended, newest
  * @returns {Array} classes
  */
-const getClasses = async (sort, types) => {
+const getClasses = async (sort, types, limit, offset) => {
   let classes;
   const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
 
@@ -231,6 +231,8 @@ const getClasses = async (sort, types) => {
             ],
             exclude: ['banner_uri'],
           },
+          limit,
+          offset,
         });
       case 'recommended':
         return Class.findAll({
@@ -245,6 +247,8 @@ const getClasses = async (sort, types) => {
             ],
             exclude: ['banner_uri'],
           },
+          limit,
+          offset,
         });
       default:
         return Class.findAll({
@@ -259,6 +263,8 @@ const getClasses = async (sort, types) => {
             ],
             exclude: ['banner_uri'],
           },
+          limit,
+          offset,
         });
     }
   }
@@ -281,6 +287,8 @@ const getClasses = async (sort, types) => {
         ],
         exclude: ['banner_uri'],
       },
+      limit,
+      offset,
     });
   } else if (sort === 'recommended') {
     classes = await Class.findAll({
@@ -300,6 +308,8 @@ const getClasses = async (sort, types) => {
         ],
         exclude: ['banner_uri'],
       },
+      limit,
+      offset,
     });
   }
   return classes;
