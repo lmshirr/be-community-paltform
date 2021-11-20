@@ -20,6 +20,8 @@ const classQuerySchemas = {
   sortAndType: Joi.object().keys({
     sort: Joi.string().valid('newest', 'recommended').required(),
     type: Joi.string(),
+    limit: Joi.number().integer().min(1).max(100),
+    page: Joi.number().integer().min(1),
   }),
 };
 

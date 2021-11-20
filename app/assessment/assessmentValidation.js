@@ -39,7 +39,9 @@ const assessmentBodySchemas = {
 };
 
 const assessmentParamSchemas = {
-  classId: Joi.string().required().guid({ version: 'uuidv4' }),
+  classId: Joi.object().keys({
+    classId: Joi.string().guid({ version: 'uuidv4' }).required(),
+  }),
   classIdAssessmentId: Joi.object().keys({
     classId: Joi.string().required().guid({ version: 'uuidv4' }),
     assessmentId: Joi.string().required().guid({ version: 'uuidv4' }),
