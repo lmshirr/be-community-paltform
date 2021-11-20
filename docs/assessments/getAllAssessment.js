@@ -2,12 +2,6 @@
  * @swagger
  * /classes/{classId}/assessments:
  *   parameters:
- *    - name: communityId
- *      in: path
- *      description: The id of the community
- *      required: true
- *      schema:
- *        type: string
  *    - name: classId
  *      in: path
  *      description: The id of the class
