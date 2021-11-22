@@ -131,7 +131,7 @@ const getClasses = async (req, res, next) => {
   let types = [];
 
   try {
-    const offset = page * limit;
+    const offset = (page - 1) * limit;
     if (type) types = type.split(',');
     classes = await classService.getClasses(sort, types, limit, offset);
   } catch (error) {
