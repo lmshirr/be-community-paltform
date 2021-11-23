@@ -6,14 +6,15 @@ const communityBodySchemas = {
     type: Joi.string().required(),
     description: Joi.string().required(),
     privacy: Joi.string().valid('public', 'private').required(),
-    community_pict: Joi.optional(),
+    community_pict: Joi.any().optional(),
   }),
   editCommunity: Joi.object().keys({
-    name: Joi.string().required(),
-    type: Joi.string().required(),
-    description: Joi.string().required(),
-    privacy: Joi.string().valid('public', 'private').required(),
-    files: Joi.array(),
+    name: Joi.any().empty(),
+    type: Joi.any().empty(),
+    description: Joi.any().optional(),
+    privacy: Joi.valid('public', 'private').empty(),
+    community_pict: Joi.any(),
+    community_banner: Joi.any(),
   }),
 };
 
@@ -29,7 +30,7 @@ const communityParamSchemas = {
 
 const communityQuerySchemas = {
   getCommunities: Joi.object().keys({
-    filter: Joi.string().valid('type'),
+    filter: Joi.string().valid('type', 'name'),
     value: Joi.string(),
   }),
 };

@@ -17,7 +17,10 @@ const {
 } = require('../shared/utils/httpExceptions/index');
 const mailService = require('../shared/utils/email/mail.service');
 const userService = require('./userService');
-const { getGoogleAuthURL, getTokens } = require('../shared/utils/googleAuth/googleAuth');
+const {
+  getGoogleAuthURL,
+  getTokens,
+} = require('../shared/utils/googleAuth/googleAuth');
 const axios = require('axios');
 
 const tokenAge = 60 * 60;
@@ -335,6 +338,7 @@ module.exports.googleLogin = async (req, res, next) => {
     res.cookie('jwt', token, { maxAge: process.env.TOKEN_AGE });
     res.redirect(`${process.env.CLIENT_ROOT_URL}`);
   } catch (error) {
+    console.log(error);
     return next(new InternalServerException(error));
   }
 };

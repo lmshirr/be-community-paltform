@@ -209,47 +209,109 @@ const getClassInCommunity = async (communityId, sort) => {
 
 /**
  *
- * @param {string} sort getClassSortBy recommended, newest, latest
+ * @param {string} sort getClassSortBy recommended, newest
  * @returns {Array} classes
  */
-const getClasses = async (sort, value) => {
+const getClasses = async (sort, types, limit, offset) => {
   let classes;
+  const bucketUrl = urlJoin(config.get('GCS.bucket_url'), '/');
 
-  switch (sort) {
-    case 'upload_date':
-      // eslint-disable-next-line no-case-declarations
-      let meta;
-
-      if (value === 'newest') {
-        meta = 'DESC';
-      }
-      if (value === 'latest') {
-        meta = 'ASC';
-      }
-      classes = await Class.findAll({
-        order: [['created_at', meta]],
-        include: { model: Community },
-      });
-      break;
-    case 'category':
-      classes = await Class.findAll({
-        include: [
-          {
-            model: Community,
-            where: { type: value },
+  if (!types.length) {
+    switch (sort) {
+      case 'newest':
+        return Class.findAll({
+          order: [['created_at', 'DESC']],
+          include: { model: Community },
+          attributes: {
+            include: [
+              [
+                sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+                'banner_pict',
+              ],
+            ],
+            exclude: ['banner_uri'],
           },
-        ],
-        order: [['created_at', 'DESC']],
-      });
-      break;
-    default:
-      classes = await Class.findAll({
-        order: [['created_at', 'DESC']],
-        include: { model: Community },
-      });
-      break;
+          limit,
+          offset,
+        });
+      case 'recommended':
+        return Class.findAll({
+          order: [['created_at', 'DESC']],
+          include: { model: Community },
+          attributes: {
+            include: [
+              [
+                sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+                'banner_pict',
+              ],
+            ],
+            exclude: ['banner_uri'],
+          },
+          limit,
+          offset,
+        });
+      default:
+        return Class.findAll({
+          order: [['created_at', 'DESC']],
+          include: { model: Community },
+          attributes: {
+            include: [
+              [
+                sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+                'banner_pict',
+              ],
+            ],
+            exclude: ['banner_uri'],
+          },
+          limit,
+          offset,
+        });
+    }
   }
 
+  if (sort === 'newest') {
+    classes = await Class.findAll({
+      order: [['created_at', 'DESC']],
+      include: {
+        model: Community,
+        where: {
+          type: { [Op.in]: types },
+        },
+      },
+      attributes: {
+        include: [
+          [
+            sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+            'banner_pict',
+          ],
+        ],
+        exclude: ['banner_uri'],
+      },
+      limit,
+      offset,
+    });
+  } else if (sort === 'recommended') {
+    classes = await Class.findAll({
+      order: [['created_at', 'DESC']],
+      include: {
+        model: Community,
+        where: {
+          type: { [Op.in]: types },
+        },
+      },
+      attributes: {
+        include: [
+          [
+            sequelize.fn('CONCAT', bucketUrl, sequelize.col('banner_uri')),
+            'banner_pict',
+          ],
+        ],
+        exclude: ['banner_uri'],
+      },
+      limit,
+      offset,
+    });
+  }
   return classes;
 };
 

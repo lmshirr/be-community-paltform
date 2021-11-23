@@ -125,12 +125,15 @@ const getClassInCommunity = async (req, res, next) => {
 };
 
 const getClasses = async (req, res, next) => {
-  const { sort, value } = req.query;
+  const { sort, type, limit = 20, page = 1 } = req.query;
 
   let classes;
+  let types = [];
 
   try {
-    classes = await classService.getClasses(sort, value);
+    const offset = (page - 1) * limit;
+    if (type) types = type.split(',');
+    classes = await classService.getClasses(sort, types, limit, offset);
   } catch (error) {
     return next(error);
   }

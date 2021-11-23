@@ -21,7 +21,7 @@ const classRouter = Router();
 // class
 classRouter.get(
   '/',
-  usePipes(classQuerySchemas.sortAndDate, 'query'),
+  usePipes(classQuerySchemas.sortAndType, 'query'),
   authorizationMiddleware.checkLogin,
   classController.getClasses
 );
