@@ -1,4 +1,4 @@
-const { Module, Community_Member, Class } = require('../shared/db/models');
+const { Community_Member, Class } = require('../shared/db/models');
 const { Op } = require('sequelize');
 const {
     ForbiddenException,
@@ -20,8 +20,6 @@ module.exports = {
                   },
                 }],
             });
-
-            console.log('tes===============> ', admin)
 
             if (!admin) {
                 throw new ForbiddenException('You dont have permission to this action!');
