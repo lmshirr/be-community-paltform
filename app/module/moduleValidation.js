@@ -4,11 +4,12 @@ const moduleBodySchemas = {
   createModule: Joi.object().keys({
     class_id: Joi.string().guid({ version: 'uuidv4' }).required(),
     name: Joi.string().required(),
-    file_uri: Joi.optional(),
+    file_uri: Joi.any().optional(),
   }),
   editModule: Joi.object().keys({
-    name: Joi.string(),
-    file_uri: Joi.optional(),
+    class_id: Joi.any().empty(),
+    name: Joi.string().optional(),
+    file_uri: Joi.any().optional(),
   }),
 };
 
@@ -22,9 +23,6 @@ const moduleParamSchemas = {
 };
 
 module.exports = {
-    // communityBodySchemas,
-    // communityParamSchemas,
-    // communityQuerySchemas,
     moduleBodySchemas,
     moduleParamSchemas,
   };
