@@ -51,10 +51,7 @@ module.exports.addAssessment = async (req, res) => {
 
     // insert question to db
     for (let i = 0; i < questions.length; i++) {
-      const question = await questionService.createQuestion(
-        questions[i],
-        assessment.id
-      );
+      await questionService.createQuestion(questions[i], assessment.id);
     }
 
     // get inserted assessment data

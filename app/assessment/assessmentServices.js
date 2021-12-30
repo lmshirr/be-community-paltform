@@ -67,9 +67,6 @@ const getAssessmentDetail = async (assessmentId) => {
     where: { id: assessmentId },
     include: { model: Question, as: 'questions' },
   });
-  // console.log('-------------------------------------------------------');
-  // console.log(assessment);
-  // console.log('-------------------------------------------------------');
 
   return assessment;
 };

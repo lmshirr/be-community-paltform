@@ -1,6 +1,5 @@
-const db = require('../models');
+const db = require('../shared/db/models');
 const fs = require('fs');
-const { Op } = require('sequelize');
 
 module.exports.getVideo = async function (req, res) {
   try {
@@ -24,7 +23,7 @@ module.exports.addVideo = async function (req, res) {
       message: 'Please select a file',
     });
   }
-  const filename = req.file.filename;
+  const { filename } = req.file;
   const { name } = req.body;
   const { ClassId } = req.params;
   try {
@@ -56,7 +55,7 @@ module.exports.editVideo = async function (req, res) {
       });
     }
     video.update({
-      name: name,
+      name,
     });
     return res.status(200).json({
       messages: 'Video updated!',

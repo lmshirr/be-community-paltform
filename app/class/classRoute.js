@@ -5,10 +5,7 @@ const moduleController = require('../module/moduleController');
 const webinarController = require('../webminar/webinarController');
 const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
 const classMiddleware = require('./classMiddleware');
-const {
-  uploadDocMiddleware,
-  uploadVideoMiddleware,
-} = require('../shared/utils/cloudStorage');
+const { uploadDocMiddleware } = require('../shared/utils/cloudStorage');
 const { usePipes } = require('../shared/middleware/pipesMiddleware');
 const { classParamSchemas, classQuerySchemas } = require('./classValidation');
 

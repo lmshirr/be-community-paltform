@@ -4,12 +4,11 @@ const {
   User,
   sequelize,
 } = require('../shared/db/models');
-const { Op, QueryTypes } = require('sequelize');
+const { Op } = require('sequelize');
 const { NotFoundException } = require('../shared/utils/httpExceptions');
-const { deleteFile } = require('../shared/utils/cloudStorage');
 const urlJoin = require('url-join');
 const config = require('config');
-const { TYPE, NAME, POPULAR } = require('./constant');
+const { TYPE, NAME } = require('./constant');
 
 /**
  *

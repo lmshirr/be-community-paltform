@@ -1,5 +1,8 @@
 const { Attempt, Attempt_Question } = require('../shared/db/models');
-const { NotFoundException, BadRequestException } = require('../shared/utils/httpExceptions');
+const {
+  NotFoundException,
+  BadRequestException,
+} = require('../shared/utils/httpExceptions');
 
 /**
  * Get all attempts
@@ -54,7 +57,7 @@ const getAttemptDetail = async (attemptId) => {
 
 /**
  * Create a new assessment attempt
- * 
+ *
  * @param {{assessment_id: string, user_id: string, total_score: bigint, start_time: Date, finish_time: Date, deadline: Date }} createAttemptDto
  * @returns {object} assessment
  */

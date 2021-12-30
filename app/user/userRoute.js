@@ -2,7 +2,6 @@ const express = require('express');
 const userController = require('./userController');
 const authorizationMiddleware = require('../shared/middleware/authorizationMiddleware');
 const { communityMemberController } = require('../communityMembership');
-const { uploadImageMiddleware } = require('../shared/utils/cloudStorage');
 
 const userRouter = express.Router();
 

@@ -19,10 +19,10 @@ const moduleParamSchemas = {
   }),
   classId: Joi.object().keys({
     classId: Joi.string().guid({ version: 'uuidv4' }),
-  })
+  }),
 };
 
 module.exports = {
-    moduleBodySchemas,
-    moduleParamSchemas,
-  };
+  moduleBodySchemas,
+  moduleParamSchemas,
+};

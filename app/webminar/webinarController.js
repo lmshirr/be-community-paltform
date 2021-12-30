@@ -1,6 +1,4 @@
 const db = require('../shared/db/models');
-const fs = require('fs');
-const { Op } = require('sequelize');
 
 module.exports.addWebinar = function (req, res) {
   const {
@@ -15,7 +13,6 @@ module.exports.addWebinar = function (req, res) {
     filename_dp,
   } = req.body;
   const { class_id } = req.params;
-  const { file } = req;
   console.log(req.body);
   console.log(class_id);
   const path =
@@ -45,7 +42,7 @@ module.exports.addWebinar = function (req, res) {
     .catch((error) => {
       res.status(500).json({
         success: false,
-        error: error,
+        error,
       });
     });
 };
@@ -56,7 +53,7 @@ module.exports.getWebinar = async function (req, res) {
     const webinar = await db.Webinar.findOne({ where: { id } });
     res.status(200).json({
       success: true,
-      webinar: webinar,
+      webinar,
     });
   } catch (error) {
     res.status(500).json({
@@ -82,7 +79,7 @@ module.exports.showWebinar = async function (req, res) {
     res.status(200).json({
       success: true,
       list: webinar,
-      total: total,
+      total,
     });
   } catch (error) {
     res.status(500).json({
@@ -103,7 +100,7 @@ module.exports.deleteWebinar = function (req, res) {
       .catch((error) => {
         res.status(500).json({
           success: false,
-          error: error,
+          error,
         });
       });
   });
@@ -112,20 +109,19 @@ module.exports.deleteWebinar = function (req, res) {
 module.exports.editWebinar = async function (req, res) {
   try {
     const webinar = await db.Webinar.findByPk(req.params.webinarId);
-    const { name, speaker, speaker_job, description, date, time, link } =
-      req.body;
+    const { name } = req.body;
     console.log(webinar);
     webinar.update({
-      name: name,
+      name,
     });
     res.status(200).json({
       success: true,
-      webinar: webinar,
+      webinar,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error,
+      error,
     });
   }
 };

@@ -47,7 +47,9 @@ module.exports.addAttempt = async (req, res) => {
     await attemptService.checkAttempt(assessmentId, userId);
 
     // calculate deadline data based on assessment duration
-    const assessment = await assessmentService.getAssessmentDetail(assessmentId);
+    const assessment = await assessmentService.getAssessmentDetail(
+      assessmentId
+    );
     const deadline = new Date(
       new Date(startTime).getTime() + assessment.duration * 60 * 1000
     );
@@ -85,7 +87,8 @@ module.exports.addAttempt = async (req, res) => {
 
 module.exports.completeAttempt = async (req, res) => {
   const { attemptId } = req.params;
-  let { finishTime, questions } = req.body;
+  const { questions } = req.body;
+  let { finishTime } = req.body;
   try {
     finishTime = new Date(finishTime);
 

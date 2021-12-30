@@ -1,5 +1,4 @@
 const { Question } = require('../shared/db/models');
-const { NotFoundException } = require('../shared/utils/httpExceptions');
 
 /**
  *

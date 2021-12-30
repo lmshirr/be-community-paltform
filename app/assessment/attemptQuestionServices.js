@@ -48,7 +48,10 @@ const createAttemptQuestion = async (createAttemptQuestionDto) => {
  * @param {{choosed_answer: string, question_score: string}} updateAttemptQuestionDto
  * @returns attemptQuestion
  */
-const updateAttemptQuestion = async (attemptQuestionId, updateAttemptQuestionDto) => {
+const updateAttemptQuestion = async (
+  attemptQuestionId,
+  updateAttemptQuestionDto
+) => {
   const attemptQuestion = await Attempt_Question.findOne({
     where: { id: attemptQuestionId },
   });

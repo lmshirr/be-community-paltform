@@ -121,7 +121,9 @@ const checkMembership = (req, res, next) => {
       const video = await Video.findByPk(req.params.VideoId);
       classDetails = await Class.findByPk(video.ClassId);
     } else if (req.url.includes('assessments') && req.params.assessmentId) {
-      const assessment = await assessmentService.getAssessmentDetail(req.params.assessmentId);
+      const assessment = await assessmentService.getAssessmentDetail(
+        req.params.assessmentId
+      );
       if (!assessment) {
         return res.status(400).json({
           success: false,
